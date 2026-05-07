@@ -1,0 +1,279 @@
+.app-shell {
+  display: grid;
+  grid-template-columns: clamp(250px, 20vw, 320px) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 1rem 0.75rem;
+  border-inline-start: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.sidebar-header {
+  margin-bottom: 0.75rem;
+}
+
+.kicker {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.03em;
+}
+
+.sidebar-header h2 {
+  margin: 0.25rem 0 0;
+  font-size: 1.05rem;
+}
+
+.chapters-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.chapter-item {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--card-bg);
+}
+
+.chapter-toggle {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text-h);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem;
+  font-size: 0.9rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.chapter-toggle:hover {
+  background: var(--hover-bg);
+}
+
+.chapter-label {
+  text-align: right;
+}
+
+.chapter-arrow {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.subtopic-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0.4rem 0.4rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.subtopic-button {
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.55rem;
+  background: transparent;
+  color: var(--text);
+  text-align: right;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.subtopic-button:hover {
+  background: var(--hover-bg);
+  color: var(--text-h);
+}
+
+.subtopic-button.active {
+  border-color: var(--accent);
+  background: #eaf0ff;
+  color: var(--text-h);
+}
+
+.subtopic-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.soon-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  background: #eef1f9;
+  color: #5d6577;
+}
+
+.content {
+  padding: 1rem 1.3rem;
+  min-height: 100vh;
+}
+
+.exercise-view {
+  width: 100%;
+}
+
+.exercise-header h1 {
+  margin: 0;
+  color: var(--text-h);
+  font-size: 1.3rem;
+}
+
+.exercise-header p {
+  margin: 0.25rem 0 1rem;
+  color: var(--text);
+}
+
+.exercise-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.exercise-card {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  background: var(--card-bg);
+  padding: 0.8rem;
+}
+
+.exercise-level {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.exercise-prompt {
+  margin: 0.45rem 0 0.65rem;
+  color: var(--text-h);
+}
+
+.text-line {
+  margin: 0.15rem 0;
+  direction: rtl;
+}
+
+.exercise-image {
+  margin: 0.75rem 0;
+  padding: 0.55rem;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 16px rgba(47, 103, 255, 0.07);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 640px;
+  width: fit-content;
+  max-inline-size: 100%;
+}
+
+.exercise-image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: 380px;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  background: #fbfcff;
+}
+
+.exercise-solution .exercise-image {
+  background: #fdfdff;
+  box-shadow: none;
+}
+
+.math-line {
+  margin: 0.25rem 0;
+  direction: ltr;
+}
+
+.math-line .katex-display {
+  margin: 0.25rem 0;
+}
+
+.inline-math {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+}
+
+.inline-math .katex {
+  direction: ltr;
+}
+
+.solution-toggle {
+  border: 1px solid var(--accent);
+  border-radius: 0.45rem;
+  background: #fff;
+  color: var(--accent);
+  padding: 0.3rem 0.65rem;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.solution-toggle:hover {
+  background: #edf2ff;
+}
+
+.exercise-solution {
+  margin: 0.55rem 0 0;
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.45rem;
+  background: #f3f6ff;
+  color: var(--text-h);
+}
+
+.exercise-solution .text-line {
+  margin: 0.1rem 0;
+}
+
+.empty-state {
+  min-height: 100%;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  color: var(--text);
+}
+
+@media (max-width: 1050px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    border-inline-start: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .content {
+    padding: 1rem;
+  }
+}
