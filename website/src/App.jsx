@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react'
 import { BlockMath, InlineMath } from 'react-katex'
 import { chapters } from './data/chapters'
-import unit1Exercises from './data/unit1-exercises.json'
-import unit3Exercises from './data/unit3-exercises.json'
+import exercisesByChapter from './data/exercises-by-chapter.json'
 import 'katex/dist/katex.min.css'
 import './App.css'
 
@@ -29,14 +28,29 @@ const renderInlineMath = (text, keyPrefix) => {
 
 const renderMathText = (content, keyPrefix, imageBaseUrl = '') => {
   const lines = content.split('\n').map((line) => line.trim()).filter(Boolean)
+  const nodes = []
+  let textBuffer = []
 
-  return lines.map((line, index) => {
+  const flushTextBuffer = (index) => {
+    if (textBuffer.length === 0) {
+      return
+    }
+    nodes.push(
+      <p className="text-line" key={`${keyPrefix}-line-${index}`}>
+        {renderInlineMath(textBuffer.join(' '), `${keyPrefix}-${index}`)}
+      </p>,
+    )
+    textBuffer = []
+  }
+
+  lines.forEach((line, index) => {
     const imageMatch = line.match(imageMarkerPattern)
 
     if (imageMatch) {
+      flushTextBuffer(index)
       const filename = imageMatch[1].trim()
       const alt = imageMatch[2].trim()
-      return (
+      nodes.push(
         <figure className="exercise-image" key={`${keyPrefix}-image-${index}`}>
           <img
             src={`${imageBaseUrl}${filename}`}
@@ -45,24 +59,27 @@ const renderMathText = (content, keyPrefix, imageBaseUrl = '') => {
           />
         </figure>
       )
+      return
     }
 
     const blockMatch = line.match(blockFormulaPattern)
 
     if (blockMatch) {
-      return (
+      flushTextBuffer(index)
+      nodes.push(
         <div className="math-line" key={`${keyPrefix}-block-${index}`}>
           <BlockMath math={blockMatch[1].trim()} />
         </div>
       )
+      return
     }
 
-    return (
-      <p className="text-line" key={`${keyPrefix}-line-${index}`}>
-        {renderInlineMath(line, `${keyPrefix}-${index}`)}
-      </p>
-    )
+    textBuffer.push(line)
   })
+
+  flushTextBuffer(lines.length)
+
+  return nodes
 }
 
 const buildSubtopicMapForSource = (source) => {
@@ -74,65 +91,30 @@ const buildSubtopicMapForSource = (source) => {
   return map
 }
 
-const buildIdsByChapter = (unitExerciseJson, chapterId) => ({
-  chapterId,
-  ids: new Set(unitExerciseJson.subtopics.map((s) => s.id)),
-})
-
-const FIRST_CHAPTER_ID_WITHOUT_BOUND_EXERCISES = 4
-
 function App() {
   const [openChapterId, setOpenChapterId] = useState(chapters[0]?.id ?? null)
 
-  const subtopicEntryByChapter = useMemo(
-    () => ({
-      1: buildSubtopicMapForSource(unit1Exercises),
-      3: buildSubtopicMapForSource(unit3Exercises),
-    }),
-    [],
-  )
-
-  const exerciseChaptersMeta = useMemo(
-    () => [buildIdsByChapter(unit1Exercises, 1), buildIdsByChapter(unit3Exercises, 3)],
-    [],
-  )
-
-  const exercisesBoundToChapter = (chapterId, subtopicToken) =>
-    exerciseChaptersMeta.some(
-      (meta) => meta.chapterId === chapterId && meta.ids.has(subtopicToken),
-    )
+  const subtopicEntryByChapter = useMemo(() => {
+    const map = {}
+    for (const [chapterId, source] of Object.entries(exercisesByChapter)) {
+      map[chapterId] = buildSubtopicMapForSource(source)
+    }
+    return map
+  }, [])
 
   const [selection, setSelection] = useState(() => ({
     chapterId: chapters[0]?.id ?? null,
-    subtopicToken: unit1Exercises.subtopics[0]?.id ?? null,
+    subtopicToken:
+      chapters[0]?.subtopics?.[0]?.split(' ')[0] ?? null,
   }))
   const [openSolutions, setOpenSolutions] = useState({})
 
-  const exercisesAvailableForChapter = (chapterId, subtopicToken) =>
-    chapterId != null &&
-    chapterId < FIRST_CHAPTER_ID_WITHOUT_BOUND_EXERCISES &&
-    exercisesBoundToChapter(chapterId, subtopicToken)
-
-  const selectedEntry =
-    selection.chapterId != null &&
-    selection.subtopicToken &&
-    exercisesAvailableForChapter(selection.chapterId, selection.subtopicToken)
-      ? subtopicEntryByChapter[selection.chapterId]?.[selection.subtopicToken] ?? null
-      : null
+  const selectedEntry = selection.chapterId != null && selection.subtopicToken
+    ? subtopicEntryByChapter[selection.chapterId]?.[selection.subtopicToken] ?? null
+    : null
   const selectedSubtopic = selectedEntry?.subtopic ?? null
   const selectedImageBaseUrl = selectedEntry?.imageBaseUrl ?? ''
   const hasSelectedSubtopicExercises = Boolean(selectedSubtopic)
-  const awaitingContent =
-    selection.chapterId != null &&
-    selection.chapterId >= FIRST_CHAPTER_ID_WITHOUT_BOUND_EXERCISES &&
-    Boolean(selection.subtopicToken)
-
-  const awaitingEarlyChapterContent =
-    selection.chapterId != null &&
-    selection.subtopicToken &&
-    selection.chapterId < FIRST_CHAPTER_ID_WITHOUT_BOUND_EXERCISES &&
-    !hasSelectedSubtopicExercises &&
-    !awaitingContent
 
   const toggleChapter = (chapterId) => {
     setOpenChapterId((currentOpenId) => (currentOpenId === chapterId ? null : chapterId))
@@ -181,10 +163,6 @@ function App() {
                   <ul id={`chapter-panel-${chapter.id}`} className="subtopic-list">
                     {chapter.subtopics.map((subtopic) => {
                       const subtopicToken = subtopic.split(' ')[0]
-                      const canShowExercises = exercisesAvailableForChapter(
-                        chapter.id,
-                        subtopicToken,
-                      )
                       const isSelected =
                         selection.chapterId === chapter.id &&
                         selection.subtopicToken === subtopicToken
@@ -202,7 +180,6 @@ function App() {
                             }}
                           >
                             {subtopic}
-                            {!canShowExercises && <span className="soon-pill">בקרוב</span>}
                           </button>
                         </li>
                       )
@@ -256,15 +233,7 @@ function App() {
                 })}
               </ol>
             </>
-          ) : awaitingContent ? (
-            <div className="empty-state">
-              <h2>תוכן בהכנה</h2>
-              <p>
-                מפרק 4 ואילך, החל בנושא משוואות ממעלה ראשונה, התרגילים עדיין לא מקושרים לתפריט.
-                בינתיים לא מוצג כאן תוכן, כדי שלא יוצג חומר שאינו תואם לתת-הנושא שבחרתם.
-              </p>
-            </div>
-          ) : awaitingEarlyChapterContent ? (
+          ) : selection.chapterId && selection.subtopicToken ? (
             <div className="empty-state">
               <h2>תוכן בהכנה</h2>
               <p>לתת-נושא זה עדיין אין באתר סט תרגילים. נשמח להוסיף אותו בהמשך.</p>

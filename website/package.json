@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "sync-content": "node scripts/sync-content.mjs",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
