@@ -2,7 +2,7 @@
   "1": {
     "chapterId": 1,
     "chapterTitle": "טכניקה אלגברית",
-    "generatedAt": "2026-05-09T20:19:28.129Z",
+    "generatedAt": "2026-05-09T21:52:50.137Z",
     "imageBaseUrl": "",
     "subtopics": [
       {
@@ -122,7 +122,7 @@
             "id": 19,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "על ציר המספרים ממוקמות שתי נקודות:\n$$A = -7, \\quad B = 3$$\nא. מה המרחק בין הנקודות?\nב. מהו מיקומה של נקודה\n$C$\nהנמצאת בדיוק באמצע קטע\n$AB$\n?",
-            "solution": "א. $10$| ב.$-2$"
+            "solution": "א.\n$10$\nב.\n$-2$"
           },
           {
             "id": 20,
@@ -370,7 +370,7 @@
             "id": 18,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "בכיתה יש 24 תלמידים.\n$\\dfrac{1}{3}$\nמהם נעדרים\nכמה תלמידים נמצאים בכיתה?",
-            "solution": "16 תלמידים"
+            "solution": "$16$\nתלמידים"
           },
           {
             "id": 19,
@@ -503,13 +503,13 @@
             "id": 19,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "פתרו את המשוואה עבור\n$x$\n:\n$$\\frac{x}{3} + \\frac{x}{4} = 7$$",
-            "solution": "$x = 12"
+            "solution": "$x = 12$"
           },
           {
             "id": 20,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "אדם מסיים\n$\\dfrac{2}{5}$\nממשימה בכל שעה.\nכמה שעות יידרשו לו להשלים\n$\\dfrac{4}{3}$\nממשימה?",
-            "solution": "\\dfrac{10}{3}$שעות"
+            "solution": "$\\dfrac{10}{3}$\nשעות"
           }
         ]
       },
@@ -540,13 +540,13 @@
             "id": 4,
             "level": "רמה 1: בניית ביטחון",
             "prompt": "עגלו את\n$2.855$\nל-\n$2$\nמקומות אחרי הנקודה:",
-            "solution": "$2.86"
+            "solution": "$2.86$"
           },
           {
             "id": 5,
             "level": "רמה 1: בניית ביטחון",
             "prompt": "כמה ספרות משמעותיות יש במספר\n$0.0230$\n?",
-            "solution": "3$ספרות משמעותיות"
+            "solution": "$3$\nספרות משמעותיות"
           },
           {
             "id": 6,
@@ -570,13 +570,13 @@
             "id": 9,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "הביעו את\n$\\dfrac{7}{3}$\nכמספר עשרוני מעוגל ל-\n$3$\nמקומות אחרי הנקודה:",
-            "solution": "$2.333"
+            "solution": "$2.333$"
           },
           {
             "id": 10,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "כמה ספרות משמעותיות יש במספר\n$1.0050$\n?",
-            "solution": "5$ספרות משמעותיות"
+            "solution": "$5$\nספרות משמעותיות"
           },
           {
             "id": 11,
@@ -606,13 +606,13 @@
             "id": 15,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "עגלו את\n$\\pi \\approx 3.14159$\nל-\n$4$\nספרות משמעותיות:",
-            "solution": "$3.142"
+            "solution": "$3.142$"
           },
           {
             "id": 16,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "מלבן בעל צלעות\n$3.2 \\text{cm}$\nו-\n$4.15 \\text{cm}$\n.\nחשבו את השטח עם מספר הספרות המשמעותיות הנכון:",
-            "solution": "13 \\text{cm}^2$"
+            "solution": "$13 \\text{ cm}^2$"
           },
           {
             "id": 17,
@@ -630,13 +630,13 @@
             "id": 19,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "חשבו ועגלו ל-\n$2$\nמקומות אחרי הנקודה:\n$$\\frac{2.35 \\times 4.8}{3.6} =$$",
-            "solution": "$3.13"
+            "solution": "$3.13$"
           },
           {
             "id": 20,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "תלמיד קיבל\n$78.5\\%$\nבבחינה עם\n$40$\nשאלות.\nכמה שאלות ענה נכון? (עגלו לשלם):",
-            "solution": "31$שאלות"
+            "solution": "$31$\nשאלות"
           }
         ]
       },
@@ -739,19 +739,19 @@
             "id": 16,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "חשבו:\n$$\\sqrt{144} - 3^2 =$$",
-            "solution": "$3"
+            "solution": "$3$"
           },
           {
             "id": 17,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "פשטו ככל האפשר (שאלה מסגנון מה\"ט – שנת 2024):\n$$\\frac{(a^3)^4 \\cdot (a^4)^2 \\cdot a}{(a^3)^5 \\cdot a^6} =$$",
-            "solution": "1$(בתנאי$a \\neq 0$)"
+            "solution": "$1$\nבתנאי:\n$a \\neq 0$"
           },
           {
             "id": 18,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "פשטו:\n$$\\frac{x^5 \\cdot x^{-2}}{(x^2)^3 \\cdot x^{-4}} =$$",
-            "solution": "x$(בתנאי$x \\neq 0$)"
+            "solution": "$x$\nבתנאי:\n$x \\neq 0$"
           },
           {
             "id": 19,
@@ -1138,7 +1138,7 @@
             "id": 19,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "הוכיחו כי הביטוי הבא שווה לביטוי:\n$$2x - 10$$\n$$(x + 3)(x - 3) - (x - 1)^2$$",
-            "solution": "הוכחה:\n$$(x^2 - 9) - (x^2 - 2x + 1) = 2x - 10 \\checkmark$$"
+            "solution": "הוכחה:\n$(x^2 - 9) - (x^2 - 2x + 1) = 2x - 10 \\checkmark$"
           },
           {
             "id": 20,
@@ -1392,13 +1392,13 @@
             "id": 19,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "בכל הסעיפים פרקו לגורמים:\nא.\n$$6m^2n - 15mn^2 =$$\nב.\n$$4x^3y^2 - 8x^2y^3 + 12xy^4 =$$",
-            "solution": "א. $3mn(2m - 5n)ב. 4xy^2(x^2 - 2xy + 3y^2)$"
+            "solution": "א.\n$3mn(2m - 5n)$\nב.\n$4xy^2(x^2 - 2xy + 3y^2)$"
           },
           {
             "id": 20,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "פרקו לגורמים ופשטו:\nתחום הגדרה:\n$x \\neq -2$\n$$\\frac{3x^2 + 6x}{x + 2} =$$",
-            "solution": "$3x$"
+            "solution": "$3x$\nבתנאי:\n$x \\neq -2$"
           }
         ]
       },
@@ -1519,13 +1519,13 @@
             "id": 19,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "פרקו לגורמים ופשטו (ציינו את תחום ההגדרה):\n$$\\frac{4x^2 - 49}{2x + 7} =$$",
-            "solution": "ביטוי מפושט:\n$$2x - 7$$\nתחום ההגדרה:\n$$x \\neq -\\dfrac{7}{2}$$"
+            "solution": "ביטוי מפושט:\n$2x - 7$\nתחום ההגדרה:\n$x \\neq -\\dfrac{7}{2}$"
           },
           {
             "id": 20,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "בכל הסעיפים פרקו לגורמים:\nא.\n$$4x^2 - 49 =$$\nב.\n$$x^2 - 8x + 16 =$$\nג.\n$$x^4 - 1 =$$",
-            "solution": "א.\n$$(2x + 7)(2x - 7)$$\nב.\n$$(x - 4)^2$$\nג.\n$$(x^2 + 1)(x + 1)(x - 1)$$"
+            "solution": "א.\n$(2x + 7)(2x - 7)$\nב.\n$(x - 4)^2$\nג.\n$(x^2 + 1)(x + 1)(x - 1)$"
           }
         ]
       },
@@ -1652,7 +1652,7 @@
             "id": 20,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "בכל הסעיפים פרקו לגורמים:\nא.\n$$x^2 + 4x - 12 =$$\nב.\n$$3x^2 - 5x - 2 =$$\nג.\n$$2x^3 - 8x =$$",
-            "solution": "א. $(x + 6)(x - 2)ב. (3x + 1)(x - 2)ג. 2x(x + 2)(x - 2)$"
+            "solution": "א.\n$(x + 6)(x - 2)$\nב.\n$(3x + 1)(x - 2)$\nג.\n$2x(x + 2)(x - 2)$"
           }
         ]
       },
@@ -1671,13 +1671,13 @@
             "id": 2,
             "level": "רמה 1: בניית ביטחון",
             "prompt": "צמצמו (ציינו את תנאי הצמצום):\n$$\\frac{2x}{4x^2} =$$",
-            "solution": "$\\dfrac{1}{2x}$\nבתנאי\n$x \\neq 0$"
+            "solution": "$\\dfrac{1}{2x}$\nבתנאי:\n$x \\neq 0$"
           },
           {
             "id": 3,
             "level": "רמה 1: בניית ביטחון",
             "prompt": "פרקו לגורמים וצמצמו:\n$$\\frac{x^2 - 4}{x - 2} =$$",
-            "solution": "$x + 2$\nבתנאי\n$x \\neq 2$"
+            "solution": "$x + 2$\nבתנאי:\n$x \\neq 2$"
           },
           {
             "id": 4,
@@ -1689,7 +1689,7 @@
             "id": 5,
             "level": "רמה 1: בניית ביטחון",
             "prompt": "צמצמו:\n$$\\frac{6a^2b}{3ab^2} =$$",
-            "solution": "$\\dfrac{2a}{b}$\nבתנאי\n$a, b \\neq 0$"
+            "solution": "$\\dfrac{2a}{b}$\nבתנאי:\n$a, b \\neq 0$"
           },
           {
             "id": 6,
@@ -1701,31 +1701,31 @@
             "id": 7,
             "level": "רמה 1: בניית ביטחון",
             "prompt": "פרקו לגורמים וצמצמו:\n$$\\frac{x^2 + 2x}{x} =$$",
-            "solution": "$x + 2$\nבתנאי\n$x \\neq 0$"
+            "solution": "$x + 2$\nבתנאי:\n$x \\neq 0$"
           },
           {
             "id": 8,
             "level": "רמה 1: בניית ביטחון",
             "prompt": "פרקו לגורמים וצמצמו:\n$$\\frac{a^2 - 9}{a + 3} =$$",
-            "solution": "$a - 3$\nבתנאי\n$a \\neq -3$"
+            "solution": "$a - 3$\nבתנאי:\n$a \\neq -3$"
           },
           {
             "id": 9,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "מצאו את תחום ההגדרה וצמצמו:\n$$\\frac{2x + 4}{x^2 - 4} =$$",
-            "solution": "$\\dfrac{2}{x - 2}$\nבתנאי\n$x \\neq 2$\n,\n$x \\neq -2$"
+            "solution": "$\\dfrac{2}{x - 2}$\nבתנאי:\n$x \\neq 2,\\quad x \\neq -2$"
           },
           {
             "id": 10,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "מצאו את תחום ההגדרה וצמצמו:\n$$\\frac{x^2 - 5x + 6}{x^2 - x - 2} =$$",
-            "solution": "$\\dfrac{x - 3}{x + 1}$\nבתנאי\n$x \\neq 2$\n,\n$x \\neq -1$"
+            "solution": "$\\dfrac{x - 3}{x + 1}$\nבתנאי:\n$x \\neq 2,\\quad x \\neq -1$"
           },
           {
             "id": 11,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "פרקו לגורמים וצמצמו:\n$$\\frac{3x^2 - 12}{x + 2} =$$",
-            "solution": "$3(x - 2)$\nבתנאי\n$x \\neq -2$"
+            "solution": "$3(x - 2)$\nבתנאי:\n$x \\neq -2$"
           },
           {
             "id": 12,
@@ -1737,25 +1737,25 @@
             "id": 13,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "מצאו את תחום ההגדרה וצמצמו:\n$$\\frac{2a^2 + 4a}{a^2 - 4} =$$",
-            "solution": "$\\dfrac{2a}{a - 2}$\nבתנאי\n$a \\neq 2$\n,\n$a \\neq -2$"
+            "solution": "$\\dfrac{2a}{a - 2}$\nבתנאי:\n$a \\neq 2,\\quad a \\neq -2$"
           },
           {
             "id": 14,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "מצאו את תחום ההגדרה וצמצמו:\n$$\\frac{x^2 - 4x + 4}{x^2 - 4} =$$",
-            "solution": "$\\dfrac{x - 2}{x + 2}$\nבתנאי\n$x \\neq 2$\n,\n$x \\neq -2$"
+            "solution": "$\\dfrac{x - 2}{x + 2}$\nבתנאי:\n$x \\neq 2,\\quad x \\neq -2$"
           },
           {
             "id": 15,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "פרקו לגורמים וצמצמו:\n$$\\frac{4x^2 - 1}{2x + 1} =$$",
-            "solution": "$2x - 1$\nבתנאי\n$x \\neq -\\dfrac{1}{2}$"
+            "solution": "$2x - 1$\nבתנאי:\n$x \\neq -\\dfrac{1}{2}$"
           },
           {
             "id": 16,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "מצאו את תחום ההגדרה וצמצמו:\n$$\\frac{x^3 - x}{x^2 - 1} =$$",
-            "solution": "$x$\nבתנאי\n$x \\neq 1$\n,\n$x \\neq -1$"
+            "solution": "$x$\nבתנאי:\n$x \\neq 1,\\quad x \\neq -1$"
           },
           {
             "id": 17,
@@ -1767,19 +1767,19 @@
             "id": 18,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "מצאו את תחום ההגדרה וצמצמו:\n$$\\frac{x^2 + x - 6}{x^2 - x - 2} =$$",
-            "solution": "$\\dfrac{x + 3}{x + 1}$\nבתנאי\n$x \\neq 2$\n,\n$x \\neq -1$"
+            "solution": "$\\dfrac{x + 3}{x + 1}$\nבתנאי:\n$x \\neq 2,\\quad x \\neq -1$"
           },
           {
             "id": 19,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "מצאו את תחום ההגדרה וצמצמו:\n$$\\frac{2x^2 - 8}{x^2 + 3x + 2} =$$",
-            "solution": "$\\dfrac{2(x - 2)}{x + 1}$\nבתנאי\n$x \\neq -1$\n,\n$x \\neq -2$"
+            "solution": "$\\dfrac{2(x - 2)}{x + 1}$\nבתנאי:\n$x \\neq -1,\\quad x \\neq -2$"
           },
           {
             "id": 20,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "נתון הביטוי:\n$$\\frac{x^2 - 5x + 6}{x^2 - 9}$$\nא. עבור אילו ערכים של\n$x$\nהביטוי חסר משמעות?\nב. פשטו את הביטוי.\nג. מה ערך הביטוי כאשר\n$x = 5$\n?",
-            "solution": "א.\n$x = 3$\nאו\n$x = -3$\nב.\n$\\dfrac{x - 2}{x + 3}$\nבתנאי\n$x \\neq 3$\n,\n$x \\neq -3$\nג.\n$\\dfrac{3}{8}$"
+            "solution": "א.\n$x = 3$\nאו\n$x = -3$\nב.\n$\\dfrac{x - 2}{x + 3}$\nבתנאי:\n$x \\neq 3,\\quad x \\neq -3$\nג.\n$\\dfrac{3}{8}$"
           }
         ]
       },
@@ -1840,73 +1840,73 @@
             "id": 9,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "פרקו לגורמים, כפלו וצמצמו:\n$$\\frac{x^2 - 9}{x + 3} \\cdot \\frac{1}{x - 3} =$$",
-            "solution": "$\\dfrac{1}{x - 3}$בתנאי:$x \\neq -3,\\quad x \\neq 3$"
+            "solution": "$\\dfrac{1}{x - 3}$\nבתנאי:\n$x \\neq -3,\\quad x \\neq 3$"
           },
           {
             "id": 10,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "פרקו לגורמים וחלקו:\n$$\\frac{x^2 - 4}{x^2 + 2x} \\div \\frac{x - 2}{x} =$$",
-            "solution": "$1$בתנאי:$x \\neq 0,\\quad x \\neq -2,\\quad x \\neq 2$"
+            "solution": "$1$\nבתנאי:\n$x \\neq 0,\\quad x \\neq -2,\\quad x \\neq 2$"
           },
           {
             "id": 11,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "פרקו לגורמים, כפלו וצמצמו:\n$$\\frac{2x + 4}{x^2 - 4} \\cdot \\frac{x - 2}{4} =$$",
-            "solution": "$\\dfrac{1}{2}$בתנאי:$x \\neq -2,\\quad x \\neq 2$"
+            "solution": "$\\dfrac{1}{2}$\nבתנאי:\n$x \\neq -2,\\quad x \\neq 2$"
           },
           {
             "id": 12,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "פרקו לגורמים וחלקו:\n$$\\frac{a^2 - 1}{a^2 + 2a + 1} \\div \\frac{a - 1}{a + 1} =$$",
-            "solution": "$1$בתנאי:$a \\neq -1,\\quad a \\neq 1$"
+            "solution": "$1$\nבתנאי:\n$a \\neq -1,\\quad a \\neq 1$"
           },
           {
             "id": 13,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "כפלו וצמצמו:\n$$\\frac{x^2 + 3x}{x^2 - 9} \\cdot \\frac{x - 3}{x} =$$",
-            "solution": "$1$בתנאי:$x \\neq 0,\\quad x \\neq \\pm 3$"
+            "solution": "$1$\nבתנאי:\n$x \\neq 0,\\quad x \\neq \\pm 3$"
           },
           {
             "id": 14,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "חלקו וצמצמו:\n$$\\frac{4x^2 - 1}{2x + 1} \\div (2x - 1) =$$",
-            "solution": "$1$בתנאי:$x \\neq -\\dfrac{1}{2},\\quad x \\neq \\dfrac{1}{2}$"
+            "solution": "$1$\nבתנאי:\n$x \\neq -\\dfrac{1}{2},\\quad x \\neq \\dfrac{1}{2}$"
           },
           {
             "id": 15,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "פרקו לגורמים, כפלו וצמצמו:\n$$\\frac{x^2 - x - 6}{x^2 - 4} \\cdot \\frac{x + 2}{x - 3} =$$",
-            "solution": "$1$בתנאי:$x \\neq 2,\\quad x \\neq -2,\\quad x \\neq 3$"
+            "solution": "$1$\nבתנאי:\n$x \\neq 2,\\quad x \\neq -2,\\quad x \\neq 3$"
           },
           {
             "id": 16,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "פרקו לגורמים וחלקו:\n$$\\frac{x^2 - 5x + 6}{x^2 - 4} \\div \\frac{x - 3}{x + 2} =$$",
-            "solution": "$1$בתנאי:$x \\neq 2,\\quad x \\neq -2,\\quad x \\neq 3$"
+            "solution": "$1$\nבתנאי:\n$x \\neq 2,\\quad x \\neq -2,\\quad x \\neq 3$"
           },
           {
             "id": 17,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "פשטו ככל האפשר (שאלה בסגנון מה\"ט – שנת 2023):\n$$\\frac{2x}{x - 4} : \\frac{1}{2x - 8}$$\nא. פשטו את הביטוי.\nב. מהו תחום ההגדרה?\nג. עבור איזה ערך של\n$x$\nערך הביטוי שווה לשמונה?",
-            "solution": "- א.$4x$- ב.$x \\neq 4$- ג.$x = 2$"
+            "solution": "א.\n$4x$\nב.\n$x \\neq 4$\nג.\n$x = 2$"
           },
           {
             "id": 18,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "פשטו לחלוטין:\n$$\\frac{x^2 - 9}{x^2 - x - 6} \\cdot \\frac{x^2 + x - 2}{x^2 + 5x + 6} =$$",
-            "solution": "$\\dfrac{x - 1}{x + 2}$בתנאי:$x \\neq 3,\\quad x \\neq -3,\\quad x \\neq -2$"
+            "solution": "$\\dfrac{x - 1}{x + 2}$\nבתנאי:\n$x \\neq 3,\\quad x \\neq -3,\\quad x \\neq -2$"
           },
           {
             "id": 19,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "פשטו לחלוטין:\n$$\\frac{a^2 - 4a + 4}{a^2 - 4} \\div \\frac{a - 2}{a + 2} =$$",
-            "solution": "$1$בתנאי:$a \\neq 2,\\quad a \\neq -2$"
+            "solution": "$1$\nבתנאי:\n$a \\neq 2,\\quad a \\neq -2$"
           },
           {
             "id": 20,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "פשטו לחלוטין:\n$$\\frac{x^2 + 3x - 4}{x^2 - 1} \\cdot \\frac{x^2 - x}{x^2 + 4x} =$$",
-            "solution": "$\\dfrac{x - 1}{x + 1}$בתנאי:$x \\neq \\pm 1,\\quad x \\neq 0,\\quad x \\neq -4$"
+            "solution": "$\\dfrac{x - 1}{x + 1}$\nבתנאי:\n$x \\neq \\pm 1,\\quad x \\neq 0,\\quad x \\neq -4$"
           }
         ]
       },
@@ -1979,25 +1979,25 @@
             "id": 11,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "חברו:\n$$\\frac{x}{x - 3} + \\frac{3}{x^2 - 9} =$$",
-            "solution": "$\\dfrac{x^2 + 3x + 3}{x^2 - 9}$\n(בתנאי\n$x \\neq \\pm 3$\n)"
+            "solution": "$\\dfrac{x^2 + 3x + 3}{x^2 - 9}$\nבתנאי:\n$x \\neq \\pm 3$"
           },
           {
             "id": 12,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "חסרו:\n$$\\frac{2x}{x^2 - 1} - \\frac{1}{x - 1} =$$",
-            "solution": "$\\dfrac{1}{x + 1}$\n(בתנאי\n$x \\neq \\pm 1$\n)"
+            "solution": "$\\dfrac{1}{x + 1}$\nבתנאי:\n$x \\neq \\pm 1$"
           },
           {
             "id": 13,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "חברו:\n$$\\frac{1}{x} + \\frac{1}{x + 1} + \\frac{1}{x(x+1)} =$$",
-            "solution": "$\\dfrac{2}{x}$\n(בתנאי\n$x \\neq 0, -1$\n)"
+            "solution": "$\\dfrac{2}{x}$\nבתנאי:\n$x \\neq 0,\\quad x \\neq -1$"
           },
           {
             "id": 14,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "חסרו (פרקו לגורמים):\n$$\\frac{3}{x^2 - x} - \\frac{2}{x^2 + x} =$$",
-            "solution": "$\\dfrac{x + 5}{x(x - 1)(x + 1)}$\n(בתנאי\n$x \\neq 0, \\pm 1$\n)"
+            "solution": "$\\dfrac{x + 5}{x(x - 1)(x + 1)}$\nבתנאי:\n$x \\neq 0,\\quad x \\neq \\pm 1$"
           },
           {
             "id": 15,
@@ -2009,7 +2009,7 @@
             "id": 16,
             "level": "רמה 2: תרגול שוטף ומשולב",
             "prompt": "חסרו:\n$$\\frac{2}{x^2 - 4} - \\frac{1}{x + 2} =$$",
-            "solution": "$\\dfrac{4 - x}{(x + 2)(x - 2)}$\n(בתנאי\n$x \\neq \\pm 2$\n)"
+            "solution": "$\\dfrac{4 - x}{(x + 2)(x - 2)}$\nבתנאי:\n$x \\neq \\pm 2$"
           },
           {
             "id": 17,
@@ -2021,19 +2021,19 @@
             "id": 18,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "פשטו לחלוטין:\n$$\\frac{2}{x + 3} - \\frac{x}{x^2 - 9} =$$",
-            "solution": "$\\dfrac{x - 6}{x^2 - 9}$\n(בתנאי\n$x \\neq \\pm 3$\n)"
+            "solution": "$\\dfrac{x - 6}{x^2 - 9}$\nבתנאי:\n$x \\neq \\pm 3$"
           },
           {
             "id": 19,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "פשטו לחלוטין:\n$$\\frac{x}{x^2 - x - 2} + \\frac{1}{x + 1} =$$",
-            "solution": "$\\dfrac{2(x - 1)}{(x + 1)(x - 2)}$\n(בתנאי\n$x \\neq -1, 2$\n)"
+            "solution": "$\\dfrac{2(x - 1)}{(x + 1)(x - 2)}$\nבתנאי:\n$x \\neq -1,\\quad x \\neq 2$"
           },
           {
             "id": 20,
             "level": "רמה 3: רמת בחינת מה\"ט",
             "prompt": "פשטו לחלוטין:\n$$\\frac{x + 1}{x^2 - 4} - \\frac{x - 1}{x^2 + 4x + 4} =$$",
-            "solution": "$\\dfrac{6x}{(x - 2)(x + 2)^2}$\n(בתנאי\n$x \\neq \\pm 2$\n)"
+            "solution": "$\\dfrac{6x}{(x - 2)(x + 2)^2}$\nבתנאי:\n$x \\neq \\pm 2$"
           }
         ]
       }
@@ -2042,7 +2042,7 @@
   "2": {
     "chapterId": 2,
     "chapterTitle": "חזקות ושורשים, מידות, המרות וכתיבה מדעית",
-    "generatedAt": "2026-05-09T20:19:28.135Z",
+    "generatedAt": "2026-05-09T21:52:50.143Z",
     "imageBaseUrl": "",
     "subtopics": [
       {
@@ -4209,7 +4209,7 @@
   "3": {
     "chapterId": 3,
     "chapterTitle": "קריאת והבנת מידע מגרפים מסיפורי מעשה",
-    "generatedAt": "2026-05-09T20:19:28.195Z",
+    "generatedAt": "2026-05-09T21:52:50.186Z",
     "imageBaseUrl": "/chapter3-images/",
     "subtopics": [
       {
@@ -5868,7 +5868,7 @@
   "4": {
     "chapterId": 4,
     "chapterTitle": "משוואות ממעלה ראשונה ושנייה, מערכת משוואות",
-    "generatedAt": "2026-05-09T20:19:28.201Z",
+    "generatedAt": "2026-05-09T21:52:50.193Z",
     "imageBaseUrl": "",
     "subtopics": [
       {
@@ -7884,7 +7884,7 @@
   "5": {
     "chapterId": 5,
     "chapterTitle": "שינוי נושא הנוסחה",
-    "generatedAt": "2026-05-09T20:19:28.205Z",
+    "generatedAt": "2026-05-09T21:52:50.198Z",
     "imageBaseUrl": "",
     "subtopics": [
       {
@@ -9924,7 +9924,7 @@
   "6": {
     "chapterId": 6,
     "chapterTitle": "מבוא להנדסה",
-    "generatedAt": "2026-05-09T20:19:28.261Z",
+    "generatedAt": "2026-05-09T21:52:50.335Z",
     "imageBaseUrl": "/chapter6-images/",
     "subtopics": [
       {
@@ -12472,7 +12472,7 @@
   "7": {
     "chapterId": 7,
     "chapterTitle": "הנדסה אנליטית",
-    "generatedAt": "2026-05-09T20:19:28.322Z",
+    "generatedAt": "2026-05-09T21:52:50.375Z",
     "imageBaseUrl": "/chapter7-images/",
     "subtopics": [
       {
@@ -15147,7 +15147,7 @@
   "8": {
     "chapterId": 8,
     "chapterTitle": "הפונקציה הריבועית והפרבולה",
-    "generatedAt": "2026-05-09T20:19:28.389Z",
+    "generatedAt": "2026-05-09T21:52:50.421Z",
     "imageBaseUrl": "/chapter8-images/",
     "subtopics": [
       {
@@ -17187,7 +17187,7 @@
   "9": {
     "chapterId": 9,
     "chapterTitle": "שאלות מילוליות",
-    "generatedAt": "2026-05-09T20:19:28.419Z",
+    "generatedAt": "2026-05-09T21:52:50.447Z",
     "imageBaseUrl": "/chapter9-images/",
     "subtopics": [
       {
@@ -20073,7 +20073,7 @@
   "10": {
     "chapterId": 10,
     "chapterTitle": "טריגונומטריה",
-    "generatedAt": "2026-05-09T20:19:28.457Z",
+    "generatedAt": "2026-05-09T21:52:50.476Z",
     "imageBaseUrl": "/chapter10-images/",
     "subtopics": [
       {
