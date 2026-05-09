@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Generate graphs for all Chapter 3 exercises and update markdown files."""
+"""Generate graphs for all Chapter 3 exercises and update markdown files.
+
+Hebrew labels use python-bidi ``get_display()`` so text renders correctly with
+matplotlib's left-to-right layout (plain Hebrew strings would appear mirrored).
+"""
 
 import matplotlib
 matplotlib.use('Agg')
@@ -21,7 +25,8 @@ def h(text):
         return text
     return get_display(str(text))
 
-CHAPTER_DIR = "/Users/mq/Desktop/מתמטיקה - אורט/mahat-Math/3 - קריאת והבנת מידע מגרפים מסיפורי מעשה"
+_WORKSPACE = os.path.dirname(os.path.abspath(__file__))
+CHAPTER_DIR = os.path.join(_WORKSPACE, "3 - קריאת והבנת מידע מגרפים מסיפורי מעשה")
 IMAGES_DIR  = os.path.join(CHAPTER_DIR, "images")
 os.makedirs(IMAGES_DIR, exist_ok=True)
 

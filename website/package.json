@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "sync-content": "node scripts/sync-content.mjs",
+    "finalize-solutions": "node scripts/finalize-solutions-in-markdown.mjs",
+    "repair-solution-dollars": "node scripts/repair-solution-dollar-wrap.mjs",
+    "normalize-solutions": "node scripts/finalize-solutions-in-markdown.mjs && node scripts/repair-solution-dollar-wrap.mjs && npm run sync-content",
+    "normalize-fraction-minus": "node scripts/normalize-fraction-minus.mjs",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",

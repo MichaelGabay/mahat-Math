@@ -28,6 +28,8 @@ const sectionMap = {
 
 const imageLinePattern = /^!\[([^\]]*)\]\(([^)]+)\)$/u
 const exercisePattern = /^(?:\*\*)?(\d+)\.(?:\*\*)?\s*(.*)$/u
+/** כותרות תשובה בסגנון **תרגיל 12:** (פרק שאלות מילוליות ועוד) */
+const answerHeadingPattern = /^\*\*תרגיל\s+(\d+):\*\*\s*(.*)$/u
 
 const normalizeTitle = (fileName) =>
   fileName
@@ -64,6 +66,43 @@ const buildSolution = (rawLines) => {
     return 'לא הוגדר פתרון.'
   }
   return lines.join('\n').trim()
+}
+
+/** פיצול שורות תשובה שמוזגו בטעות (למשל $5.$ ואז 14.$ לפני \\dfrac) */
+const splitMergedAnswerFragments = (line) => {
+  const trimmed = line.trim()
+  if (!trimmed) {
+    return []
+  }
+
+  const splitOnce = (text, delimiterWithNumCapture) => {
+    if (!delimiterWithNumCapture.test(text)) {
+      return [text]
+    }
+    delimiterWithNumCapture.lastIndex = 0
+    const parts = text.split(delimiterWithNumCapture)
+    const out = []
+    const head = parts[0]?.trim() ?? ''
+    if (head.length > 0) {
+      out.push(head)
+    }
+    for (let i = 1; i < parts.length; i += 2) {
+      const num = parts[i]
+      const rest = parts[i + 1]?.trim() ?? ''
+      out.push(`${num}. ${rest}`)
+    }
+    return out
+  }
+
+  const primary = /\$(\d+)\.\$/u
+  const secondary = /(?<=[^\d$])(\d{1,2})\.\$(?=\S)/u
+  /** לא לפצל $8.9$ או $33.75$ — רק נקודה שאינה חלק ממספר עשרוני */
+  const tertiary = /(?<=\$)(\d{1,2})\.(?!\d)/u
+
+  let chunks = splitOnce(trimmed, primary)
+  chunks = chunks.flatMap((chunk) => splitOnce(chunk, secondary))
+  chunks = chunks.flatMap((chunk) => splitOnce(chunk, tertiary))
+  return chunks
 }
 
 const parseFile = async (filePath, fileName) => {
@@ -104,14 +143,25 @@ const parseFile = async (filePath, fileName) => {
     }
 
     if (inAnswers) {
-      const match = line.match(exercisePattern)
-      if (match) {
+      const headingMatch = line.match(answerHeadingPattern)
+      if (headingMatch) {
         flushAnswer()
-        currentAnswerNumber = Number(match[1])
-        const rest = match[2]?.trim() ?? ''
+        currentAnswerNumber = Number(headingMatch[1])
+        const rest = headingMatch[2]?.trim() ?? ''
         currentAnswerLines = rest ? [rest] : []
-      } else if (currentAnswerNumber !== null) {
-        currentAnswerLines.push(line)
+        continue
+      }
+      const fragments = splitMergedAnswerFragments(line)
+      for (const fragment of fragments) {
+        const match = fragment.match(exercisePattern)
+        if (match) {
+          flushAnswer()
+          currentAnswerNumber = Number(match[1])
+          const rest = match[2]?.trim() ?? ''
+          currentAnswerLines = rest ? [rest] : []
+        } else if (currentAnswerNumber !== null) {
+          currentAnswerLines.push(fragment)
+        }
       }
       continue
     }

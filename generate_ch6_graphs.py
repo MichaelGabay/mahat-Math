@@ -25,8 +25,8 @@ CHAPTER_DIR = os.path.join(WORKSPACE, "6 - מבוא להנדסה")
 IMAGES_DIR = os.path.join(CHAPTER_DIR, "images")
 os.makedirs(IMAGES_DIR, exist_ok=True)
 
-# DejaVu first so Latin labels render cleanly; fall back to Hebrew-capable fonts.
-plt.rcParams["font.family"] = ["DejaVu Sans", "Arial Hebrew", "Arial Unicode MS", "Arial"]
+# Hebrew-capable fonts first for מודול זה; Latin/math still fall back via DejaVu.
+plt.rcParams["font.family"] = ["Arial Hebrew", "Arial Unicode MS", "DejaVu Sans", "Arial"]
 plt.rcParams["axes.unicode_minus"] = False
 HEBREW_RE = re.compile(r"[\u0590-\u05FF]")
 
@@ -258,10 +258,11 @@ def gen_2(stem: str, n: int) -> None:
         ax.text(0.15, 0.9, "C", fontsize=10)
     elif n == 17:
         ax.plot([0, 4], [0, 0], "k-", lw=1.5)
-        ax.plot([2, 3], [0, 2], "k--", lw=1)
-        ax.text(1, -0.25, "parallel lines + transversal", fontsize=8)
+        ax.plot([0, 4], [2.8, 2.8], "k-", lw=1.5)
+        ax.plot([1.2, 2.8], [0, 2.8], "k--", lw=1)
+        ax.text(1, -0.38, "ישרים מקבילים וישר חותך", fontsize=8)
         ax.set_xlim(-0.5, 4.5)
-        ax.set_ylim(-0.5, 2.5)
+        ax.set_ylim(-0.55, 3.45)
     elif n == 18:
         angle_fan(ax, 0, 0, [0, 60, 135], ["OA", "OB", "OC"])
         ax.set_xlim(-1, 3.5)
@@ -282,29 +283,44 @@ def gen_2(stem: str, n: int) -> None:
 
 def gen_3(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
+    # אלפא גבוהה יותר כדי שהמלבנים ייראו בבירור במסכים ובתצוגת תמונה מוקטנת
     if n == 13:
-        poly(ax, [(0, 0), (8, 0), (8, 6), (0, 6)], alpha=0.25)
+        poly(ax, [(0, 0), (8, 0), (8, 6), (0, 6)], alpha=0.35)
         ax.text(0.5, 3, "ריצוף", fontsize=10)
     elif n == 14:
-        poly(ax, [(0, 0), (5, 0), (5, 4), (0, 4)], fill="#F5E6CC", alpha=0.5)
+        poly(ax, [(0, 0), (5, 0), (5, 4), (0, 4)], fill="#F5E6CC", alpha=0.55)
         ax.plot([0, 5, 5, 0, 0], [0, 0, 4, 4, 0], "k-", lw=2)
         ax.text(2, 2, "מסגרת", fontsize=10)
     elif n == 15:
-        poly(ax, [(0, 0), (3, 0), (3, 3), (0, 3)], alpha=0.2)
-        poly(ax, [(5, 0), (8, 0), (8, 2), (5, 2)], alpha=0.2)
+        poly(ax, [(0, 0), (3, 0), (3, 3), (0, 3)], alpha=0.35)
+        poly(ax, [(5, 0), (8, 0), (8, 2), (5, 2)], alpha=0.35)
     elif n == 16:
-        poly(ax, [(0, 0), (8, 0), (8, 3), (5, 3), (5, 6), (0, 6)], alpha=0.3)
+        poly(ax, [(0, 0), (8, 0), (8, 3), (5, 3), (5, 6), (0, 6)], alpha=0.38)
     elif n == 17:
-        poly(ax, [(0, 0), (15, 0), (15, 8), (0, 8)], alpha=0.2)
+        poly(ax, [(0, 0), (15, 0), (15, 8), (0, 8)], alpha=0.35)
     elif n == 18:
-        poly(ax, [(0, 0), (20, 0), (20, 12), (0, 12)], alpha=0.2)
+        poly(ax, [(0, 0), (20, 0), (20, 12), (0, 12)], alpha=0.35)
     elif n == 19:
-        poly(ax, [(0, 0), (12, 0), (12, 12), (0, 12)], alpha=0.15)
+        poly(ax, [(0, 0), (12, 0), (12, 12), (0, 12)], alpha=0.32)
         poly(ax, [(3, 3), (9, 3), (9, 9), (3, 9)], fill=C_GRAY, alpha=0.45)
     elif n == 20:
-        poly(ax, [(0, 0), (30, 0), (30, 20), (0, 20)], alpha=0.15)
-    ax.set_xlim(-0.5, 10)
-    ax.set_ylim(-0.5, 8)
+        poly(ax, [(0, 0), (30, 0), (30, 20), (0, 20)], alpha=0.32)
+    # גבולות מתאימים לכל צורה — לא לחתוך מלבנים גדולים (בעבר הוגדר קבוע 10×8 לכולם)
+    _extent = {
+        13: (8, 6),
+        14: (5, 4),
+        15: (8, 3),
+        16: (8, 6),
+        17: (15, 8),
+        18: (20, 12),
+        19: (12, 12),
+        20: (30, 20),
+    }
+    emax_x, emax_y = _extent[n]
+    pad_x = max(0.6, emax_x * 0.04)
+    pad_y = max(0.6, emax_y * 0.04)
+    ax.set_xlim(-pad_x * 0.5, emax_x + pad_x)
+    ax.set_ylim(-pad_y * 0.5, emax_y + pad_y)
     save_fig(fig, stem, n)
 
 
