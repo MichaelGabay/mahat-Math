@@ -83,7 +83,8 @@ body {
 }
 
 html[data-theme='dark'] .math-line .katex,
-html[data-theme='dark'] .inline-math .katex {
+html[data-theme='dark'] .inline-math .katex,
+html[data-theme='dark'] .katex-mount .katex {
   color: var(--katex-fg);
 }
 

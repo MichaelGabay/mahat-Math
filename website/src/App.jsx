@@ -1,6 +1,13 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
-import { BlockMath, InlineMath } from 'react-katex'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { chapters } from './data/chapters'
+import { KatexBlock, KatexInline } from './KatexMount.jsx'
 import exercisesByChapter from './data/exercises-by-chapter.json'
 import 'katex/dist/katex.min.css'
 import './App.css'
@@ -91,13 +98,54 @@ const getInitialNavigation = () => {
   return { selection, openChapterId }
 }
 
-const blockFormulaPattern = /^\$\$(.+)\$\$$/u
-const inlineFormulaPattern = /(\$[^$\n]+\$)/u
+/** בלוק $$…$$ בשורה אחת (מותרים רווחים קלים) */
+const blockFormulaPattern = /^\s*\$\$\s*(.+?)\s*\$\$\s*$/u
+/**
+ * נוסחה בשורה $…$ בלבד — לא לבלוע את ה־$ השני של $$ (אחרת נשבר KaTeX בפרודקשן).
+ * (?<!\$) לפני ה־$ הפתוח, (?!\$) אחרי ה־$ הסוגר.
+ */
+const inlineFormulaPattern = /((?<!\$)\$[^$\n]+\$(?!\$))/u
 const imageMarkerPattern = /^\[IMG:([^|\]]+)\|([^\]]*)\]$/u
 /** שורה שמתחילה בסעיף ממוספר בעברית (א. ב. ג. …) — מפרידה בין הנתונים לסעיפים (גם בלי רווח אחרי הנקודה) */
 const hebrewSubItemLinePattern = /^[\u05D0-\u05EA]\./u
 /** טקסט מודגש בסגנון Markdown — האתר לא מריץ מפרש Markdown מלא */
 const boldChunkPattern = /(\*\*[^*]+\*\*)/gu
+
+/** מפרק $$\displaystyle…$$ מתוך פסקה ממוזגת כדי שלא יתנגש עם $…$ בשורה */
+const splitDisplayMathSegments = (raw) => {
+  const trimmed = raw.trim()
+  if (trimmed.length === 0) {
+    return []
+  }
+  if (!trimmed.includes('$$')) {
+    return [{ type: 'text', value: trimmed }]
+  }
+  const segments = []
+  const re = /\$\$\s*([\s\S]*?)\s*\$\$/g
+  let last = 0
+  let m = re.exec(trimmed)
+  while (m !== null) {
+    if (m.index > last) {
+      const t = trimmed.slice(last, m.index)
+      if (t.trim().length > 0) {
+        segments.push({ type: 'text', value: t })
+      }
+    }
+    const inner = m[1].trim()
+    if (inner.length > 0) {
+      segments.push({ type: 'display', value: inner })
+    }
+    last = re.lastIndex
+    m = re.exec(trimmed)
+  }
+  if (last < trimmed.length) {
+    const tail = trimmed.slice(last)
+    if (tail.trim().length > 0) {
+      segments.push({ type: 'text', value: tail })
+    }
+  }
+  return segments.length > 0 ? segments : [{ type: 'text', value: trimmed }]
+}
 
 const renderInlineMath = (text, keyPrefix) => {
   const parts = text.split(inlineFormulaPattern).filter(Boolean)
@@ -106,8 +154,13 @@ const renderInlineMath = (text, keyPrefix) => {
     if (part.startsWith('$') && part.endsWith('$')) {
       const math = part.slice(1, -1).trim()
       return (
-        <span className="inline-math" dir="ltr" key={`${keyPrefix}-math-${index}`}>
-          <InlineMath math={math} />
+        <span
+          className="inline-math"
+          dir="ltr"
+          lang="en"
+          key={`${keyPrefix}-math-${index}`}
+        >
+          <KatexInline math={math} />
         </span>
       )
     }
@@ -140,11 +193,41 @@ const renderMathText = (content, keyPrefix, imageBaseUrl = '') => {
     if (textBuffer.length === 0) {
       return
     }
-    nodes.push(
-      <p className="text-line" key={`${keyPrefix}-line-${index}`}>
-        {renderRichInline(textBuffer.join(' '), `${keyPrefix}-${index}`)}
-      </p>,
-    )
+    const joined = textBuffer.join(' ')
+    const segments = splitDisplayMathSegments(joined)
+    const baseKey = `${keyPrefix}-line-${index}`
+
+    if (segments.length === 1 && segments[0].type === 'text') {
+      nodes.push(
+        <p className="text-line" key={baseKey}>
+          {renderRichInline(segments[0].value, `${keyPrefix}-${index}`)}
+        </p>,
+      )
+    } else {
+      nodes.push(
+        <Fragment key={baseKey}>
+          {segments.map((seg, si) => {
+            if (seg.type === 'display') {
+              return (
+                <div
+                  className="math-line"
+                  dir="ltr"
+                  lang="en"
+                  key={`${baseKey}-d-${si}`}
+                >
+                  <KatexBlock math={seg.value} />
+                </div>
+              )
+            }
+            return (
+              <p className="text-line" key={`${baseKey}-t-${si}`}>
+                {renderRichInline(seg.value, `${keyPrefix}-${index}-t-${si}`)}
+              </p>
+            )
+          })}
+        </Fragment>,
+      )
+    }
     textBuffer = []
   }
 
@@ -179,8 +262,13 @@ const renderMathText = (content, keyPrefix, imageBaseUrl = '') => {
     if (blockMatch) {
       flushTextBuffer(index)
       nodes.push(
-        <div className="math-line" key={`${keyPrefix}-block-${index}`}>
-          <BlockMath math={blockMatch[1].trim()} />
+        <div
+          className="math-line"
+          dir="ltr"
+          lang="en"
+          key={`${keyPrefix}-block-${index}`}
+        >
+          <KatexBlock math={blockMatch[1].trim()} />
         </div>,
       )
       return
@@ -296,7 +384,9 @@ function App() {
 
   useEffect(() => {
     if (!isNarrowViewport) {
-      setMobileNavOpen(false)
+      queueMicrotask(() => {
+        setMobileNavOpen(false)
+      })
     }
   }, [isNarrowViewport])
 
