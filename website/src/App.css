@@ -416,6 +416,7 @@
 .text-line {
   margin: 0.15rem 0;
   direction: rtl;
+  word-break: normal;
 }
 
 .exercise-prompt .text-line + .text-line {
@@ -461,8 +462,52 @@
 .math-line {
   margin: 0.25rem 0;
   direction: ltr;
+  unicode-bidi: isolate;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  contain: layout;
+}
+
+.katex-mount--block {
+  display: block;
+  max-width: 100%;
+}
+
+.katex-mount--block .katex-mount-inner {
+  display: block;
+}
+
+.katex-mount--inline {
+  display: inline;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.katex-mount--inline .katex-mount-inner {
+  display: inline-block;
+}
+
+/* WebKit + RTL: min-content על .base עלול לשבור כל אות לשורה — דורסים לרוחב שורה תקין */
+.math-line .katex .base,
+.inline-math .katex .base,
+.katex-mount .katex .base {
+  width: max-content !important;
+}
+
+.math-line .katex,
+.math-line .katex-display,
+.math-line .katex .katex-html,
+.inline-math .katex,
+.inline-math .katex .katex-html,
+.katex-mount .katex,
+.katex-mount .katex .katex-html {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
 }
 
 .math-line .katex-display {
@@ -473,6 +518,12 @@
   direction: ltr;
   unicode-bidi: isolate;
   display: inline-block;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  max-width: 100%;
+  overflow-x: auto;
+  vertical-align: middle;
 }
 
 .inline-math .katex {
