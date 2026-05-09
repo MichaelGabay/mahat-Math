@@ -1,5 +1,7 @@
 :root {
+  color-scheme: light;
   --bg: #f6f8fc;
+  --bg-gradient-top: #ffffff;
   --surface: #f0f4ff;
   --card-bg: #ffffff;
   --text: #4c5667;
@@ -7,6 +9,20 @@
   --border: #d7deec;
   --hover-bg: #e8efff;
   --accent: #2f67ff;
+  --accent-pressed: #4a5d8f;
+  --active-subtopic-bg: #eaf0ff;
+  --pill-bg: #eef1f9;
+  --pill-text: #5d6577;
+  --image-frame-bg: #ffffff;
+  --image-inner-bg: #fbfcff;
+  --solution-image-frame-bg: #fdfdff;
+  --solution-panel-bg: #f3f6ff;
+  --solution-toggle-bg: #ffffff;
+  --solution-toggle-hover: #edf2ff;
+  --exercise-image-shadow: rgba(47, 103, 255, 0.07);
+  --sidebar-mobile-shadow: rgba(26, 31, 46, 0.18);
+  --backdrop-tint: rgba(26, 31, 46, 0.45);
+  --katex-fg: var(--text-h);
 
   font-family: 'Segoe UI', Arial, sans-serif;
   font-size: 16px;
@@ -32,9 +48,53 @@ body {
   min-height: 100%;
 }
 
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0f1117;
+  --bg-gradient-top: #1a1e2a;
+  --surface: #171b24;
+  --card-bg: #1c2130;
+  --text: #a8b0c4;
+  --text-h: #e8eaf4;
+  --border: #2c3348;
+  --hover-bg: #252b3d;
+  --accent: #6b8cff;
+  --accent-pressed: #5576e6;
+  --active-subtopic-bg: #283253;
+  --pill-bg: #252b3d;
+  --pill-text: #9aa4bc;
+  --image-frame-bg: #1c2130;
+  --image-inner-bg: #141822;
+  --solution-image-frame-bg: #1a1f2c;
+  --solution-panel-bg: #222838;
+  --solution-toggle-bg: #1c2130;
+  --solution-toggle-hover: #2a3145;
+  --exercise-image-shadow: rgba(0, 0, 0, 0.35);
+  --sidebar-mobile-shadow: rgba(0, 0, 0, 0.45);
+  --backdrop-tint: rgba(0, 0, 0, 0.55);
+  --katex-fg: #e8eaf4;
+}
+
 body {
   direction: rtl;
-  background: radial-gradient(circle at top, #ffffff 0%, var(--bg) 58%);
+  background: radial-gradient(circle at top, var(--bg-gradient-top) 0%, var(--bg) 58%);
+  padding: env(safe-area-inset-top) env(safe-area-inset-end) env(safe-area-inset-bottom)
+    env(safe-area-inset-start);
+}
+
+html[data-theme='dark'] .math-line .katex,
+html[data-theme='dark'] .inline-math .katex {
+  color: var(--katex-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 #root {
