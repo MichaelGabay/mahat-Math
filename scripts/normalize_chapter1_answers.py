@@ -2,8 +2,23 @@
 """Normalize <details> answer blocks in chapter 1 MD files for GitHub RTL + markdown."""
 
 from pathlib import Path
+import re
 
 BASE = Path(__file__).resolve().parents[1] / "1 - טכניקה אלגברית"
+
+
+def insert_blanks_between_numbered(inner: str) -> str:
+    """Blank line before each `N.` answer (GitHub readability)."""
+    lines = inner.split("\n")
+    out = []
+    seen_any_number = False
+    for line in lines:
+        if re.match(r"^\d+\.", line):
+            if seen_any_number and out and out[-1] != "":
+                out.append("")
+            seen_any_number = True
+        out.append(line)
+    return "\n".join(out)
 
 ANSWERS: dict[str, str] = {
     "1.1_ציר_המספרים_ומספרים_מכוונים.md": """1. $2$
@@ -337,6 +352,7 @@ for name in (
 
 
 def patch_file(path: Path, inner: str) -> None:
+    inner = insert_blanks_between_numbered(inner)
     text = path.read_text(encoding="utf-8")
     start = text.index("<details>")
     end = text.index("</details>") + len("</details>")
