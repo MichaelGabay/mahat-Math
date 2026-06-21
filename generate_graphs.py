@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Generate graphs for all Chapter 3 exercises and update markdown files.
 
-Hebrew labels use python-bidi ``get_display()`` so text renders correctly with
-matplotlib's left-to-right layout (plain Hebrew strings would appear mirrored).
+Hebrew labels are stored in logical order. Matplotlib + Arial Hebrew render RTL
+correctly on their own — do NOT apply python-bidi ``get_display()`` (that mirrors text).
 """
 
 import matplotlib
@@ -17,13 +17,11 @@ import re
 plt.rcParams['font.family'] = ['Arial Hebrew', 'Arial Unicode MS', 'Arial', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
-from bidi.algorithm import get_display
-
 def h(text):
-    """Fix Hebrew RTL for matplotlib (reorder characters for LTR renderer)."""
+    """Pass-through for graph labels (plain logical Hebrew — no bidi transform)."""
     if text is None:
         return text
-    return get_display(str(text))
+    return str(text)
 
 _WORKSPACE = os.path.dirname(os.path.abspath(__file__))
 CHAPTER_DIR = os.path.join(_WORKSPACE, "3 - קריאת והבנת מידע מגרפים מסיפורי מעשה")
@@ -509,8 +507,35 @@ def run_update_markdowns():
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
+    import sys
+    subs = [int(s) for s in sys.argv[1:]] if len(sys.argv) > 1 else None
+
     print("=== Generating graphs ===")
-    run_generate()
-    print("\n=== Updating markdown files ===")
-    run_update_markdowns()
-    print("\nDone!")
+    total = 0
+    for d in E:
+        if subs and d['sub'] not in subs:
+            continue
+        fname = f"3_{d['sub']}_ex{d['ex']:02d}.png"
+        make_graph(
+            fname,
+            d['title'],
+            d['xl'],
+            d['yl'],
+            d['x'],
+            d['y'],
+            x2=d.get('x2'),
+            y2=d.get('y2'),
+            lbl1=d.get('lbl1'),
+            lbl2=d.get('lbl2'),
+            time_x=d.get('time_x', False),
+            bar=d.get('bar', False),
+        )
+        total += 1
+    print(f"\n✓ Generated {total} graphs in: {IMAGES_DIR}")
+
+    if subs is None:
+        print("\n=== Updating markdown files ===")
+        run_update_markdowns()
+        print("\nDone!")
+    else:
+        print(f"\nDone! (subtopics {subs} only — markdown not modified)")
