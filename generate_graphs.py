@@ -28,6 +28,57 @@ CHAPTER_DIR = os.path.join(_WORKSPACE, "3 - קריאת והבנת מידע מג�
 IMAGES_DIR  = os.path.join(CHAPTER_DIR, "images")
 os.makedirs(IMAGES_DIR, exist_ok=True)
 
+def _fmt_tick(v):
+    """Format axis tick — drop trailing .0 for whole numbers."""
+    if abs(v - round(v)) < 1e-9:
+        return str(int(round(v)))
+    if abs(v * 2 - round(v * 2)) < 1e-9:
+        return f'{v:.1f}'
+    if abs(v * 4 - round(v * 4)) < 1e-9:
+        return f'{v:.2f}'
+    return f'{v:g}'
+
+
+def _snap_axes_to_data(ax, xs, ys, extra_x=None, extra_y=None, snap_x=True):
+    """Align grid lines so every data point sits on a tick — prefer uniform spacing."""
+    xs = [float(v) for v in xs] + ([float(v) for v in extra_x] if extra_x else [])
+    ys = [float(v) for v in ys] + ([float(v) for v in extra_y] if extra_y else [])
+    if not xs or not ys:
+        return
+
+    def _values_on_ticks(values, ticks):
+        return all(any(abs(v - t) < 1e-9 for t in ticks) for v in values)
+
+    def _uniform_ticks(values, max_ticks=14):
+        vmin, vmax = min(values), max(values)
+        span = vmax - vmin if vmax > vmin else 1
+        for step in (5000, 2000, 1000, 500, 200, 100, 50, 25, 20, 10, 5, 2, 1,
+                     0.5, 0.25, 0.2, 0.1, 0.05, 0.01):
+            lo = np.floor(vmin / step) * step
+            hi = np.ceil(vmax / step) * step
+            ticks = np.arange(lo, hi + step * 0.5, step)
+            if len(ticks) < 2 or len(ticks) > max_ticks:
+                continue
+            if (hi - lo) > span * 2.5 and len(ticks) <= 3:
+                continue
+            if _values_on_ticks(values, ticks):
+                return ticks
+        return sorted(set(values))
+
+    xt = _uniform_ticks(xs) if snap_x else None
+    yt = _uniform_ticks(ys)
+
+    if snap_x and xt is not None:
+        ax.set_xticks(xt)
+        ax.set_xticklabels([_fmt_tick(v) for v in xt])
+        px = max((max(xt) - min(xt)) * 0.04, 0.5) if max(xt) > min(xt) else 1
+        ax.set_xlim(min(xt) - px, max(xt) + px)
+
+    ax.set_yticks(yt)
+    ax.set_yticklabels([_fmt_tick(v) for v in yt])
+    py = max((max(yt) - min(yt)) * 0.06, 0.5) if max(yt) > min(yt) else 1
+    ax.set_ylim(min(yt) - py, max(yt) + py)
+
 # ── Graph generator ──────────────────────────────────────────────────────────
 def make_graph(fname, title, xl, yl, x, y,
                x2=None, y2=None, lbl1=None, lbl2=None,
@@ -71,6 +122,9 @@ def make_graph(fname, title, xl, yl, x, y,
         ticks = sorted(set(list(x) + (list(x2) if x2 else [])))
         ax.set_xticks(ticks)
         ax.tick_params(axis='x', rotation=45, labelsize=8)
+        _snap_axes_to_data(ax, x, y, x2, y2, snap_x=False)
+    elif not bar:
+        _snap_axes_to_data(ax, x, y, x2, y2)
 
     plt.tight_layout()
     path = os.path.join(IMAGES_DIR, fname)
@@ -90,7 +144,7 @@ def ex(sub, n, title, xl, yl, x, y, **kw):
 # ============================================================
 S = 1
 ex(S,1,'עלות חשמל לפי צריכה','קוט"ש','עלות (₪)',[0,100,200,300],[25,75,125,175])
-ex(S,2,'גובה ילדה לפי גיל','גיל (שנים)','גובה (ס"מ)',[0,5,10,15,20],[48,110,140,162,168])
+ex(S,2,'גובה ילדה לפי גיל','גיל (שנים)','גובה (ס"מ)',[0,5,10,15,20],[50,110,140,160,170])
 ex(S,3,'כמות מים בבריכה לפי זמן','זמן (דקות)','מים (ל\')',[0,10,20,30],[300,550,800,1050])
 ex(S,4,'דלק ברכב לפי מרחק','מרחק (ק"מ)','דלק (ל\')',[0,100,200,300,400],[50,42,34,26,18])
 ex(S,5,'עלות מנוי חדר כושר','חודשים','עלות (₪)',[0,1,2,3,6],[150,280,410,540,930])
