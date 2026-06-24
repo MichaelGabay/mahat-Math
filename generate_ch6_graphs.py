@@ -545,11 +545,98 @@ def gen_14(stem: str, n: int) -> None:
     save_fig(fig, stem, n)
 
 
+def _factory_plan(ax) -> None:
+    """MAHAT-style factory: CDFG 22×5 + extension ABCG 20×5, triangle DEF inside."""
+    sqrt13 = math.sqrt(13)
+    C, D, G = (0, 0), (22, 0), (0, 5)
+    D_top, F, B_j, A, B = (22, 5), (10, 5), (20, 5), (0, 10), (20, 10)
+    E = (16, 5 + sqrt13)
+    poly(ax, [C, D, D_top, F, B_j, B, A, G], alpha=0.18)
+    poly(ax, [A, B, B_j, G], fill="#D8E8F5", alpha=0.55)
+    poly(ax, [D_top, F, E], fill="#E8E8E8", alpha=0.55)
+    ax.plot([G[0], B_j[0]], [G[1], B_j[1]], "k--", lw=0.9)
+    ax.plot([A[0], E[0], D_top[0]], [A[1], E[1], D_top[1]], "k--", lw=0.9)
+    ax.plot([E[0], F[0]], [E[1], F[1]], "k--", lw=0.9)
+    for x, y, lb in [
+        (A[0], A[1], "A"),
+        (B[0], B[1], "B"),
+        (C[0], C[1], "C"),
+        (D[0], D[1], "D"),
+        (E[0], E[1], "E"),
+        (F[0], F[1], "F"),
+        (G[0], G[1], "G"),
+    ]:
+        mark_pt(ax, x, y, lb, dx=-0.35 if x < 1 else 0.2, dy=0.2)
+
+
 def gen_15(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
-    poly(ax, [(0, 0), (10, 0), (10, 6), (3, 6), (3, 3), (0, 3)], alpha=0.3)
-    ax.set_xlim(-1, 12)
-    ax.set_ylim(-1, 8)
+    if n == 9:
+        poly(ax, [(0, 0), (12, 0), (12, 10), (10, 10), (10, 4), (2, 4), (2, 10), (0, 10)], alpha=0.35)
+        ax.set_xlim(-1, 13)
+        ax.set_ylim(-1, 11)
+    elif n == 10:
+        poly(ax, [(0, 0), (15, 0), (15, 8), (8, 8), (8, 13), (0, 13)], alpha=0.35)
+        ax.set_xlim(-1, 16)
+        ax.set_ylim(-1, 14)
+    elif n == 11:
+        poly(ax, [(4, 0), (12, 0), (12, 12), (0, 12), (0, 4)], alpha=0.35)
+        ax.set_xlim(-1, 13)
+        ax.set_ylim(-1, 13)
+    elif n == 12:
+        poly(ax, [(0, 0), (20, 0), (20, 15), (0, 15)], alpha=0.12)
+        poly(ax, [(3, 3), (17, 3), (17, 12), (3, 12)], fill="#F8F8F8", edge=C_EDGE, lw=1.2)
+        ax.set_xlim(-1, 21)
+        ax.set_ylim(-1, 16)
+    elif n == 13:
+        poly(ax, [(0, 0), (30, 0), (30, 20), (0, 20)], alpha=0.12)
+        poly(ax, [(10, 20), (14, 20), (14, 23), (10, 23)], fill=C_FILL, alpha=0.55)
+        poly(ax, [(30, 8), (36, 8), (36, 10), (30, 10)], fill=C_FILL, alpha=0.55)
+        ax.set_xlim(-2, 38)
+        ax.set_ylim(-1, 25)
+    elif n == 14:
+        poly(
+            ax,
+            [(2, 0), (14, 0), (16, 2), (16, 14), (14, 16), (2, 16), (0, 14), (0, 2)],
+            alpha=0.35,
+        )
+        ax.set_xlim(-1, 17)
+        ax.set_ylim(-1, 17)
+    elif n == 15:
+        poly(ax, [(0, 0), (10, 0), (10, 6), (5, 10), (0, 6)], alpha=0.35)
+        ax.set_xlim(-1, 11)
+        ax.set_ylim(-1, 11)
+    elif n == 16:
+        poly(ax, [(0, 0), (60, 0), (60, 60), (0, 60)], alpha=0.12)
+        for ox, oy in [(15, 15), (30, 15), (15, 30), (30, 30)]:
+            poly(ax, [(ox, oy), (ox + 15, oy), (ox + 15, oy + 15), (ox, oy + 15)], fill="#F0F0F0", edge=C_EDGE)
+        ax.set_xlim(-2, 62)
+        ax.set_ylim(-2, 62)
+    elif n in (17, 20):
+        _factory_plan(ax)
+        ax.set_xlim(-2, 24)
+        ax.set_ylim(-1, 12)
+    elif n == 18:
+        poly(ax, [(0, 0), (12, 0), (12, 8), (0, 8)], alpha=0.15)
+        theta = np.linspace(0, np.pi, 60)
+        ax.plot(6 + 2 * np.cos(theta), 2 * np.sin(theta), "k-", lw=1.5)
+        poly(ax, [(0, 5), (3, 5), (3, 8), (0, 8)], fill="#F0F0F0", edge=C_EDGE, lw=1.2)
+        ax.set_xlim(-1, 13)
+        ax.set_ylim(-1, 9)
+    elif n == 19:
+        plt.close(fig)
+        fig, ax = coord_plane((-1, 11), (-1, 9), figsize=(6.8, 5.6))
+        poly(ax, [(0, 0), (10, 0), (10, 8), (0, 8)], alpha=0.15)
+        poly(ax, [(2, 2), (6, 2), (6, 6), (2, 6)], fill="#B8D4E8", alpha=0.7)
+        for x, y, lb in [(0, 0, "A"), (10, 0, "B"), (10, 8, "C"), (0, 8, "D"), (2, 2, "P"), (6, 6, "R")]:
+            mark_pt(ax, x, y, lb)
+        ax.text(1, 4.2, "א'", fontsize=8, ha="center")
+        ax.text(8, 4.2, "ב'", fontsize=8, ha="center")
+        ax.text(4, 7.2, "ג'", fontsize=8, ha="center")
+    else:
+        poly(ax, [(0, 0), (10, 0), (10, 6), (3, 6), (3, 3), (0, 3)], alpha=0.3)
+        ax.set_xlim(-1, 12)
+        ax.set_ylim(-1, 8)
     save_fig(fig, stem, n)
 
 
