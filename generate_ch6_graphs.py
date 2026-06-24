@@ -104,7 +104,7 @@ SCOPE: dict[str, list[int]] = {
     "9_חיבור_וחיסור_שטחים": _rng(9, 20),
     "10_תכונות_המקבילית_והמעוין": _rng(9, 20),
     "11_חישובי_היקף_ושטח_מקבילית_ומעוין": _rng(9, 20),
-    "12_תכונות_הטרפז_והדלתון": _rng(9, 20),
+    "12_תכונות_הטרפז_והדלתון": _rng(9, 17),
     "14_חישובי_היקף_ושטח_טרפז_דלתון_ומעגל": _rng(9, 20),
     "15_פירוק_צורות_מורכבות_לצורות_פשוטות": _rng(9, 20),
     "16_שטחים_צבועים_באפור_ויחסי_צלעות": _rng(9, 20),
@@ -305,78 +305,90 @@ def angle_arc(ax, Ox, Oy, start_deg, end_deg, r=0.55, label=None, label_r=0.82, 
 # Per-subtopic generators (schematic; matches exercise numerics where stated)
 
 def gen_1(stem: str, n: int) -> None:
-    fig, ax = fig_axes_plain()
-
-    def _nl(pts, labels, xlim=None, y_pt=0.0):
-        if xlim is None:
-            xlim = (min(pts) - 2, max(pts) + 2)
-        ax.set_xlim(xlim)
-        ax.set_ylim(-0.55, 0.95)
-        ax.axhline(y_pt, color="black", lw=1.5)
-        for x, lb in zip(pts, labels):
-            ax.plot(x, y_pt, "o", color="#C41E3A", ms=7, zorder=5)
-            if lb:
-                ax.text(x, y_pt - 0.24, lb, ha="center", fontsize=9)
-        ax.axis("off")
-
+    # Exercise 13 is an angle fan — keep the equal-aspect canvas.
     if n == 13:
+        fig, ax = fig_axes_plain()
         angle_fan(ax, 0, 0, [0, 35, 90], ["OA", "OC", "OB"])
         _orig_text(ax, -0.3, 1.3, r"$\angle AOB=90°$", fontsize=9)
         _orig_text(ax, 1.1, 0.5, r"$\angle AOC=35°$", fontsize=9)
         right_angle(ax, 0, 0, 0.45, quadrant=1)
         ax.set_xlim(-0.8, 3)
         ax.set_ylim(-0.5, 2.5)
-    elif n == 14:
+        save_fig(fig, stem, n)
+        return
+
+    # Number-line exercises (14–20): a WIDE canvas with a NON-equal aspect.
+    # An equal aspect would squeeze a ~40-unit line into a ~60px-tall sliver
+    # where the letters collide with the dimensions. Here the point letters sit
+    # ABOVE the line and every dimension sits BELOW it, so nothing overlaps.
+    fig, ax = plt.subplots(figsize=(9.2, 2.6), facecolor="white")
+
+    def _nl(pts, labels, xlim=None):
+        if xlim is None:
+            xlim = (min(pts) - 3, max(pts) + 3)
+        ax.set_xlim(xlim)
+        ax.set_ylim(-1.9, 1.5)
+        ax.axhline(0, color="black", lw=1.6, zorder=1)
+        for x, lb in zip(pts, labels):
+            ax.plot(x, 0, "o", color="#C41E3A", ms=8, zorder=5)
+            if lb:
+                ax.text(
+                    x, 0.30, lb, ha="center", va="bottom",
+                    fontsize=13, fontweight="bold", zorder=6,
+                )
+        ax.axis("off")
+
+    if n == 14:
         # AB=30, AC:CB=2:3 → A=0, C=12, B=30, D midpoint of CB=21
-        _nl([0, 12, 21, 30], ["A", "C", "D", "B"], xlim=(-2, 34))
-        dim_h(ax, 0, 30, 0, "30", off=-0.48)
-        dim_h(ax, 0, 12, 0, "12", off=0.42)
-        dim_h(ax, 12, 30, 0, "18", off=0.42)
-        plain_text(ax, 6, 0.72, "AC:CB = 2:3", ha="center", fontsize=8)
+        _nl([0, 12, 21, 30], ["A", "C", "D", "B"], xlim=(-3, 33))
+        dim_h(ax, 0, 12, 0, "12", off=-0.6, fs=9)
+        dim_h(ax, 12, 30, 0, "18", off=-0.6, fs=9)
+        dim_h(ax, 0, 30, 0, "30", off=-1.35, fs=9)
+        plain_text(ax, 15, 1.12, "AC:CB = 2:3", ha="center", fontsize=9)
     elif n == 15:
         # a=6 → PQ=12, QR=9, RS=17, PS=38
-        _nl([0, 12, 21, 38], ["P", "Q", "R", "S"], xlim=(-2, 42))
-        dim_h(ax, 0, 12, 0, r"$2a$", off=-0.48)
-        dim_h(ax, 12, 21, 0, r"$a+3$", off=-0.48)
-        dim_h(ax, 21, 38, 0, r"$3a-1$", off=-0.48)
+        _nl([0, 12, 21, 38], ["P", "Q", "R", "S"], xlim=(-3, 41))
+        dim_h(ax, 0, 12, 0, r"$2a$", off=-0.6, fs=10)
+        dim_h(ax, 12, 21, 0, r"$a+3$", off=-0.6, fs=10)
+        dim_h(ax, 21, 38, 0, r"$3a-1$", off=-0.6, fs=10)
+        dim_h(ax, 0, 38, 0, r"$5a+8$", off=-1.35, fs=10)
     elif n == 16:
         # XY=40, XZ=15, W midpoint of ZY
-        _nl([0, 15, 27.5, 40], ["X", "Z", "W", "Y"], xlim=(-2, 44))
-        dim_h(ax, 0, 40, 0, "40", off=-0.48)
-        dim_h(ax, 0, 15, 0, "15", off=0.42, fs=7)
-        dim_h(ax, 15, 40, 0, "25", off=0.42, fs=7)
-        seg_label(ax, 15, 0, 27.5, 0, r"$ZW$", frac=0.5, dy=-0.38, fs=7)
+        _nl([0, 15, 27.5, 40], ["X", "Z", "W", "Y"], xlim=(-3, 43))
+        dim_h(ax, 0, 15, 0, "15", off=-0.6, fs=9)
+        dim_h(ax, 15, 40, 0, "25", off=-0.6, fs=9)
+        dim_h(ax, 0, 40, 0, "40", off=-1.35, fs=9)
+        plain_text(ax, 21.25, 1.12, r"$ZW = WY$", ha="center", fontsize=10)
     elif n == 17:
         # AB=12, BC=18, AC=30, M midpoint of AB=6
-        _nl([0, 6, 12, 30], ["A", "M", "B", "C"], xlim=(-2, 34))
-        dim_h(ax, 0, 12, 0, "12", off=-0.48)
-        dim_h(ax, 12, 30, 0, "18", off=-0.48)
-        dim_h(ax, 0, 30, 0, "30", off=0.78)
-        _orig_text(ax, 4, 0.72, r"$AB=\frac{2}{5}AC$", fontsize=8)
+        _nl([0, 6, 12, 30], ["A", "M", "B", "C"], xlim=(-3, 33))
+        dim_h(ax, 0, 12, 0, "12", off=-0.6, fs=9)
+        dim_h(ax, 12, 30, 0, "18", off=-0.6, fs=9)
+        dim_h(ax, 0, 30, 0, "30", off=-1.35, fs=9)
+        _orig_text(ax, 15, 1.12, r"$AB=\frac{2}{5}AC$", ha="center", fontsize=10)
     elif n == 18:
         # AB=BC=CD=DE=5, F midpoint of BD=C at 10
-        _nl([0, 5, 10, 15, 20], ["A", "B", "C", "D", "E"], xlim=(-2, 24))
-        dim_h(ax, 0, 5, 0, "5", off=-0.48, fs=7)
-        dim_h(ax, 5, 10, 0, "5", off=-0.48, fs=7)
-        dim_h(ax, 10, 15, 0, "5", off=-0.48, fs=7)
-        dim_h(ax, 15, 20, 0, "5", off=-0.48, fs=7)
-        plain_text(ax, 10, 0.72, r"$F=C$ — אמצע $BD$", ha="center", fontsize=7)
+        _nl([0, 5, 10, 15, 20], ["A", "B", "C", "D", "E"], xlim=(-3, 23))
+        dim_h(ax, 0, 5, 0, "5", off=-0.6, fs=9)
+        dim_h(ax, 5, 10, 0, "5", off=-0.6, fs=9)
+        dim_h(ax, 10, 15, 0, "5", off=-0.6, fs=9)
+        dim_h(ax, 15, 20, 0, "5", off=-0.6, fs=9)
+        plain_text(ax, 10, 1.12, r"$BF = FD$", ha="center", fontsize=10)
     elif n == 19:
         # AC=32, AB:BC=3:5 → A=0, B=12, C=32; D=6, E=22
-        _nl([0, 6, 12, 22, 32], ["A", "D", "B", "E", "C"], xlim=(-2, 36))
-        dim_h(ax, 0, 12, 0, "12", off=-0.48, fs=7)
-        dim_h(ax, 12, 32, 0, "20", off=-0.48, fs=7)
-        dim_h(ax, 0, 32, 0, "32", off=0.78, fs=7)
-        plain_text(ax, 6, 0.72, "AB:BC = 3:5", ha="center", fontsize=7)
+        _nl([0, 6, 12, 22, 32], ["A", "D", "B", "E", "C"], xlim=(-3, 35))
+        dim_h(ax, 0, 12, 0, "12", off=-0.6, fs=9)
+        dim_h(ax, 12, 32, 0, "20", off=-0.6, fs=9)
+        dim_h(ax, 0, 32, 0, "32", off=-1.35, fs=9)
+        plain_text(ax, 16, 1.12, "AB:BC = 3:5", ha="center", fontsize=9)
     elif n == 20:
         # BC=10, AB=CD=10, AD=30
-        _nl([0, 10, 20, 30], ["A", "B", "C", "D"], xlim=(-2, 34))
-        dim_h(ax, 0, 10, 0, "10", off=-0.48, fs=7)
-        dim_h(ax, 10, 20, 0, "10", off=-0.48, fs=7)
-        dim_h(ax, 20, 30, 0, "10", off=-0.48, fs=7)
-        dim_h(ax, 0, 30, 0, "30", off=0.78, fs=7)
-        plain_text(ax, 5, 0.72, r"$AB=CD$", ha="center", fontsize=7)
-        plain_text(ax, 15, 0.72, r"$BC=10$", ha="center", fontsize=7)
+        _nl([0, 10, 20, 30], ["A", "B", "C", "D"], xlim=(-3, 33))
+        dim_h(ax, 0, 10, 0, "10", off=-0.6, fs=9)
+        dim_h(ax, 10, 20, 0, "10", off=-0.6, fs=9)
+        dim_h(ax, 20, 30, 0, "10", off=-0.6, fs=9)
+        dim_h(ax, 0, 30, 0, "30", off=-1.35, fs=9)
+        plain_text(ax, 15, 1.12, r"$AB=CD$", ha="center", fontsize=10)
     save_fig(fig, stem, n)
 
 
@@ -1873,24 +1885,23 @@ def gen_12(stem: str, n: int) -> None:
         ax.set_xlim(-2.5, 23)
         ax.set_ylim(-2, 11)
     elif n == 10:
+        # טרפז כללי AB||CD: AB בסיס תחתון, ∠A=80°, ∠B=60° (זוויות בסיס חדות)
         h = 4.0
-        off_l, off_r = 1.5, 3.5
-        A = (off_l, h)
-        B = (off_l + 10, h)
-        C = (20, 0)
-        D = (0, 0)
+        A, B = (0, 0), (10, 0)
+        D = (h / math.tan(math.radians(80)), h)
+        C = (10 - h / math.tan(math.radians(60)), h)
         poly(ax, [A, B, C, D], alpha=0.28)
         for p, lb, dx, dy in zip(
             [A, B, C, D],
             ("A", "B", "C", "D"),
-            [-0.35, 0.12, 0.12, -0.35],
-            [0.1, 0.1, -0.35, -0.35],
+            [-0.4, 0.15, 0.15, -0.45],
+            [-0.45, -0.45, 0.12, 0.12],
         ):
             mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
-        angle_arc(ax, A[0], A[1], 180, 260, r=0.65, label=r"$80°$", label_r=1.0, fs=7)
-        angle_arc(ax, B[0], B[1], 280, 360, r=0.65, label=r"$60°$", label_r=1.0, fs=7)
-        dim_h(ax, A[0], B[0], A[1], r"$AB$", off=0.55)
-        ax.set_xlim(-2, 22)
+        angle_arc(ax, A[0], A[1], 0, 80, r=0.9, label=r"$80°$", label_r=1.45, fs=7)
+        angle_arc(ax, B[0], B[1], 120, 180, r=0.9, label=r"$60°$", label_r=1.45, fs=7)
+        dim_h(ax, A[0], B[0], 0, r"$AB$", off=-0.6)
+        ax.set_xlim(-2, 12)
         ax.set_ylim(-1.5, 6)
     elif n == 11:
         b_big, b_small = 48.0, 12.0
@@ -1920,18 +1931,7 @@ def gen_12(stem: str, n: int) -> None:
         ax.set_xlim(-half_w - 2.5, half_w + 2.5)
         ax.set_ylim(-c_len - 2, a_len + 2)
     elif n == 13:
-        h = math.sqrt(12.57**2 - 4.3**2)
-        _draw_iso_trap(
-            ax,
-            20.4,
-            11.8,
-            h,
-            labels={"bottom": "20.4", "top": "11.8", "leg": "12.57"},
-            vertices={"A": 3, "B": 2, "C": 1, "D": 0},
-        )
-        ax.set_xlim(-2.5, 23.5)
-        ax.set_ylim(-2, h + 2.5)
-    elif n == 14:
+        # דלתון: אלכסון ארוך 10 (אופקי), אלכסון קצר 6 (אנכי), אלכסונים מאונכים
         half_l, half_s = 5.0, 3.0
         pts = [(0, half_s), (half_l, 0), (0, -half_s), (-half_l, 0)]
         poly(ax, pts, alpha=0.28)
@@ -1939,10 +1939,12 @@ def gen_12(stem: str, n: int) -> None:
         ax.plot([0, 0], [half_s, -half_s], "k--", lw=0.75)
         dim_h(ax, -half_l, half_l, 0, "10", off=-0.75)
         dim_v(ax, 0, -half_s, half_s, "6", off=0.85)
+        right_angle(ax, 0, 0, 0.45, quadrant=1)
         ax.set_xlim(-7, 7)
         ax.set_ylim(-5, 5)
-    elif n == 15:
-        b_big, b_small, c_leg, h = 20.0, 8.0, 10.0, 8.0
+    elif n == 14:
+        # טרפז שווה-שוקיים סימבולי: בסיס גדול b1, בסיס קטן b2, שוק c
+        b_big, b_small, h = 20.0, 8.0, 8.0
         _draw_iso_trap(
             ax,
             b_big,
@@ -1952,51 +1954,19 @@ def gen_12(stem: str, n: int) -> None:
         )
         ax.set_xlim(-2.5, 23)
         ax.set_ylim(-2, 11)
-    elif n == 16:
-        _draw_iso_trap(ax, 16, 8, 6, labels={"bottom": "16", "top": "8", "leg": "5"}, alpha=0.22)
-        off = (16 - 8) / 2
-        ax.plot([0, 16], [0, 6], "k--", lw=0.7)
-        ax.plot([8, 8], [0, 6], "k--", lw=0.7)
-        plain_text(ax, 8, 3, r"$AC,\ BD$", ha="center", fontsize=8, color="#444444")
+    elif n == 15:
+        # טרפז שווה-שוקיים עם שני האלכסונים AC ו-BD (הוכחה ששווים)
+        h, off = 6.0, 4.0
+        _draw_iso_trap(ax, 16, 8, h, vertices={"A": 3, "B": 2, "C": 1, "D": 0}, alpha=0.22)
+        ax.plot([off, 16], [h, 0], "k--", lw=0.8)        # AC
+        ax.plot([16 - off, 0], [h, 0], "k--", lw=0.8)    # BD
+        plain_text(ax, 8, 3.4, r"$AC=BD$", ha="center", fontsize=8, color="#444444",
+                   bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="none", alpha=0.85))
         ax.set_xlim(-2.5, 19)
         ax.set_ylim(-2, 9)
-    elif n == 17:
-        b_big, b_small = 48.0, 12.0
-        h = 18.0 * math.tan(math.radians(40))
-        off = _draw_iso_trap(
-            ax,
-            b_big,
-            b_small,
-            h,
-            labels={"bottom": "48", "top": "12"},
-            vertices={"A": 3, "B": 0, "C": 1, "D": 2},
-            alpha=0.18,
-        )
-        poly(ax, [(off, 0), (b_big - off, 0), (b_big - off, h), (off, h)], fill=C_GRAY, alpha=0.55)
-        ax.plot([off, off], [0, h], "k--", lw=0.75)
-        ax.plot([b_big - off, b_big - off], [0, h], "k--", lw=0.75)
-        mark_pt(ax, off, 0, "G", dx=-0.1, dy=-0.35)
-        mark_pt(ax, b_big - off, 0, "H", dx=0.1, dy=-0.35)
-        right_angle(ax, off, 0, 0.45, quadrant=2)
-        right_angle(ax, b_big - off, 0, 0.45, quadrant=3)
-        angle_arc(ax, b_big, 0, 140, 180, r=0.75, label=r"$40°$", label_r=1.05, fs=7)
-        plain_text(ax, (off + b_big - off) / 2, h / 2, "אפור", ha="center", fontsize=8, color="#333333")
-        ax.set_xlim(-3, 52)
-        ax.set_ylim(-2, h + 2.5)
-    elif n == 18:
-        h, de, dc = _draw_gen_trap_ab_dc(
-            ax,
-            17,
-            13,
-            15,
-            53,
-            labels={"ab": "17", "ad": "13", "bc": "15"},
-        )
-        sc = 24.0 / dc if dc > 28 else 1.0
-        ax.set_xlim(-2, dc * sc + 3)
-        ax.set_ylim(-2, h * sc + 2.5)
-    elif n == 19:
-        h = math.sqrt(12.57**2 - 4.3**2)
+    elif n == 16:
+        # טרפז שווה-שוקיים: AB=11.8 (עליון), CD=20.4 (תחתון), שוק 12.57, משולש ACD
+        h, off = math.sqrt(12.57**2 - 4.3**2), 4.3
         _draw_iso_trap(
             ax,
             20.4,
@@ -2005,11 +1975,13 @@ def gen_12(stem: str, n: int) -> None:
             labels={"bottom": "20.4", "top": "11.8", "leg": "12.57"},
             vertices={"A": 3, "B": 2, "C": 1, "D": 0},
         )
-        ax.plot([0, 20.4], [0, h], "k--", lw=0.65, alpha=0.55)
-        plain_text(ax, 10, h / 2 - 0.8, r"$\triangle ACD$", ha="center", fontsize=8, color="#444444")
+        poly(ax, [(off, h), (20.4, 0), (0, 0)], fill=C_GRAY, alpha=0.32)
+        ax.plot([off, 20.4], [h, 0], "k--", lw=0.8)      # AC
+        plain_text(ax, 9.5, h / 2 - 0.8, r"$\triangle ACD$", ha="center", fontsize=8, color="#333333")
         ax.set_xlim(-2.5, 23.5)
         ax.set_ylim(-2, h + 2.5)
-    elif n == 20:
+    elif n == 17:
+        # טרפז שווה-שוקיים: AB=26 (בסיס גדול, תחתון), CD=10 (קטן, עליון), שוק 13
         h = math.sqrt(13**2 - 8**2)
         _draw_iso_trap(
             ax,
@@ -2017,7 +1989,7 @@ def gen_12(stem: str, n: int) -> None:
             10,
             h,
             labels={"bottom": "26", "top": "10", "leg": "13"},
-            vertices={"A": 3, "B": 2, "C": 1, "D": 0},
+            vertices={"A": 0, "B": 1, "C": 2, "D": 3},
         )
         ax.set_xlim(-2.5, 29)
         ax.set_ylim(-2, h + 2.5)
