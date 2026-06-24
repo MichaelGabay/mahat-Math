@@ -274,347 +274,2063 @@ def angle_fan(ax, Ox, Oy, rays_deg, labels):
         ax.text(x2 + 0.15, y2 + 0.1, lb, fontsize=9)
 
 
+def angle_arc(ax, Ox, Oy, start_deg, end_deg, r=0.55, label=None, label_r=0.82, fs=8):
+    """Arc marking the angle from start_deg to end_deg (CCW from +x)."""
+    arc = mpatches.Arc(
+        (Ox, Oy),
+        2 * r,
+        2 * r,
+        angle=0,
+        theta1=start_deg,
+        theta2=end_deg,
+        color="#444444",
+        lw=0.9,
+    )
+    ax.add_patch(arc)
+    if label:
+        mid = math.radians((start_deg + end_deg) / 2)
+        _orig_text(
+            ax,
+            Ox + label_r * math.cos(mid),
+            Oy + label_r * math.sin(mid),
+            label,
+            ha="center",
+            va="center",
+            fontsize=fs,
+            bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="none", alpha=0.85),
+        )
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Per-subtopic generators (schematic; matches exercise numerics where stated)
 
 def gen_1(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
+
+    def _nl(pts, labels, xlim=None, y_pt=0.0):
+        if xlim is None:
+            xlim = (min(pts) - 2, max(pts) + 2)
+        ax.set_xlim(xlim)
+        ax.set_ylim(-0.55, 0.95)
+        ax.axhline(y_pt, color="black", lw=1.5)
+        for x, lb in zip(pts, labels):
+            ax.plot(x, y_pt, "o", color="#C41E3A", ms=7, zorder=5)
+            if lb:
+                ax.text(x, y_pt - 0.24, lb, ha="center", fontsize=9)
+        ax.axis("off")
+
     if n == 13:
         angle_fan(ax, 0, 0, [0, 35, 90], ["OA", "OC", "OB"])
-        ax.text(-0.3, 1.3, r"$\angle AOB=90°$", fontsize=9)
-        ax.text(1.1, 0.5, r"$\angle AOC=35°$", fontsize=9)
+        _orig_text(ax, -0.3, 1.3, r"$\angle AOB=90°$", fontsize=9)
+        _orig_text(ax, 1.1, 0.5, r"$\angle AOC=35°$", fontsize=9)
+        right_angle(ax, 0, 0, 0.45, quadrant=1)
         ax.set_xlim(-0.8, 3)
         ax.set_ylim(-0.5, 2.5)
     elif n == 14:
-        number_line(ax, [0, 12, 30], ["A", "C", "B"])
-        ax.text(6, 0.35, "AC:CB = 2:3", fontsize=9)
+        # AB=30, AC:CB=2:3 → A=0, C=12, B=30, D midpoint of CB=21
+        _nl([0, 12, 21, 30], ["A", "C", "D", "B"], xlim=(-2, 34))
+        dim_h(ax, 0, 30, 0, "30", off=-0.48)
+        dim_h(ax, 0, 12, 0, "12", off=0.42)
+        dim_h(ax, 12, 30, 0, "18", off=0.42)
+        plain_text(ax, 6, 0.72, "AC:CB = 2:3", ha="center", fontsize=8)
     elif n == 15:
-        number_line(ax, [0, 2, 5, 8, 14], ["P", "Q", "R", "S", ""], xlim=(-1, 15))
+        # a=6 → PQ=12, QR=9, RS=17, PS=38
+        _nl([0, 12, 21, 38], ["P", "Q", "R", "S"], xlim=(-2, 42))
+        dim_h(ax, 0, 12, 0, r"$2a$", off=-0.48)
+        dim_h(ax, 12, 21, 0, r"$a+3$", off=-0.48)
+        dim_h(ax, 21, 38, 0, r"$3a-1$", off=-0.48)
     elif n == 16:
-        number_line(ax, [0, 15, 40], ["X", "Z", "Y"])
+        # XY=40, XZ=15, W midpoint of ZY
+        _nl([0, 15, 27.5, 40], ["X", "Z", "W", "Y"], xlim=(-2, 44))
+        dim_h(ax, 0, 40, 0, "40", off=-0.48)
+        dim_h(ax, 0, 15, 0, "15", off=0.42, fs=7)
+        dim_h(ax, 15, 40, 0, "25", off=0.42, fs=7)
+        seg_label(ax, 15, 0, 27.5, 0, r"$ZW$", frac=0.5, dy=-0.38, fs=7)
     elif n == 17:
-        number_line(ax, [0, 12, 30], ["A", "B", "C"])
-        ax.text(5, 0.38, r"$AB=\frac{2}{5}AC$", fontsize=9)
+        # AB=12, BC=18, AC=30, M midpoint of AB=6
+        _nl([0, 6, 12, 30], ["A", "M", "B", "C"], xlim=(-2, 34))
+        dim_h(ax, 0, 12, 0, "12", off=-0.48)
+        dim_h(ax, 12, 30, 0, "18", off=-0.48)
+        dim_h(ax, 0, 30, 0, "30", off=0.78)
+        _orig_text(ax, 4, 0.72, r"$AB=\frac{2}{5}AC$", fontsize=8)
     elif n == 18:
-        number_line(ax, [0, 5, 10, 15, 20, 25], ["A", "B", "C", "D", "E", ""], xlim=(-1, 26))
+        # AB=BC=CD=DE=5, F midpoint of BD=C at 10
+        _nl([0, 5, 10, 15, 20], ["A", "B", "C", "D", "E"], xlim=(-2, 24))
+        dim_h(ax, 0, 5, 0, "5", off=-0.48, fs=7)
+        dim_h(ax, 5, 10, 0, "5", off=-0.48, fs=7)
+        dim_h(ax, 10, 15, 0, "5", off=-0.48, fs=7)
+        dim_h(ax, 15, 20, 0, "5", off=-0.48, fs=7)
+        plain_text(ax, 10, 0.72, r"$F=C$ — אמצע $BD$", ha="center", fontsize=7)
     elif n == 19:
-        number_line(ax, [0, 12, 32], ["A", "D", "C"])
-        ax.plot([12], [0.15], "s", color="blue", ms=6)
-        ax.text(12, 0.38, "B", ha="center")
+        # AC=32, AB:BC=3:5 → A=0, B=12, C=32; D=6, E=22
+        _nl([0, 6, 12, 22, 32], ["A", "D", "B", "E", "C"], xlim=(-2, 36))
+        dim_h(ax, 0, 12, 0, "12", off=-0.48, fs=7)
+        dim_h(ax, 12, 32, 0, "20", off=-0.48, fs=7)
+        dim_h(ax, 0, 32, 0, "32", off=0.78, fs=7)
+        plain_text(ax, 6, 0.72, "AB:BC = 3:5", ha="center", fontsize=7)
     elif n == 20:
-        number_line(ax, [0, 10, 20, 30], ["A", "B", "C", "D"], xlim=(-1, 32))
+        # BC=10, AB=CD=10, AD=30
+        _nl([0, 10, 20, 30], ["A", "B", "C", "D"], xlim=(-2, 34))
+        dim_h(ax, 0, 10, 0, "10", off=-0.48, fs=7)
+        dim_h(ax, 10, 20, 0, "10", off=-0.48, fs=7)
+        dim_h(ax, 20, 30, 0, "10", off=-0.48, fs=7)
+        dim_h(ax, 0, 30, 0, "30", off=0.78, fs=7)
+        plain_text(ax, 5, 0.72, r"$AB=CD$", ha="center", fontsize=7)
+        plain_text(ax, 15, 0.72, r"$BC=10$", ha="center", fontsize=7)
     save_fig(fig, stem, n)
 
 
 def gen_2(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
-    if n in (13, 14):
-        ax.text(0.1, 0.55, "משלים / השלמה", fontsize=11)
-        ax.set_xlim(0, 2)
-        ax.set_ylim(0, 1)
+    if n == 13:
+        # זווית α ומשלימתה על ישר — (180°−α) גדולה מ-α ב-40°
+        ax.plot([-2.2, 2.2], [0, 0], "k-", lw=1.5)
+        ax.plot([0, 1.6], [0, 1.1], "k-", lw=1.3)
+        mark_pt(ax, 0, 0, "O", dx=-0.22, dy=-0.28)
+        angle_arc(ax, 0, 0, 0, 33, r=0.65, label=r"$\alpha$", label_r=0.95)
+        angle_arc(ax, 0, 0, 33, 180, r=0.95, label=r"$180°-\alpha$", label_r=1.35, fs=7)
+        ax.set_xlim(-2.6, 2.6)
+        ax.set_ylim(-0.55, 1.85)
+    elif n == 14:
+        # זווית ומשלמתה ביחס 2:3 (סכום 90°)
+        ax.plot([0, 2.4], [0, 0], "k-", lw=1.3)
+        ax.plot([0, 0], [0, 2.4], "k-", lw=1.3)
+        ax.plot([0, 1.95], [0, 1.95 * math.tan(math.radians(36))], "k-", lw=1.3)
+        mark_pt(ax, 0, 0, "O", dx=-0.22, dy=-0.28)
+        right_angle(ax, 0, 0, 0.38, quadrant=1)
+        angle_arc(ax, 0, 0, 0, 36, r=0.55, label=r"$2k$", label_r=0.82)
+        angle_arc(ax, 0, 0, 36, 90, r=0.85, label=r"$3k$", label_r=1.05)
+        ax.set_xlim(-0.55, 2.85)
+        ax.set_ylim(-0.55, 2.85)
     elif n == 15:
+        # ∠AOC=90°, ∠AOB=(3x−5)°, ∠BOC=(x+15)°  →  x=20
         angle_fan(ax, 0, 0, [0, 55, 90], ["OA", "OB", "OC"])
-        ax.set_xlim(-0.5, 3)
-        ax.set_ylim(-0.5, 2.5)
+        right_angle(ax, 0, 0, 0.42, quadrant=1)
+        angle_arc(ax, 0, 0, 0, 55, r=0.55, label=r"$(3x-5)°$", label_r=0.88, fs=7)
+        angle_arc(ax, 0, 0, 55, 90, r=0.75, label=r"$(x+15)°$", label_r=1.0, fs=7)
+        _orig_text(ax, 1.55, 0.35, r"$\angle AOC=90°$", fontsize=8)
+        ax.set_xlim(-0.6, 3.1)
+        ax.set_ylim(-0.55, 2.6)
     elif n == 16:
-        number_line(ax, [-1, 0, 1], ["A", "O", "B"])
-        ax.plot([0, 0], [0, 1.2], "k-", lw=1.2)
-        ax.text(0.15, 0.9, "C", fontsize=10)
+        # ישר AB, נקודה O, קרן OC — ∠AOC = ∠COB
+        ax.plot([-2.0, 2.0], [0, 0], "k-", lw=1.5)
+        ax.plot([0, 0], [0, 1.8], "k-", lw=1.3)
+        mark_pt(ax, -1.5, 0, "A", dx=-0.1, dy=-0.28)
+        mark_pt(ax, 0, 0, "O", dx=-0.1, dy=-0.28)
+        mark_pt(ax, 1.5, 0, "B", dx=-0.05, dy=-0.28)
+        mark_pt(ax, 0, 1.8, "C", dx=0.12, dy=0.05)
+        angle_arc(ax, 0, 0, 90, 180, r=0.55, label=r"$(4x+10)°$", label_r=0.88, fs=7)
+        angle_arc(ax, 0, 0, 0, 90, r=0.55, label=r"$\angle COB$", label_r=0.95, fs=7)
+        ax.set_xlim(-2.4, 2.4)
+        ax.set_ylim(-0.55, 2.35)
     elif n == 17:
-        ax.plot([0, 4], [0, 0], "k-", lw=1.5)
-        ax.plot([0, 4], [2.8, 2.8], "k-", lw=1.5)
-        ax.plot([1.2, 2.8], [0, 2.8], "k--", lw=1)
-        ax.text(1, -0.38, "ישרים מקבילים וישר חותך", fontsize=8)
-        ax.set_xlim(-0.5, 4.5)
-        ax.set_ylim(-0.55, 3.45)
+        # ישרים מקבילים וחותך — זוויות חד-צדדיות (4x+10)° ו-(2x+20)°
+        y1, y2 = 0.0, 2.6
+        t_deg = 110.0
+        tr = math.radians(t_deg)
+        x0, y0 = 0.9, y1
+        x1 = x0 + (y2 - y0) / math.tan(tr)
+        ax.plot([0, 4.2], [y1, y1], "k-", lw=1.5)
+        ax.plot([0, 4.2], [y2, y2], "k-", lw=1.5)
+        ax.plot([x0, x1], [y0, y2], "k-", lw=1.3)
+        plain_text(ax, 2.1, y1 - 0.42, "ישר 1", ha="center", fontsize=7)
+        plain_text(ax, 2.1, y2 + 0.18, "ישר 2", ha="center", fontsize=7)
+        angle_arc(ax, x0, y0, 0, t_deg, r=0.55, label=r"$(4x+10)°$", label_r=0.9, fs=7)
+        angle_arc(ax, x1, y2, 360 - (180 - t_deg), 360, r=0.55, label=r"$(2x+20)°$", label_r=0.92, fs=7)
+        ax.set_xlim(-0.4, 4.6)
+        ax.set_ylim(-0.75, 3.35)
     elif n == 18:
-        angle_fan(ax, 0, 0, [0, 60, 135], ["OA", "OB", "OC"])
-        ax.set_xlim(-1, 3.5)
-        ax.set_ylim(-1, 3)
+        # ∠AOC=135°, ∠AOB=(5x−10)°, ∠BOC=(2x+5)°  →  x=20
+        angle_fan(ax, 0, 0, [0, 90, 135], ["OA", "OB", "OC"])
+        angle_arc(ax, 0, 0, 0, 90, r=0.55, label=r"$(5x-10)°$", label_r=0.88, fs=7)
+        angle_arc(ax, 0, 0, 90, 135, r=0.75, label=r"$(2x+5)°$", label_r=1.0, fs=7)
+        _orig_text(ax, -0.95, 0.55, r"$\angle AOC=135°$", fontsize=8)
+        ax.set_xlim(-1.2, 3.2)
+        ax.set_ylim(-0.6, 2.8)
     elif n == 19:
-        poly(ax, [(0, 0), (3, 0), (1.5, 2)], alpha=0.25)
-        ax.text(1.4, 0.8, r"$\triangle ABC$", fontsize=10)
-        ax.set_xlim(-0.3, 3.5)
-        ax.set_ylim(-0.3, 2.5)
+        poly(ax, [(0, 0), (3.2, 0), (1.6, 2.2)], alpha=0.22)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, 3.2, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, 1.6, 2.2, "C", dx=-0.05, dy=0.08)
+        _orig_text(ax, 0.15, 0.35, r"$(2x+5)°$", fontsize=8)
+        _orig_text(ax, 2.45, 0.35, r"$(3x-15)°$", fontsize=8)
+        _orig_text(ax, 1.35, 1.55, r"$(x+40)°$", fontsize=8)
+        ax.set_xlim(-0.55, 3.75)
+        ax.set_ylim(-0.55, 2.75)
     elif n == 20:
-        poly(ax, [(0, 0), (3, 0), (3, 2), (0, 2)], alpha=0.2)
-        ax.plot([0, 3], [2, 0], "k--", lw=1)
-        ax.text(0.2, 1.8, r"$\angle ABD=63°$", fontsize=9)
-        ax.set_xlim(-0.3, 3.5)
-        ax.set_ylim(-0.3, 2.5)
+        # מלבן ABCD, אלכסון BD, ∠ABD=63°
+        w = 3.2
+        h = w * math.tan(math.radians(63))
+        poly(ax, [(0, 0), (w, 0), (w, h), (0, h)], alpha=0.18)
+        ax.plot([w, 0], [0, h], "k-", lw=1.2)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, w, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, w, h, "C", dx=0.08, dy=0.05)
+        mark_pt(ax, 0, h, "D", dx=-0.28, dy=0.05)
+        angle_arc(ax, w, 0, 180 - 63, 180, r=0.55, label=r"$63°$", label_r=0.88, fs=8)
+        _orig_text(ax, w * 0.42, h * 0.28, r"$BD=15.6$", fontsize=8)
+        ax.set_xlim(-0.55, w + 0.55)
+        ax.set_ylim(-0.55, h + 0.55)
     save_fig(fig, stem, n)
 
 
 def gen_3(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
-    # אלפא גבוהה יותר כדי שהמלבנים ייראו בבירור במסכים ובתצוגת תמונה מוקטנת
     if n == 13:
         poly(ax, [(0, 0), (8, 0), (8, 6), (0, 6)], alpha=0.35)
-        ax.text(0.5, 3, "ריצוף", fontsize=10)
+        dim_h(ax, 0, 8, 0, "8", off=-0.75)
+        dim_v(ax, 8, 0, 6, "6", off=0.75)
+        plain_text(ax, 4, 3, "ריצוף", ha="center", fontsize=9)
+        ax.set_xlim(-1.5, 10)
+        ax.set_ylim(-1.5, 8)
     elif n == 14:
-        poly(ax, [(0, 0), (5, 0), (5, 4), (0, 4)], fill="#F5E6CC", alpha=0.55)
-        ax.plot([0, 5, 5, 0, 0], [0, 0, 4, 4, 0], "k-", lw=2)
-        ax.text(2, 2, "מסגרת", fontsize=10)
+        # תמונה 40×30, שוליים 5 מכל צד → מסגרת חיצונית 50×40
+        poly(ax, [(0, 0), (50, 0), (50, 40), (0, 40)], fill="#F5E6CC", alpha=0.45, edge=C_EDGE, lw=2)
+        poly(ax, [(5, 5), (45, 5), (45, 35), (5, 35)], fill="white", alpha=0.9, edge=C_EDGE, lw=1.2)
+        dim_h(ax, 0, 50, 0, "50", off=-1.0)
+        dim_v(ax, 50, 0, 40, "40", off=1.0)
+        dim_h(ax, 5, 45, 5, "40", off=0.55)
+        dim_v(ax, 45, 5, 35, "30", off=0.75)
+        dim_h(ax, 0, 5, 40, "5", off=0.55)
+        plain_text(ax, 25, 20, "תמונה", ha="center", fontsize=8)
+        ax.set_xlim(-3, 55)
+        ax.set_ylim(-2.5, 44)
     elif n == 15:
-        poly(ax, [(0, 0), (3, 0), (3, 3), (0, 3)], alpha=0.35)
-        poly(ax, [(5, 0), (8, 0), (8, 2), (5, 2)], alpha=0.35)
+        poly(ax, [(0, 0), (5, 0), (5, 5), (0, 5)], alpha=0.35)
+        poly(ax, [(7, 0), (10, 0), (10, 3), (7, 3)], alpha=0.35)
+        dim_h(ax, 0, 5, 0, r"$a$", off=-0.75)
+        dim_v(ax, 5, 0, 5, r"$a$", off=0.75)
+        dim_h(ax, 7, 10, 0, r"$b$", off=-0.75)
+        dim_v(ax, 10, 0, 3, r"$b$", off=0.75)
+        plain_text(ax, 2.5, 2.5, "גדול", ha="center", fontsize=7)
+        plain_text(ax, 8.5, 1.5, "קטן", ha="center", fontsize=7)
+        ax.set_xlim(-1.5, 12)
+        ax.set_ylim(-1.5, 7)
     elif n == 16:
-        poly(ax, [(0, 0), (8, 0), (8, 3), (5, 3), (5, 6), (0, 6)], alpha=0.38)
+        # L: מלבן 10×4 + מלבן 6×3 מחובר לצד שמאל למעלה
+        poly(ax, [(0, 0), (10, 0), (10, 4), (6, 4), (6, 7), (0, 7)], alpha=0.38)
+        ax.plot([0, 6], [4, 4], "k--", lw=0.7)
+        dim_h(ax, 0, 10, 0, "10", off=-0.85)
+        dim_v(ax, 10, 0, 4, "4", off=0.85)
+        dim_h(ax, 0, 6, 7, "6", off=0.65)
+        dim_v(ax, 6, 4, 7, "3", off=-0.85)
+        ax.set_xlim(-2.5, 12.5)
+        ax.set_ylim(-1.5, 9.5)
     elif n == 17:
         poly(ax, [(0, 0), (15, 0), (15, 8), (0, 8)], alpha=0.35)
+        poly(ax, [(11, 4), (15, 4), (15, 8), (11, 8)], fill="#A8D5A2", alpha=0.65, edge=C_EDGE)
+        dim_h(ax, 0, 15, 0, "15", off=-0.85)
+        dim_v(ax, 15, 0, 8, "8", off=0.85)
+        dim_h(ax, 11, 15, 8, "4", off=0.55)
+        dim_v(ax, 15, 4, 8, "4", off=0.75)
+        plain_text(ax, 13, 6, "דשא", ha="center", fontsize=8)
+        ax.set_xlim(-2.5, 18)
+        ax.set_ylim(-1.5, 10.5)
     elif n == 18:
         poly(ax, [(0, 0), (20, 0), (20, 12), (0, 12)], alpha=0.35)
+        ax.plot([0, 0], [0, 12], color="#8B4513", lw=3.5)
+        plain_text(ax, -1.2, 6, "קיר", ha="center", fontsize=8, color="#8B4513")
+        dim_h(ax, 0, 20, 0, "20", off=-0.85)
+        dim_v(ax, 20, 0, 12, "12", off=0.85)
+        ax.set_xlim(-3, 23)
+        ax.set_ylim(-1.5, 14.5)
     elif n == 19:
-        poly(ax, [(0, 0), (12, 0), (12, 12), (0, 12)], alpha=0.32)
-        poly(ax, [(3, 3), (9, 3), (9, 9), (3, 9)], fill=C_GRAY, alpha=0.45)
+        # חיתוך פינתי 3×3 מפינה ימנית עליונה
+        poly(ax, [(0, 0), (12, 0), (12, 9), (9, 9), (9, 12), (0, 12)], alpha=0.32)
+        dim_h(ax, 0, 12, 0, "12", off=-0.85)
+        dim_v(ax, 0, 0, 12, "12", off=-0.85)
+        dim_v(ax, 12, 0, 9, "9", off=0.85)
+        dim_h(ax, 0, 9, 12, "9", off=0.55)
+        dim_h(ax, 9, 12, 9, "3", off=-0.55)
+        dim_v(ax, 9, 9, 12, "3", off=-0.85)
+        ax.set_xlim(-2.5, 15)
+        ax.set_ylim(-1.5, 14.5)
     elif n == 20:
         poly(ax, [(0, 0), (30, 0), (30, 20), (0, 20)], alpha=0.32)
-    # גבולות מתאימים לכל צורה — לא לחתוך מלבנים גדולים (בעבר הוגדר קבוע 10×8 לכולם)
-    _extent = {
-        13: (8, 6),
-        14: (5, 4),
-        15: (8, 3),
-        16: (8, 6),
-        17: (15, 8),
-        18: (20, 12),
-        19: (12, 12),
-        20: (30, 20),
-    }
-    emax_x, emax_y = _extent[n]
-    pad_x = max(0.6, emax_x * 0.04)
-    pad_y = max(0.6, emax_y * 0.04)
-    ax.set_xlim(-pad_x * 0.5, emax_x + pad_x)
-    ax.set_ylim(-pad_y * 0.5, emax_y + pad_y)
+        poly(ax, [(4, 4), (12, 4), (12, 9), (4, 9)], fill="#B3E5FC", alpha=0.7, edge=C_EDGE)
+        dim_h(ax, 0, 30, 0, "30", off=-1.0)
+        dim_v(ax, 30, 0, 20, "20", off=1.0)
+        dim_h(ax, 4, 12, 9, "8", off=0.55)
+        dim_v(ax, 12, 4, 9, "5", off=0.75)
+        plain_text(ax, 8, 6.5, "בריכה", ha="center", fontsize=8)
+        ax.set_xlim(-3.5, 35)
+        ax.set_ylim(-2.5, 23)
     save_fig(fig, stem, n)
 
 
 def gen_4(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
-    if n >= 13:
-        poly(ax, [(0, 0), (6, 0), (6, 4), (0, 4)], alpha=0.25)
-        ax.text(0.3, 2, "מלבן / ריבוע", fontsize=10)
-    ax.set_xlim(-0.5, 7)
-    ax.set_ylim(-0.5, 5)
+
+    def _rect_abcd(ax, w, h, alpha=0.22):
+        poly(ax, [(0, 0), (w, 0), (w, h), (0, h)], alpha=alpha)
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.28)
+        mark_pt(ax, w, 0, "B", dx=0.1, dy=-0.28)
+        mark_pt(ax, w, h, "C", dx=0.1, dy=0.08)
+        mark_pt(ax, 0, h, "D", dx=-0.35, dy=0.08)
+        right_angle(ax, 0, 0, min(0.35, w * 0.08, h * 0.08), quadrant=1)
+        return w, h
+
+    if n == 13:
+        w, h = 6.5, 4.0
+        _rect_abcd(ax, w, h, alpha=0.28)
+        ax.plot([0, w], [0, h], "k-", lw=1.0)
+        ax.plot([w, 0], [0, h], "k-", lw=1.0)
+        mx, my = w / 2, h / 2
+        mark_pt(ax, mx, my, "M", dx=0.1, dy=0.1)
+        seg_label(ax, 0, 0, mx, my, r"$AM=6.5$", frac=0.45, dx=-0.45, dy=0.15, fs=8)
+        ax.set_xlim(-1.5, w + 1.8)
+        ax.set_ylim(-1.5, h + 1.5)
+    elif n == 14:
+        w, h = 7.5, 4.5
+        _rect_abcd(ax, w, h, alpha=0.28)
+        ax.plot([0, w], [0, h], "k--", lw=0.7)
+        dim_h(ax, 0, w, 0, r"$AB=15$", off=-0.8)
+        dim_v(ax, w, 0, h, r"$BC=9$", off=0.8)
+        seg_label(ax, 0, 0, w, h, r"$AC$", frac=0.45, dx=0.4, dy=0.2, fs=8)
+        ax.set_xlim(-1.8, w + 2.2)
+        ax.set_ylim(-1.5, h + 1.8)
+    elif n == 15:
+        s = 5.0
+        _rect_abcd(ax, s, s, alpha=0.28)
+        ax.plot([0, s], [0, s], "k-", lw=1.0)
+        ax.plot([s, 0], [0, s], "k-", lw=1.0)
+        mx, my = s / 2, s / 2
+        mark_pt(ax, mx, my, "M", dx=0.1, dy=0.1)
+        seg_label(ax, 0, 0, mx, my, r"$AM=5\sqrt{2}$", frac=0.45, dx=-0.55, dy=0.15, fs=8)
+        ax.set_xlim(-1.5, s + 1.8)
+        ax.set_ylim(-1.5, s + 1.8)
+    elif n == 16:
+        w, h = 6.8, 4.0
+        _rect_abcd(ax, w, h, alpha=0.28)
+        dim_h(ax, 0, w, 0, r"$AB=3x+2$", off=-0.85)
+        dim_h(ax, 0, w, h, r"$CD=5x-8$", off=0.65)
+        ax.set_xlim(-1.8, w + 2.0)
+        ax.set_ylim(-1.5, h + 1.8)
+    elif n == 17:
+        w, h = 12.5, 24.0
+        _rect_abcd(ax, w, h, alpha=0.18)
+        e_y = 16.0
+        mark_pt(ax, w, e_y, "E", dx=0.12, dy=0.05)
+        ax.plot([0, w], [0, e_y], "k-", lw=1.0)
+        ax.plot([0, w], [0, h], "k--", lw=0.7)
+        dim_h(ax, 0, w, 0, r"$AB=25$", off=-1.0)
+        dim_v(ax, w, 0, h, r"$BC=48$", off=1.0)
+        plain_text(ax, w + 0.15, h * 0.55, r"$BE=2\cdot EC$", fontsize=7)
+        ax.set_xlim(-2.5, w + 3.5)
+        ax.set_ylim(-1.8, h + 2.0)
+    elif n == 18:
+        plt.close(fig)
+        pts = [(0, -1), (4, -1), (4, 2), (0, 2)]
+        xlim, ylim = _plane_for_pts(pts, pad=1.2)
+        fig, ax = coord_plane(xlim, ylim)
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        ax.plot([0, 4], [-1, 2], "k--", lw=0.7)
+        ax.plot([4, 0], [-1, 2], "k--", lw=0.7)
+        mx, my = 2, 0.5
+        mark_pt(ax, mx, my, "M", dx=0.1, dy=0.12)
+    elif n == 19:
+        w, h = 7.08, 13.9
+        _rect_abcd(ax, w, h, alpha=0.22)
+        mx, my = w / 2, h / 2
+        mark_pt(ax, mx, my, "M", dx=0.1, dy=0.1)
+        mark_pt(ax, mx, h, "E", dx=0.1, dy=0.1)
+        ax.plot([0, w], [0, h], "k--", lw=0.6)
+        ax.plot([w, 0], [0, h], "k--", lw=0.8)
+        ax.plot([mx, mx], [my, h], "k-", lw=1.0)
+        angle_arc(ax, w, 0, 117, 180, r=0.65, label=r"$63°$", label_r=0.95, fs=8)
+        seg_label(ax, w, h, mx, my, r"$CM=7.8$", frac=0.5, dx=0.45, dy=0.0, fs=7)
+        plain_text(ax, w / 2, -0.55, r"$\angle ABD=63°$", ha="center", fontsize=7)
+        plain_text(ax, mx + 0.35, (my + h) / 2, r"$ME \parallel AD$", fontsize=7)
+        ax.set_xlim(-1.8, w + 2.5)
+        ax.set_ylim(-1.5, h + 1.8)
+    elif n == 20:
+        sq, rw, rh = 4.0, 5.5, 3.5
+        gap = 1.2
+        poly(ax, [(0, 0), (sq, 0), (sq, sq), (0, sq)], alpha=0.28)
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.28)
+        mark_pt(ax, sq, 0, "B", dx=0.1, dy=-0.28)
+        mark_pt(ax, sq, sq, "C", dx=0.1, dy=0.08)
+        mark_pt(ax, 0, sq, "D", dx=-0.35, dy=0.08)
+        ox = sq + gap
+        poly(ax, [(ox, 0), (ox + rw, 0), (ox + rw, rh), (ox, rh)], alpha=0.28, fill="#E8F4E8")
+        mark_pt(ax, ox, 0, "E", dx=-0.35, dy=-0.28)
+        mark_pt(ax, ox + rw, 0, "F", dx=0.1, dy=-0.28)
+        mark_pt(ax, ox + rw, rh, "G", dx=0.1, dy=0.08)
+        mark_pt(ax, ox, rh, "H", dx=-0.35, dy=0.08)
+        dim_h(ax, 0, sq, 0, r"$x+3$", off=-0.75)
+        dim_h(ax, ox, ox + rw, 0, r"$x+7$", off=-0.75)
+        dim_v(ax, ox + rw, 0, rh, r"$x+1$", off=0.75)
+        plain_text(ax, sq / 2, sq + 0.35, "ריבוע", ha="center", fontsize=8)
+        plain_text(ax, ox + rw / 2, rh + 0.35, "מלבן", ha="center", fontsize=8)
+        ax.set_xlim(-1.2, ox + rw + 1.8)
+        ax.set_ylim(-1.2, max(sq, rh) + 1.2)
+    else:
+        ax.set_xlim(-0.5, 7)
+        ax.set_ylim(-0.5, 5)
     save_fig(fig, stem, n)
 
 
 def gen_5(stem: str, n: int) -> None:
-    gen_4(stem, n)  # same schematic style
+    fig, ax = fig_axes_plain()
+
+    def _rect_abcd(ax, w, h, alpha=0.22):
+        poly(ax, [(0, 0), (w, 0), (w, h), (0, h)], alpha=alpha)
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.28)
+        mark_pt(ax, w, 0, "B", dx=0.1, dy=-0.28)
+        mark_pt(ax, w, h, "C", dx=0.1, dy=0.08)
+        mark_pt(ax, 0, h, "D", dx=-0.35, dy=0.08)
+        right_angle(ax, 0, 0, min(0.35, w * 0.08, h * 0.08), quadrant=1)
+        return w, h
+
+    if n == 13:
+        w, h = 7, 4
+        poly(ax, [(0, 0), (w, 0), (w, h), (0, h)], alpha=0.32)
+        dim_h(ax, 0, w, 0, "7 מ'", off=-0.75)
+        dim_v(ax, w, 0, h, "4 מ'", off=0.75)
+        plain_text(ax, w / 2, h / 2, "גינה", ha="center", fontsize=9)
+        ax.set_xlim(-1.5, w + 2)
+        ax.set_ylim(-1.5, h + 1.5)
+    elif n == 14:
+        w, h = 5, 3
+        poly(ax, [(0, 0), (w, 0), (w, h), (0, h)], alpha=0.32, fill="#F5E6CC")
+        dim_h(ax, 0, w, 0, "5 מ'", off=-0.7)
+        dim_v(ax, w, 0, h, "3 מ'", off=0.7)
+        plain_text(ax, w / 2, h / 2, "חדר", ha="center", fontsize=9)
+        ax.set_xlim(-1.2, w + 1.8)
+        ax.set_ylim(-1.2, h + 1.2)
+    elif n == 15:
+        s_outer, s_inner = 10, 5
+        poly(ax, [(0, 0), (s_outer, 0), (s_outer, s_outer), (0, s_outer)], alpha=0.18)
+        off = (s_outer - s_inner) / 2
+        poly(
+            ax,
+            [
+                (off, off),
+                (off + s_inner, off),
+                (off + s_inner, off + s_inner),
+                (off, off + s_inner),
+            ],
+            fill=C_SHADE,
+            alpha=0.45,
+        )
+        mark_pt(ax, 0, 0, "A", dx=-0.4, dy=-0.3)
+        mark_pt(ax, s_outer, 0, "B", dx=0.12, dy=-0.3)
+        mark_pt(ax, s_outer, s_outer, "C", dx=0.12, dy=0.1)
+        mark_pt(ax, 0, s_outer, "D", dx=-0.4, dy=0.1)
+        mark_pt(ax, off, off, "E", dx=-0.35, dy=-0.3)
+        mark_pt(ax, off + s_inner, off, "F", dx=0.1, dy=-0.3)
+        mark_pt(ax, off + s_inner, off + s_inner, "G", dx=0.1, dy=0.1)
+        mark_pt(ax, off, off + s_inner, "H", dx=-0.35, dy=0.1)
+        dim_h(ax, 0, s_outer, 0, "10 ס\"מ", off=-0.85)
+        dim_h(ax, off, off + s_inner, off, "5 ס\"מ", off=0.55, fs=7)
+        ax.set_xlim(-1.5, s_outer + 1.5)
+        ax.set_ylim(-1.5, s_outer + 1.5)
+    elif n == 16:
+        w, h = 6, 18
+        poly(ax, [(0, 0), (w, 0), (w, h), (0, h)], alpha=0.2)
+        poly(ax, [(-0.3, -0.3), (w + 2, -0.3), (w + 2, h + 2), (-0.3, h + 2)], alpha=0.12, fill="#E8F4E8")
+        dim_h(ax, 0, w, 0, r"$w$", off=-0.7)
+        dim_v(ax, w, 0, h, r"$3w$", off=0.8)
+        dim_h(ax, -0.3, w + 2, -0.3, r"$w+2$", off=-0.55, fs=7)
+        dim_v(ax, w + 2, -0.3, h + 2, r"$3w+2$", off=0.75, fs=7)
+        plain_text(ax, w / 2, h + 1.2, "+2 ס\"מ לכל ממד", ha="center", fontsize=7)
+        ax.set_xlim(-1.5, w + 3.5)
+        ax.set_ylim(-1.5, h + 2.5)
+    elif n == 17:
+        w, h = 7.5, 4.5
+        _rect_abcd(ax, w, h)
+        e_x = w * 2 / 3
+        mark_pt(ax, e_x, h, "E", dx=0.1, dy=0.1)
+        ax.plot([e_x, 0], [h, 0], "k-", lw=1.0)
+        ax.plot([e_x, w], [h, 0], "k-", lw=0.7, ls="--")
+        dim_h(ax, 0, w, 0, "7.5 מ'", off=-0.85)
+        dim_v(ax, w, 0, h, "4.5 מ'", off=0.85)
+        dim_h(ax, 0, e_x, h, r"$DE$", off=0.55, fs=7)
+        dim_h(ax, e_x, w, h, r"$EC$", off=0.55, fs=7)
+        seg_label(ax, 0, h / 2, e_x, h, r"$2 \cdot EC$", frac=0.5, dx=-0.5, dy=0.2, fs=7)
+        ax.set_xlim(-1.8, w + 2.2)
+        ax.set_ylim(-1.5, h + 1.8)
+    elif n == 18:
+        w, h = 12, 26
+        _rect_abcd(ax, w, h)
+        e_y = 12
+        mark_pt(ax, w, e_y, "E", dx=0.12, dy=0.05)
+        ax.plot([0, w], [0, e_y], "k-", lw=1.0)
+        ax.plot([0, w], [0, h], "k-", lw=1.0)
+        dim_h(ax, 0, w, 0, "12 ס\"מ", off=-0.9)
+        dim_v(ax, w, 0, h, "26 ס\"מ", off=0.95)
+        dim_v(ax, w, 0, e_y, r"$BE$", off=1.35, fs=7)
+        dim_v(ax, w, e_y, h, r"$EC$", off=1.35, fs=7)
+        seg_label(ax, 0, 0, w, h, r"$AC$", frac=0.45, dx=0.5, dy=0.3, fs=7)
+        plain_text(ax, w + 0.15, 6, r"$AB=BE$", fontsize=7)
+        ax.set_xlim(-2, w + 3)
+        ax.set_ylim(-1.5, h + 1.5)
+    elif n == 19:
+        l_vis, w_vis = 14, 7
+        poly(ax, [(0, 0), (l_vis, 0), (l_vis, w_vis), (0, w_vis)], alpha=0.28)
+        dim_h(ax, 0, l_vis, 0, r"$2w$", off=-1.1)
+        dim_v(ax, l_vis, 0, w_vis, r"$w$", off=1.1)
+        plain_text(ax, l_vis / 2, w_vis / 2, "מגרש", ha="center", fontsize=9)
+        plain_text(ax, l_vis / 2, -0.55, r"אורך $= 2 \times$ רוחב", ha="center", fontsize=7)
+        plain_text(ax, l_vis / 2, w_vis + 0.75, r"היקף $= 84$ מ'", ha="center", fontsize=8)
+        ax.set_xlim(-3, l_vis + 4)
+        ax.set_ylim(-2, w_vis + 2.5)
+    elif n == 20:
+        w, h = 8, 15
+        _rect_abcd(ax, w, h)
+        e_y = 10
+        mark_pt(ax, w, e_y, "E", dx=0.12, dy=0.05)
+        ax.plot([0, w], [0, e_y], color="#C41E3A", lw=1.0)
+        ax.plot([0, w], [0, h], color="#1565C0", lw=0.8)
+        dim_h(ax, 0, w, 0, "8 ס\"מ", off=-0.85)
+        dim_v(ax, w, 0, h, "15 ס\"מ", off=1.0)
+        dim_v(ax, w, 0, e_y, r"$BE$", off=1.45, fs=7)
+        dim_v(ax, w, e_y, h, r"$EC$", off=1.45, fs=7)
+        plain_text(ax, w + 0.15, 5, r"$BE=2 \cdot EC$", fontsize=7)
+        seg_label(ax, 0, 0, w, e_y, r"$\triangle ABE$", frac=0.35, dx=-0.6, dy=0.2, fs=7)
+        seg_label(ax, 0, 0, w, h, r"$\triangle AEC$", frac=0.55, dx=0.6, dy=0.2, fs=7)
+        ax.set_xlim(-2.2, w + 3)
+        ax.set_ylim(-1.5, h + 1.5)
+    save_fig(fig, stem, n)
 
 
 def gen_6(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
-    poly(ax, [(0, 0), (5, 0), (5, 3), (0, 3)], alpha=0.2)
-    ax.text(0.3, 1.5, "אלגברה + צורה", fontsize=10)
-    ax.set_xlim(-0.5, 6)
-    ax.set_ylim(-0.5, 4)
+
+    def _rect_abcd(w, h, alpha=0.18):
+        poly(ax, [(0, 0), (w, 0), (w, h), (0, h)], alpha=alpha)
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.28)
+        mark_pt(ax, w, 0, "B", dx=0.1, dy=-0.28)
+        mark_pt(ax, w, h, "C", dx=0.1, dy=0.08)
+        mark_pt(ax, 0, h, "D", dx=-0.35, dy=0.08)
+        right_angle(ax, 0, 0, min(0.35, w * 0.07, h * 0.07), quadrant=1)
+
+    if n == 13:
+        s_a = 4.0
+        w_b, h_b = 8.0, 2.0
+        gap = 1.2
+        poly(ax, [(0, 0), (s_a, 0), (s_a, s_a), (0, s_a)], alpha=0.32, fill="#E3F2FD")
+        mark_pt(ax, s_a / 2, s_a + 0.15, "A", dx=-0.05, dy=0.05)
+        seg_label(ax, 0, 0, s_a, 0, r"$x+3$", frac=0.5, dy=-0.35, fs=8)
+        x0 = s_a + gap
+        poly(ax, [(x0, 0), (x0 + w_b, 0), (x0 + w_b, h_b), (x0, h_b)], alpha=0.32, fill="#FFF3E0")
+        mark_pt(ax, x0 + w_b / 2, h_b + 0.15, "B", dx=-0.05, dy=0.05)
+        dim_h(ax, x0, x0 + w_b, 0, r"$x+7$", off=-0.7)
+        dim_v(ax, x0 + w_b, 0, h_b, r"$x+1$", off=0.7)
+        plain_text(ax, (s_a + x0 + w_b) / 2, -0.95, r"שטחים שווים", ha="center", fontsize=8)
+        ax.set_xlim(-1.2, x0 + w_b + 1.5)
+        ax.set_ylim(-1.5, s_a + 1.2)
+    elif n == 14:
+        w, h = 9.0, 5.0
+        _rect_abcd(w, h)
+        e_x = 6.0
+        mark_pt(ax, e_x, h, "E", dx=0.1, dy=0.08)
+        dim_h(ax, 0, w, h, "9", off=0.55)
+        plain_text(ax, w / 2, -0.85, r"$DE=2 \cdot EC$", ha="center", fontsize=7)
+        ax.set_xlim(-1.5, w + 2)
+        ax.set_ylim(-1.5, h + 1.5)
+    elif n == 15:
+        w, l_rect = 8.0, 15.0
+        poly(ax, [(0, 0), (w, 0), (w, l_rect), (0, l_rect)], alpha=0.2)
+        poly(ax, [(w, 0), (2 * w, 0), (2 * w, w), (w, w)], alpha=0.32, fill="#E8F5E9")
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.28)
+        mark_pt(ax, w, 0, "B", dx=0.1, dy=-0.28)
+        mark_pt(ax, w, l_rect, "C", dx=0.1, dy=0.08)
+        mark_pt(ax, 0, l_rect, "D", dx=-0.35, dy=0.08)
+        dim_v(ax, 0, 0, l_rect, r"$w+7$", off=-1.05, fs=8)
+        dim_v(ax, w, 0, w, r"$w$", off=0.75, fs=8)
+        dim_h(ax, w, 2 * w, w, r"$w$", off=0.55, fs=8)
+        plain_text(ax, w / 2, l_rect + 0.55, r"שטח מלבן $-$ שטח ריבוע $=56$", ha="center", fontsize=7)
+        ax.set_xlim(-2.5, 2 * w + 1.5)
+        ax.set_ylim(-1.5, l_rect + 1.5)
+    elif n == 16:
+        w, l0 = 8.0, 10.0
+        poly(ax, [(0, 0), (w, 0), (w, l0), (0, l0)], alpha=0.28)
+        poly(ax, [(0, 0), (w, 0), (w, l0 + 1), (0, l0 + 1)], alpha=0.12, fill="#E8F4E8")
+        dim_v(ax, w, 0, l0, r"$l$", off=0.75)
+        dim_v(ax, w, 0, l0 + 1, r"$l+1$", off=1.35, fs=7)
+        dim_h(ax, 0, w, 0, r"$w$", off=-0.75)
+        plain_text(ax, w / 2, l0 / 2 + 0.2, "שטח", ha="center", fontsize=8)
+        _orig_text(ax, w / 2, l0 / 2 - 0.15, r"$+8$", ha="center", fontsize=8)
+        plain_text(ax, w / 2, l0 / 2 - 0.5, 'מ"ר', ha="center", fontsize=8)
+        plain_text(ax, w / 2, -1.05, "הגדלת אורך ב-", ha="center", fontsize=7)
+        _orig_text(ax, w / 2 + 1.05, -1.05, r"$1$", ha="left", fontsize=7)
+        plain_text(ax, w / 2 + 1.25, -1.05, "מ'", ha="left", fontsize=7)
+        ax.set_xlim(-1.5, w + 2.5)
+        ax.set_ylim(-1.8, l0 + 2.2)
+    elif n == 17:
+        w, h, be, bf = 50.0, 20.0, 10.0, 5.0
+        _rect_abcd(w, h)
+        poly(ax, [(w, 0), (w - bf, 0), (w, be)], fill=C_GRAY, alpha=0.45)
+        ax.plot([w, w - bf, w], [0, 0, be], "k-", lw=1.1)
+        mark_pt(ax, w, be, "E", dx=0.1, dy=0.05)
+        mark_pt(ax, w - bf, 0, "F", dx=0.1, dy=-0.28)
+        right_angle(ax, w, 0, 0.9, quadrant=3)
+        dim_h(ax, 0, w, 0, "50", off=-0.9)
+        dim_v(ax, 0, 0, h, "20", off=-1.1)
+        dim_v(ax, w, 0, be, "10", off=0.85)
+        dim_h(ax, w - bf, w, 0, "5", off=-1.35, fs=7)
+        ax.set_xlim(-4, w + 4)
+        ax.set_ylim(-2.5, h + 2)
+    elif n == 18:
+        w, h, ae = 25.0, 10.0, 5.0
+        _rect_abcd(w, h)
+        mark_pt(ax, ae, 0, "E", dx=0.1, dy=-0.28)
+        poly(ax, [(0, 0), (ae, 0), (0, h)], fill="#E3F2FD", alpha=0.45)
+        poly(ax, [(ae, 0), (w, 0), (w, h), (0, h)], fill="#FFF8E1", alpha=0.35)
+        ax.plot([0, ae, w, w, 0], [0, 0, 0, h, h], "k-", lw=0.9)
+        dim_h(ax, 0, w, 0, "25", off=-0.85)
+        dim_v(ax, 0, 0, h, "10", off=-1.0)
+        plain_text(ax, w / 2, -1.55, r"$AE:EB=1:4$", ha="center", fontsize=7)
+        seg_label(ax, ae / 2, 0, ae / 2, h / 2, r"$\triangle ADE$", frac=0.55, dx=0.45, dy=0.0, fs=7)
+        plain_text(ax, w * 0.62, h * 0.55, r"טרפז $EBCD$", fontsize=7)
+        ax.set_xlim(-2.5, w + 2.5)
+        ax.set_ylim(-2.2, h + 1.5)
+    elif n == 19:
+        w, h = 8.0, 19.0
+        ef = 38.0
+        _rect_abcd(w, h)
+        e_x = w / 2
+        mark_pt(ax, e_x, 0, "E", dx=0.1, dy=-0.28)
+        mark_pt(ax, e_x, -ef, "F", dx=0.1, dy=-0.28)
+        poly(ax, [(0, 0), (w, 0), (e_x, -ef)], fill="#FFEBEE", alpha=0.5)
+        ax.plot([0, w, e_x, e_x], [0, 0, -ef, 0], "k-", lw=1.1)
+        right_angle(ax, e_x, 0, 0.45, quadrant=4)
+        dim_h(ax, 0, w, 0, "8", off=-0.85)
+        dim_h(ax, 0, w, h, "8", off=0.55)
+        dim_v(ax, w, 0, h, "19", off=0.85)
+        dim_v(ax, e_x, 0, -ef, "38", off=1.05)
+        seg_label(ax, 0, 0, e_x, -ef, r"$\triangle ABF$", frac=0.42, dx=-0.55, dy=0.0, fs=7)
+        plain_text(ax, w / 2, -ef - 1.1, r"$EF \perp AB$, $EF=2 \times BC$", ha="center", fontsize=7)
+        ax.set_xlim(-2, w + 2.5)
+        ax.set_ylim(-ef - 2, h + 1.5)
+    elif n == 20:
+        w, h, be = 12.0, 26.0, 12.0
+        _rect_abcd(w, h)
+        mark_pt(ax, w, be, "E", dx=0.12, dy=0.05)
+        ax.plot([0, w], [0, be], color="#C41E3A", lw=1.0)
+        ax.plot([0, w], [0, h], color="#1565C0", lw=0.9)
+        dim_h(ax, 0, w, 0, "12", off=-0.85)
+        dim_v(ax, w, 0, h, "26", off=0.95)
+        dim_v(ax, w, 0, be, "12", off=1.35, fs=7)
+        plain_text(ax, w + 0.2, 6, r"$AB=BE$", fontsize=7)
+        seg_label(ax, 0, 0, w, be, r"$\triangle ABE$", frac=0.35, dx=-0.55, dy=0.15, fs=7)
+        seg_label(ax, 0, 0, w, h, r"$\triangle AEC$", frac=0.55, dx=0.55, dy=0.15, fs=7)
+        ax.set_xlim(-2.2, w + 3)
+        ax.set_ylim(-1.5, h + 1.5)
     save_fig(fig, stem, n)
 
 
 def gen_7(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
     if n == 9:
-        poly(ax, [(0, 0), (2, 3), (-2, 3)], alpha=0.3)
+        # שווה-שוקיים, זווית בסיס 65°
+        b, h = 4.0, 3.2
+        poly(ax, [(0, 0), (b, 0), (b / 2, h)], alpha=0.28)
+        mark_pt(ax, b / 2, h, "A", dx=-0.05, dy=0.08)
+        mark_pt(ax, 0, 0, "B", dx=-0.28, dy=-0.22)
+        mark_pt(ax, b, 0, "C", dx=0.08, dy=-0.22)
+        angle_arc(ax, 0, 0, 0, 65, r=0.65, label=r"$65°$", label_r=0.95)
+        angle_arc(ax, b, 0, 115, 180, r=0.65, label=r"$65°$", label_r=0.95)
+        ax.set_xlim(-1.2, 5.5)
+        ax.set_ylim(-1.0, 4.5)
     elif n == 10:
-        poly(ax, [(0, 0), (3, 0), (1.5, 2.6)], alpha=0.3)
+        # שווה-צלעות
+        s = 4.0
+        h = s * math.sqrt(3) / 2
+        poly(ax, [(0, 0), (s, 0), (s / 2, h)], alpha=0.28)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, s, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, s / 2, h, "C", dx=-0.05, dy=0.08)
+        angle_arc(ax, 0, 0, 0, 60, r=0.55, label=r"$60°$", label_r=0.82)
+        angle_arc(ax, s, 0, 120, 180, r=0.55, label=r"$60°$", label_r=0.82)
+        angle_arc(ax, s / 2, h, 240, 300, r=0.55, label=r"$60°$", label_r=0.82)
+        ax.set_xlim(-1.2, 5.5)
+        ax.set_ylim(-1.0, 4.5)
     elif n == 11:
-        poly(ax, [(0, 0), (3, 0), (3, 4)], alpha=0.25)
-        ax.plot([3], [4], "ko", ms=4)
+        # ישר-זווית, זווית 30° ב-A (זווית ישרה ב-B)
+        poly(ax, [(0, 0), (4, 0), (4, 2.31)], alpha=0.28)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, 4, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, 4, 2.31, "C", dx=0.08, dy=0.05)
+        right_angle(ax, 4, 0, 0.38, quadrant=2)
+        angle_arc(ax, 0, 0, 0, 30, r=0.55, label=r"$30°$", label_r=0.88)
+        ax.set_xlim(-1.0, 5.5)
+        ax.set_ylim(-1.0, 3.5)
     elif n == 12:
-        poly(ax, [(0, 0), (8, 0), (8, 6)], alpha=0.25)
+        # בדיקת פיתגורס 8, 15, 17
+        poly(ax, [(0, 0), (8, 0), (8, 15)], alpha=0.25)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, 8, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, 8, 15, "C", dx=0.08, dy=0.05)
+        right_angle(ax, 8, 0, 0.45, quadrant=2)
+        dim_h(ax, 0, 8, 0, "8", off=-0.75)
+        dim_v(ax, 8, 0, 15, "15", off=0.75)
+        seg_label(ax, 0, 0, 8, 15, "17", frac=0.45, dx=-0.35, dy=0.15)
+        ax.set_xlim(-1.5, 11)
+        ax.set_ylim(-1.5, 17)
     elif n == 13:
-        poly(ax, [(0, 0), (3, 0), (1, 2)], alpha=0.25)
+        # זוויות (x+10)°, (2x-5)°, (4x+35)°
+        poly(ax, [(0, 0), (4.2, 0), (1.4, 2.4)], alpha=0.25)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, 4.2, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, 1.4, 2.4, "C", dx=-0.05, dy=0.08)
+        _orig_text(ax, 0.35, 0.35, r"$(x+10)°$", fontsize=8)
+        _orig_text(ax, 2.85, 0.35, r"$(2x-5)°$", fontsize=8)
+        _orig_text(ax, 1.15, 1.65, r"$(4x+35)°$", fontsize=8)
+        ax.set_xlim(-0.8, 5.0)
+        ax.set_ylim(-0.8, 3.2)
     elif n == 14:
-        poly(ax, [(0, 0), (5, 0), (2.5, 4.5)], alpha=0.25)
-        ax.text(-0.4, 2, "13,13,10", fontsize=8)
+        # ABC שווה-שוקיים: AB=AC=13, BC=10
+        b, h = 10.0, 12.0
+        poly(ax, [(0, 0), (b, 0), (b / 2, h)], alpha=0.25)
+        mark_pt(ax, b / 2, h, "A", dx=-0.05, dy=0.08)
+        mark_pt(ax, 0, 0, "B", dx=-0.28, dy=-0.22)
+        mark_pt(ax, b, 0, "C", dx=0.08, dy=-0.22)
+        seg_label(ax, 0, 0, b / 2, h, "13", frac=0.5, dx=-0.35, dy=0.0)
+        seg_label(ax, b, 0, b / 2, h, "13", frac=0.5, dx=0.35, dy=0.0)
+        dim_h(ax, 0, b, 0, "10", off=-0.85)
+        ax.set_xlim(-1.5, 12)
+        ax.set_ylim(-1.5, 14)
     elif n == 15:
-        poly(ax, [(0, 0), (2, 0), (0, 2)], alpha=0.3)
+        # משולש 45°-45°-90°, יתר 10
+        leg = 10 / math.sqrt(2)
+        poly(ax, [(0, 0), (leg, 0), (0, leg)], alpha=0.28)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, leg, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, 0, leg, "C", dx=-0.28, dy=0.05)
+        right_angle(ax, 0, 0, 0.45, quadrant=1)
+        angle_arc(ax, leg, 0, 90, 135, r=0.55, label=r"$45°$", label_r=0.85)
+        angle_arc(ax, 0, leg, 270, 315, r=0.55, label=r"$45°$", label_r=0.85)
+        seg_label(ax, leg, 0, 0, leg, "10", frac=0.5, dx=0.25, dy=0.0)
+        ax.set_xlim(-1.2, 9.5)
+        ax.set_ylim(-1.2, 9.5)
     elif n == 16:
-        ax.text(0.2, 0.5, "טבלת סיווג", fontsize=11)
-        ax.set_xlim(0, 3)
-        ax.set_ylim(0, 1)
+        # תרגיל 17 במרקדאון: ABC שווה-שוקיים, BC=10, ∠A=100°
+        b, h = 10.0, 3.5
+        poly(ax, [(0, 0), (b, 0), (b / 2, h)], alpha=0.28)
+        mark_pt(ax, b / 2, h, "A", dx=-0.05, dy=0.08)
+        mark_pt(ax, 0, 0, "B", dx=-0.28, dy=-0.22)
+        mark_pt(ax, b, 0, "C", dx=0.08, dy=-0.22)
+        angle_arc(ax, b / 2, h, 240, 300, r=0.55, label=r"$100°$", label_r=0.88)
+        dim_h(ax, 0, b, 0, "10", off=-0.75)
+        ax.set_xlim(-1.5, 12)
+        ax.set_ylim(-1.5, 5.5)
     elif n == 17:
-        poly(ax, [(0, 0), (4, 0), (1, 3.5)], alpha=0.25)
+        # תרגיל 17: ABC שווה-שוקיים, BC=10, ∠A=100°
+        b, h = 10.0, 3.5
+        poly(ax, [(0, 0), (b, 0), (b / 2, h)], alpha=0.28)
+        mark_pt(ax, b / 2, h, "A", dx=-0.05, dy=0.08)
+        mark_pt(ax, 0, 0, "B", dx=-0.28, dy=-0.22)
+        mark_pt(ax, b, 0, "C", dx=0.08, dy=-0.22)
+        angle_arc(ax, b / 2, h, 240, 300, r=0.55, label=r"$100°$", label_r=0.88)
+        dim_h(ax, 0, b, 0, "10", off=-0.75)
+        ax.set_xlim(-1.5, 12)
+        ax.set_ylim(-1.5, 5.5)
     elif n == 18:
-        poly(ax, [(0, 0), (6, 0), (6, 5), (0, 5)], alpha=0.15)
-        poly(ax, [(0, 5), (6, 5), (3, 9)], alpha=0.35, fill="#C8E6C9")
+        # תרגיל 18: מלבן ABCD 6×5 + משולש ECD, גובה 4
+        w, h_rect, h_tri = 6.0, 5.0, 4.0
+        poly(ax, [(0, 0), (w, 0), (w, h_rect), (0, h_rect)], alpha=0.15)
+        poly(ax, [(0, h_rect), (w, h_rect), (w / 2, h_rect + h_tri)], alpha=0.35, fill="#C8E6C9")
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, w, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, w, h_rect, "C", dx=0.08, dy=-0.05)
+        mark_pt(ax, 0, h_rect, "D", dx=-0.28, dy=-0.05)
+        mark_pt(ax, w / 2, h_rect + h_tri, "E", dx=-0.05, dy=0.08)
+        dim_h(ax, 0, w, 0, "6", off=-0.75)
+        dim_v(ax, w, 0, h_rect, "5", off=0.75)
+        dim_v(ax, w / 2, h_rect, h_rect + h_tri, "4", off=0.75)
+        ax.set_xlim(-1.5, 9)
+        ax.set_ylim(-1.5, 11)
     elif n == 19:
-        poly(ax, [(0, 0), (10, 0), (10, 10), (0, 10)], alpha=0.15)
-        poly(ax, [(0, 0), (4, 0), (4, 10), (0, 10)], fill=C_SHADE, alpha=0.4)
+        # תרגיל 19: ריבוע 10, E על BC, BE=4
+        s = 10.0
+        poly(ax, [(0, 0), (s, 0), (s, s), (0, s)], alpha=0.15)
+        ax.plot([0, s], [0, 4], "k-", lw=1.2)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, s, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, s, s, "C", dx=0.08, dy=0.05)
+        mark_pt(ax, 0, s, "D", dx=-0.28, dy=0.05)
+        mark_pt(ax, s, 4, "E", dx=0.08, dy=-0.05)
+        right_angle(ax, s, 0, 0.45, quadrant=1)
+        dim_h(ax, 0, s, 0, "10", off=-0.85)
+        dim_v(ax, s, 0, s, "10", off=0.85)
+        dim_v(ax, s, 0, 4, "4", off=0.55)
+        ax.set_xlim(-1.5, 13)
+        ax.set_ylim(-1.5, 13)
     elif n == 20:
-        poly(ax, [(0, 0), (4, 0), (2, 3.5)], alpha=0.25)
-        poly(ax, [(1, 0), (3, 0), (3, 1), (1, 1)], fill=C_SHADE, alpha=0.5)
-    ax.set_xlim(-1, 12)
-    ax.set_ylim(-1, 12)
+        # תרגיל 20: צורה שנותרה — צלעות חיצוניות 2, 3, 4, 5, 8 (היקף 22)
+        pts = [(0, 0), (8, 0), (8, 4), (5, 4), (2, 0)]
+        poly(ax, pts, alpha=0.3)
+        dim_h(ax, 0, 8, 0, "8", off=-0.75)
+        dim_h(ax, 0, 2, 0, "2", off=-0.4)
+        dim_v(ax, 8, 0, 4, "4", off=0.75)
+        dim_h(ax, 5, 8, 4, "3", off=0.55)
+        seg_label(ax, 5, 4, 2, 0, "5", frac=0.5, dx=0.0, dy=0.35)
+        ax.set_xlim(-1.5, 10)
+        ax.set_ylim(-1.5, 6)
     save_fig(fig, stem, n)
 
 
 def gen_8(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
+
+    def _rect(w, h, alpha=0.15):
+        poly(ax, [(0, 0), (w, 0), (w, h), (0, h)], alpha=alpha)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, w, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, w, h, "C", dx=0.08, dy=0.05)
+        mark_pt(ax, 0, h, "D", dx=-0.28, dy=0.05)
+
     if n == 9:
-        poly(ax, [(0, 0), (9, 0), (0, 12)], alpha=0.3)
+        poly(ax, [(0, 0), (9, 0), (9, 12)], alpha=0.28)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, 9, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, 9, 12, "C", dx=0.08, dy=0.05)
+        right_angle(ax, 9, 0, 0.45, quadrant=2)
+        dim_h(ax, 0, 9, 0, "9", off=-0.75)
+        seg_label(ax, 0, 0, 9, 12, "15", frac=0.45, dx=-0.35, dy=0.15)
+        ax.set_xlim(-1.5, 12)
+        ax.set_ylim(-1.5, 14)
     elif n == 10:
-        poly(ax, [(0, 0), (6, 0), (3, 5)], alpha=0.3)
-        ax.plot([3, 3], [0, 5], "k--", lw=0.8)
+        b, h = 12.0, 8.0
+        poly(ax, [(0, 0), (b, 0), (b / 2, h)], alpha=0.28)
+        mark_pt(ax, b / 2, h, "A", dx=-0.05, dy=0.08)
+        mark_pt(ax, 0, 0, "B", dx=-0.28, dy=-0.22)
+        mark_pt(ax, b, 0, "C", dx=0.08, dy=-0.22)
+        ax.plot([b / 2, b / 2], [0, h], "k--", lw=0.8)
+        dim_h(ax, 0, b, 0, "12", off=-0.85)
+        seg_label(ax, 0, 0, b / 2, h, "10", frac=0.5, dx=-0.35, dy=0.0)
+        seg_label(ax, b, 0, b / 2, h, "10", frac=0.5, dx=0.35, dy=0.0)
+        dim_v(ax, b / 2, 0, h, "8", off=0.75)
+        ax.set_xlim(-1.5, 14)
+        ax.set_ylim(-1.5, 10)
     elif n == 11:
-        poly(ax, [(0, 0), (10, 0), (5, 8.66)], alpha=0.25)
+        s = 10.0
+        h = 5 * math.sqrt(3)
+        poly(ax, [(0, 0), (s, 0), (s / 2, h)], alpha=0.25)
+        mark_pt(ax, s / 2, h, "A", dx=-0.05, dy=0.08)
+        mark_pt(ax, 0, 0, "B", dx=-0.28, dy=-0.22)
+        mark_pt(ax, s, 0, "C", dx=0.08, dy=-0.22)
+        dim_h(ax, 0, s, 0, "10", off=-0.85)
+        dim_v(ax, s / 2, 0, h, r"$5\sqrt{3}$", off=0.75)
+        ax.set_xlim(-1.5, 12)
+        ax.set_ylim(-1.5, 10)
     elif n == 12:
         poly(ax, [(0, 0), (7, 0), (7, 24)], alpha=0.25)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, 7, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, 7, 24, "C", dx=0.08, dy=0.05)
+        right_angle(ax, 7, 0, 0.45, quadrant=2)
+        dim_h(ax, 0, 7, 0, "7", off=-0.75)
+        dim_v(ax, 7, 0, 24, "24", off=0.75)
+        seg_label(ax, 0, 0, 7, 24, "25", frac=0.45, dx=-0.35, dy=0.15)
+        ax.set_xlim(-1.5, 10)
+        ax.set_ylim(-1.5, 27)
     elif n == 13:
-        poly(ax, [(0, 0), (6, 0), (3, 4)], alpha=0.25)
+        poly(ax, [(0, 0), (12, 0), (6, 6)], alpha=0.25)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, 12, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, 6, 6, "C", dx=-0.05, dy=0.08)
+        ax.plot([6, 6], [0, 6], "k--", lw=0.8)
+        dim_h(ax, 0, 12, 0, r"$3x$", off=-0.85)
+        dim_v(ax, 6, 0, 6, r"$x+2$", off=0.75)
+        plain_text(ax, 4, 2.5, r"שטח $=36$", ha="center", fontsize=8)
+        ax.set_xlim(-1.5, 14)
+        ax.set_ylim(-1.5, 8)
     elif n == 14:
-        poly(ax, [(0, 0), (14, 0), (7, 8)], alpha=0.2)
-        ax.plot([7, 7], [0, 8], "k--", lw=0.8)
+        h = 8.0
+        poly(ax, [(0, 0), (14, 0), (7, h)], alpha=0.22)
+        poly(ax, [(0, 0), (7, 0), (3.5, h)], alpha=0.22, fill="#D8E8F5")
+        ax.plot([7, 7], [0, h], "k--", lw=0.8)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, 14, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, 7, 0, "C", dx=0.08, dy=-0.22)
+        mark_pt(ax, 3.5, h, "D", dx=-0.05, dy=0.08)
+        dim_h(ax, 0, 14, 0, "14", off=-0.85)
+        dim_h(ax, 0, 7, 0, "7", off=-0.45, fs=7)
+        dim_v(ax, 7, 0, h, "8", off=0.75)
+        ax.set_xlim(-1.5, 16)
+        ax.set_ylim(-1.5, 10)
     elif n == 15:
-        poly(ax, [(0, 0), (5, 0), (5, 12), (0, 12)], alpha=0.15)
-        poly(ax, [(0, 0), (5, 0), (5, 12)], fill=C_SHADE, alpha=0.35)
-        ax.plot([0, 5, 2.5], [12, 12, 6], "k-", lw=1)
+        poly(ax, [(0, 0), (5, 0), (5, 12)], alpha=0.28)
+        mark_pt(ax, 0, 0, "A", dx=-0.28, dy=-0.22)
+        mark_pt(ax, 5, 0, "B", dx=0.08, dy=-0.22)
+        mark_pt(ax, 5, 12, "C", dx=0.08, dy=0.05)
+        right_angle(ax, 5, 0, 0.45, quadrant=2)
+        mark_pt(ax, 2.5, 6, "D", dx=0.08, dy=0.05)
+        ax.plot([5, 2.5], [0, 6], "k-", lw=1.0)
+        dim_h(ax, 0, 5, 0, "5", off=-0.75)
+        dim_v(ax, 5, 0, 12, "12", off=0.75)
+        seg_label(ax, 0, 0, 5, 12, r"$AC$", frac=0.45, dx=-0.35, dy=0.15)
+        ax.set_xlim(-1.5, 8)
+        ax.set_ylim(-1.5, 14)
     elif n == 16:
-        poly(ax, [(0, 0), (10, 0), (10, 10), (0, 10)], alpha=0.15)
-        poly(ax, [(0, 0), (4, 0), (4, 10), (0, 10)], fill=C_SHADE, alpha=0.35)
+        s = 10.0
+        _rect(s, s)
+        poly(ax, [(0, 0), (s, 0), (s, 4)], fill=C_SHADE, alpha=0.4)
+        ax.plot([0, s, s], [0, 0, 4], "k-", lw=1.2)
+        mark_pt(ax, s, 4, "E", dx=0.08, dy=-0.05)
+        right_angle(ax, s, 0, 0.45, quadrant=1)
+        dim_h(ax, 0, s, 0, "10", off=-0.85)
+        dim_v(ax, s, 0, s, "10", off=0.85)
+        dim_v(ax, s, 0, 4, "4", off=0.55)
+        ax.set_xlim(-1.5, 13)
+        ax.set_ylim(-1.5, 13)
     elif n == 17:
-        poly(ax, [(0, 0), (25, 0), (25, 48), (0, 48)], alpha=0.12)
-        poly(ax, [(0, 0), (25, 0), (25, 32)], fill=C_SHADE, alpha=0.25)
+        w, h = 25.0, 48.0
+        _rect(w, h, alpha=0.12)
+        poly(ax, [(0, 0), (w, 0), (w, 32)], fill=C_SHADE, alpha=0.3)
+        ax.plot([0, w], [0, 32], "k-", lw=1.0)
+        mark_pt(ax, w, 32, "E", dx=0.08, dy=-0.05)
+        dim_h(ax, 0, w, 0, "25", off=-1.1)
+        dim_v(ax, w, 0, h, "48", off=1.1)
+        dim_v(ax, w, 0, 32, "32", off=1.55, fs=7)
+        dim_v(ax, w, 32, h, "16", off=1.55, fs=7)
+        plain_text(ax, w + 0.2, 16, r"$BE=2\cdot EC$", fontsize=7)
+        ax.set_xlim(-3, w + 5)
+        ax.set_ylim(-2, h + 2)
     elif n == 18:
-        poly(ax, [(0, 0), (6, 0), (6, 5), (0, 5)], alpha=0.15)
-        poly(ax, [(0, 5), (6, 5), (3, 9)], alpha=0.35, fill="#C8E6C9")
+        w, h_rect, h_tri = 6.0, 5.0, 4.0
+        _rect(w, h_rect, alpha=0.15)
+        poly(ax, [(0, h_rect), (w, h_rect), (w / 2, h_rect + h_tri)], alpha=0.35, fill="#C8E6C9")
+        mark_pt(ax, w / 2, h_rect + h_tri, "E", dx=-0.05, dy=0.08)
+        dim_h(ax, 0, w, 0, "6", off=-0.75)
+        dim_v(ax, w, 0, h_rect, "5", off=0.75)
+        dim_v(ax, w / 2, h_rect, h_rect + h_tri, "4", off=0.75)
+        ax.set_xlim(-1.5, 9)
+        ax.set_ylim(-1.5, 11)
     elif n == 19:
-        poly(ax, [(0, 0), (8, 0), (8, 6), (0, 6)], alpha=0.15)
+        w, h = 7.5, 4.5
+        _rect(w, h)
+        e_x = w * 2 / 3
+        mark_pt(ax, e_x, h, "E", dx=0.08, dy=0.05)
+        ax.plot([0, e_x], [0, h], "k-", lw=0.9)
+        ax.plot([e_x, w], [h, 0], "k-", lw=0.9)
+        ax.plot([0, w], [0, h], "k--", lw=0.7)
+        dim_h(ax, 0, w, 0, "7.5 מ'", off=-0.85)
+        dim_v(ax, w, 0, h, "4.5 מ'", off=0.85)
+        dim_h(ax, 0, e_x, h, r"$DE$", off=0.55, fs=7)
+        dim_h(ax, e_x, w, h, r"$EC$", off=0.55, fs=7)
+        plain_text(ax, e_x / 2, h + 0.35, r"$DE=2\cdot EC$", ha="center", fontsize=7)
+        ax.set_xlim(-1.8, w + 2.2)
+        ax.set_ylim(-1.5, h + 1.8)
     elif n == 20:
-        poly(ax, [(0, 0), (8, 0), (4, 6.93)], alpha=0.2)
-        poly(ax, [(1, 0), (3, 0), (3, 2), (1, 2)], fill=C_SHADE, alpha=0.45)
-    ax.set_xlim(-1, 28)
-    ax.set_ylim(-1, 52)
+        w, h = 50.0, 20.0
+        _rect(w, h, alpha=0.12)
+        poly(ax, [(w, 0), (w - 5, 0), (w, 10)], fill=C_SHADE, alpha=0.45)
+        ax.plot([w, w - 5, w], [0, 0, 10], "k-", lw=1.2)
+        mark_pt(ax, w - 5, 0, "F", dx=0.08, dy=-0.22)
+        mark_pt(ax, w, 10, "E", dx=0.08, dy=-0.05)
+        right_angle(ax, w, 0, 0.9, quadrant=3)
+        dim_h(ax, w - 5, w, 0, "5", off=-0.85)
+        dim_v(ax, w, 0, 10, "10", off=0.85)
+        dim_h(ax, 0, w, h, "50", off=0.55)
+        dim_v(ax, 0, 0, h, "20", off=-1.1)
+        ax.set_xlim(-4, w + 4)
+        ax.set_ylim(-2, h + 2)
     save_fig(fig, stem, n)
 
 
 def gen_9(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
     if n == 9:
-        poly(ax, [(0, 0), (10, 0), (10, 8), (4, 8), (4, 5), (0, 5)], alpha=0.35)
+        poly(ax, [(0, 0), (10, 0), (10, 5), (6, 5), (6, 8), (0, 8)], alpha=0.35)
+        dim_h(ax, 0, 10, 0, "10", off=-0.75)
+        dim_v(ax, 0, 0, 8, "8", off=-0.75)
+        dim_v(ax, 10, 0, 5, "5", off=0.75)
+        dim_h(ax, 6, 10, 5, "4", off=0.55)
+        dim_v(ax, 6, 5, 8, "3", off=0.55)
+        dim_h(ax, 0, 6, 8, "6", off=0.55)
+        ax.set_xlim(-2, 12.5)
+        ax.set_ylim(-1.5, 10)
     elif n == 10:
         poly(ax, [(0, 0), (20, 0), (20, 12), (0, 12)], alpha=0.12)
-        poly(ax, [(6, 3), (14, 3), (12, 8), (8, 8)], fill=C_GRAY, alpha=0.5)
+        poly(ax, [(6, 0), (14, 0), (16, 5), (4, 5)], fill=C_GRAY, alpha=0.5)
+        dim_h(ax, 0, 20, 0, "20", off=-0.85)
+        dim_v(ax, 20, 0, 12, "12", off=0.85)
+        dim_h(ax, 6, 14, 0, "8", off=-0.45, fs=7)
+        dim_h(ax, 4, 16, 5, "12", off=0.55, fs=7)
+        dim_v(ax, 16, 0, 5, "5", off=0.65, fs=7)
+        plain_text(ax, 10, 2.5, "גינה", ha="center", fontsize=8, color="#555555")
+        ax.set_xlim(-2.5, 22.5)
+        ax.set_ylim(-1.5, 14)
     elif n == 11:
         poly(ax, [(0, 0), (16, 0), (16, 16), (0, 16)], alpha=0.1)
         for dx, dy in [(0, 0), (12, 0), (12, 12), (0, 12)]:
             poly(ax, [(dx, dy), (dx + 4, dy), (dx + 4, dy + 4), (dx, dy + 4)], fill=C_GRAY, alpha=0.35)
+        dim_h(ax, 0, 16, 0, "16", off=-0.85)
+        dim_v(ax, 16, 0, 16, "16", off=0.85)
+        dim_h(ax, 0, 4, 0, "4", off=-1.45, fs=7)
+        dim_v(ax, 4, 0, 4, "4", off=-1.45, fs=7)
+        ax.set_xlim(-2.5, 18.5)
+        ax.set_ylim(-2.5, 18.5)
     elif n == 12:
-        poly(ax, [(0, 0), (8, 0), (8, 8), (0, 8)], alpha=0.15)
-        for c in [(0, 0), (6, 0), (6, 6), (0, 6)]:
-            poly(
-                ax,
-                [c, (c[0] + 2, c[1]), (c[0] + 2, c[1] + 2), (c[0], c[1] + 2)],
-                fill=C_SHADE,
-                alpha=0.4,
-            )
+        s = 8.0
+        leg = s / 4
+        poly(ax, [(0, 0), (s, 0), (s, s), (0, s)], alpha=0.12)
+        for tri in [
+            [(0, 0), (leg, 0), (0, leg)],
+            [(s, 0), (s - leg, 0), (s, leg)],
+            [(s, s), (s, s - leg), (s - leg, s)],
+            [(0, s), (leg, s), (0, s - leg)],
+        ]:
+            poly(ax, tri, fill=C_SHADE, alpha=0.45)
+        dim_h(ax, 0, s, 0, r"$a$", off=-0.85)
+        dim_v(ax, s, 0, s, r"$a$", off=0.85)
+        dim_h(ax, 0, leg, 0, r"$\frac{a}{4}$", off=-0.45, fs=7)
+        dim_v(ax, leg, 0, leg, r"$\frac{a}{4}$", off=0.55, fs=7)
+        ax.set_xlim(-2, 10.5)
+        ax.set_ylim(-2, 10.5)
     elif n == 13:
-        poly(ax, [(0, 0), (18, 0), (18, 10), (0, 10)], alpha=0.15)
-        poly(ax, [(0, 0), (6, 0), (6, 10), (0, 10)], fill=C_SHADE, alpha=0.35)
-        ax.plot([6, 18], [10, 0], "k-", lw=1)
+        w, h, ae = 18.0, 10.0, 6.0
+        poly(ax, [(0, 0), (w, 0), (w, h), (0, h)], alpha=0.15)
+        poly(ax, [(0, 0), (ae, 0), (w, h)], fill=C_SHADE, alpha=0.4)
+        ax.plot([ae, w], [0, h], "k-", lw=1.1)
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.28)
+        mark_pt(ax, w, 0, "B", dx=0.1, dy=-0.28)
+        mark_pt(ax, w, h, "C", dx=0.1, dy=0.08)
+        mark_pt(ax, 0, h, "D", dx=-0.35, dy=0.08)
+        mark_pt(ax, ae, 0, "E", dx=0.08, dy=-0.35)
+        dim_h(ax, 0, w, 0, "18", off=-0.85)
+        dim_v(ax, w, 0, h, "10", off=0.85)
+        dim_h(ax, 0, ae, 0, "6", off=-0.45, fs=7)
+        ax.set_xlim(-2.5, 21)
+        ax.set_ylim(-1.5, 12.5)
     elif n == 14:
         poly(ax, [(0, 0), (14, 0), (10, 8), (4, 8)], alpha=0.25)
-        circle(ax, (9, 4), 4, fill="#E8F4FF")
+        circle(ax, (7, 4), 4, fill="#E8F4FF")
+        dim_h(ax, 0, 14, 0, "14", off=-0.85)
+        dim_h(ax, 4, 10, 8, "6", off=0.55, fs=7)
+        dim_v(ax, 14, 0, 8, "8", off=0.85)
+        ax.text(7, 4.3, r"$d=8$", ha="center", fontsize=8)
+        ax.set_xlim(-2, 16.5)
+        ax.set_ylim(-1.5, 10.5)
     elif n == 15:
         poly(ax, [(0, 0), (24, 0), (24, 10), (0, 10)], alpha=0.12)
         circle(ax, (5, 5), 5, fill="#E8F4FF")
+        dim_h(ax, 0, 24, 0, "24", off=-0.85)
+        dim_v(ax, 24, 0, 10, "10", off=0.85)
+        dim_h(ax, 0, 10, 0, "10", off=-0.45, fs=7)
+        ax.set_xlim(-2, 26.5)
+        ax.set_ylim(-1.5, 12.5)
     elif n == 16:
-        poly(ax, [(0, 0), (8, 0), (8, 8), (0, 8)], alpha=0.12)
-        circle(ax, (4, 4), 4, fill="#DDDDDD")
+        s = 8.0
+        poly(ax, [(0, 0), (s, 0), (s, s), (0, s)], alpha=0.12)
+        circle(ax, (s / 2, s / 2), s / 2, fill="#DDDDDD")
+        dim_h(ax, 0, s, 0, r"$a$", off=-0.85)
+        dim_v(ax, s, 0, s, r"$a$", off=0.85)
+        ax.text(s / 2, s / 2, r"$r=\frac{a}{2}$", ha="center", fontsize=8)
+        ax.set_xlim(-2, 10.5)
+        ax.set_ylim(-2, 10.5)
     elif n == 17:
-        poly(ax, [(0, 0), (50, 0), (50, 20), (0, 20)], alpha=0.08)
-        poly(ax, [(40, 5), (45, 5), (45, 15), (40, 15)], fill=C_SHADE, alpha=0.45)
+        w, h, be, bf = 50.0, 20.0, 10.0, 5.0
+        poly(ax, [(0, 0), (w, 0), (w, h), (0, h)], alpha=0.08)
+        poly(ax, [(w, 0), (w, be), (w - bf, 0)], fill=C_SHADE, alpha=0.45)
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.28)
+        mark_pt(ax, w, 0, "B", dx=0.1, dy=-0.28)
+        mark_pt(ax, w, h, "C", dx=0.1, dy=0.08)
+        mark_pt(ax, 0, h, "D", dx=-0.35, dy=0.08)
+        mark_pt(ax, w, be, "E", dx=0.12, dy=0.05)
+        mark_pt(ax, w - bf, 0, "F", dx=0.08, dy=-0.35)
+        dim_h(ax, 0, w, 0, "50", off=-0.85)
+        dim_v(ax, 0, 0, h, "20", off=-1.1)
+        dim_v(ax, w, 0, be, "10", off=0.85, fs=7)
+        dim_h(ax, w - bf, w, 0, "5", off=-0.45, fs=7)
+        ax.set_xlim(-4, w + 4)
+        ax.set_ylim(-2, h + 2)
     elif n == 18:
-        poly(ax, [(0, 0), (10, 5), (20, 0), (10, -5)], alpha=0.2)
-        poly(ax, [(4, -3), (16, -3), (16, 3), (4, 3)], alpha=0.15)
+        ha, hb, inset = 35, 25, 15
+        A, B, C, D = (0, ha), (hb, 0), (0, -ha), (-hb, 0)
+        poly(ax, [A, B, C, D], alpha=0.22)
+        ax.plot([A[0], C[0]], [A[1], C[1]], "k--", lw=0.7)
+        ax.plot([B[0], D[0]], [B[1], D[1]], "k--", lw=0.7)
+        K = (0, ha - inset)
+        M = (0, -ha + inset)
+        I = (hb - inset, 0)
+        J = (-hb + inset, 0)
+        E = (J[0], K[1])
+        F = (I[0], K[1])
+        H = (I[0], M[1])
+        G = (J[0], M[1])
+        poly(ax, [E, F, H, G], fill="#F8F8F8", edge=C_EDGE, lw=1.2, alpha=0.85)
+        for p, lb, dx, dy in [
+            (A, "A", -0.35, 0.1),
+            (B, "B", 0.12, -0.3),
+            (C, "C", -0.15, -0.4),
+            (D, "D", -0.4, 0.05),
+            (E, "E", -0.35, 0.1),
+            (F, "F", 0.12, 0.1),
+            (H, "H", 0.12, -0.35),
+            (G, "G", -0.35, -0.35),
+            (K, "K", 0.55, 0.05),
+            (I, "I", 0.12, -0.1),
+            (M, "M", 0.55, -0.35),
+            (J, "J", -0.55, 0.05),
+        ]:
+            mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+        dim_v(ax, 0, -ha, ha, "70", off=1.15)
+        dim_h(ax, -hb, hb, 0, "50", off=-1.05)
+        seg_label(ax, A[0], A[1], K[0], K[1], "15", frac=0.45, dx=-0.55, dy=0.05, fs=7)
+        seg_label(ax, C[0], C[1], M[0], M[1], "15", frac=0.45, dx=0.55, dy=-0.05, fs=7)
+        seg_label(ax, B[0], B[1], I[0], I[1], "15", frac=0.45, dx=0.45, dy=-0.05, fs=7)
+        seg_label(ax, D[0], D[1], J[0], J[1], "15", frac=0.45, dx=-0.55, dy=-0.05, fs=7)
+        plain_text(ax, 0, ha + 2.5, r"$ABCD$ — מעוין", ha="center", fontsize=7)
+        plain_text(ax, 0, 0, r"$EHGF$ — מלבן", ha="center", fontsize=7)
+        ax.set_xlim(-38, 38)
+        ax.set_ylim(-42, 42)
     elif n == 19:
-        poly(ax, [(0, 0), (12, 0), (12, 12), (0, 12)], alpha=0.12)
-        poly(ax, [(0, 12), (12, 12), (6, 20)], alpha=0.3)
-        circle(ax, (6, 6), 6, fill="#E8E8E8")
+        s, h_tri, r = 12.0, 8.0, 6.0
+        poly(ax, [(0, 0), (s, 0), (s, s), (0, s)], alpha=0.12)
+        poly(ax, [(0, s), (s, s), (s / 2, s + h_tri)], alpha=0.3)
+        circle(ax, (s / 2, s / 2), r, fill="#E8E8E8")
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.28)
+        mark_pt(ax, s, 0, "B", dx=0.1, dy=-0.28)
+        mark_pt(ax, s, s, "C", dx=0.1, dy=0.08)
+        mark_pt(ax, 0, s, "D", dx=-0.35, dy=0.08)
+        mark_pt(ax, s / 2, s + h_tri, "E", dx=-0.05, dy=0.08)
+        dim_h(ax, 0, s, 0, "12", off=-0.85)
+        dim_v(ax, s / 2, s, s + h_tri, "8", off=0.85)
+        ax.text(s / 2, s / 2, r"$r=6$", ha="center", fontsize=8)
+        ax.set_xlim(-2, 15)
+        ax.set_ylim(-1.5, 22)
     elif n == 20:
-        poly(ax, [(0, 0), (14, 0), (14, 10), (0, 10)], alpha=0.12)
-        poly(ax, [(3, 2), (11, 2), (11, 8), (3, 8)], fill=C_SHADE, alpha=0.35)
-    ax.set_xlim(-1, 52)
-    ax.set_ylim(-6, 24)
+        vx, vy = 18 / 41, 80 / 41
+        pts = [(0, 0), (8, 0), (8, 4), (5, 4), (vx, vy)]
+        poly(ax, pts, alpha=0.3)
+        dim_h(ax, 0, 8, 0, "8", off=-0.75)
+        dim_v(ax, 8, 0, 4, "4", off=0.75)
+        dim_h(ax, 5, 8, 4, "3", off=0.55)
+        seg_label(ax, 5, 4, vx, vy, "5", frac=0.5, dx=0.25, dy=0.12, fs=7)
+        seg_label(ax, vx, vy, 0, 0, "2", frac=0.5, dx=-0.4, dy=0.0, fs=7)
+        ax.set_xlim(-1.5, 10)
+        ax.set_ylim(-1.5, 6.5)
     save_fig(fig, stem, n)
 
 
 def gen_10(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
-    poly(ax, [(0, 0), (5, 0), (6.5, 3), (1.5, 3)], alpha=0.25)
-    if n >= 17:
-        rh = [(0, 0), (4, 2), (0, 4), (-4, 2)]
-        ax.clear()
-        poly(ax, rh, alpha=0.3)
-    ax.set_xlim(-5, 8)
-    ax.set_ylim(-1, 6)
+
+    def _pgram_pts(base, height, slant):
+        return [(0, 0), (base, 0), (base + slant, height), (slant, height)]
+
+    def _pgram_labeled(base, height, slant, labels=("A", "B", "C", "D"), alpha=0.28):
+        pts = _pgram_pts(base, height, slant)
+        poly(ax, pts, alpha=alpha)
+        for p, lb, dx, dy in zip(
+            pts,
+            labels,
+            [-0.35, 0.1, 0.1, -0.35],
+            [-0.3, -0.3, 0.08, 0.08],
+        ):
+            mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+        return pts
+
+    def _rhombus_diag(d_ac, d_bd, labels=("A", "B", "C", "D"), alpha=0.28):
+        ha, hb = d_ac / 2, d_bd / 2
+        pts = [(0, ha), (hb, 0), (0, -ha), (-hb, 0)]
+        poly(ax, pts, alpha=alpha)
+        ax.plot([0, 0], [-ha, ha], "k--", lw=0.7)
+        ax.plot([-hb, hb], [0, 0], "k--", lw=0.7)
+        mark_pt(ax, 0, 0, "O", dx=0.12, dy=0.1)
+        for p, lb, dx, dy in zip(
+            pts,
+            labels,
+            [-0.15, 0.12, -0.15, -0.35],
+            [0.12, -0.28, -0.35, 0.05],
+        ):
+            mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+        return pts, ha, hb
+
+    def _pgram_angle_arcs(pts, angle_labels):
+        """angle_labels: dict vertex index -> (start_deg, end_deg, label)."""
+        for idx, (start, end, label) in angle_labels.items():
+            x, y = pts[idx]
+            angle_arc(ax, x, y, start, end, r=0.75, label=label, label_r=1.05, fs=7)
+
+    if n == 9:
+        pts = _pgram_labeled(10, 4, 3)
+        _pgram_angle_arcs(
+            pts,
+            {
+                0: (0, 38, r"$(3x+10)°$"),
+                1: (142, 180, r"$(5x-10)°$"),
+            },
+        )
+        ax.set_xlim(-2, 15)
+        ax.set_ylim(-1.5, 6.5)
+    elif n == 10:
+        _rhombus_diag(10, 24)
+        seg_label(ax, 0, 5, 5, 0, "13", frac=0.5, dx=0.35, dy=0.15)
+        dim_v(ax, 0, -5, 5, "10", off=0.75)
+        ax.set_xlim(-14.5, 14.5)
+        ax.set_ylim(-7, 7.5)
+    elif n == 11:
+        by = math.sqrt(40)
+        pts = [(-9, 0), (3, by), (9, 0), (-3, -by)]
+        poly(ax, pts, alpha=0.28)
+        for p, lb, dx, dy in zip(
+            pts,
+            ("A", "B", "C", "D"),
+            [-0.35, 0.1, 0.1, -0.35],
+            [-0.3, -0.3, 0.08, 0.08],
+        ):
+            mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+        ax.plot([-9, 9], [0, 0], "k--", lw=0.7)
+        ax.plot([3, -3], [by, -by], "k--", lw=0.7)
+        mark_pt(ax, 0, 0, "O", dx=0.12, dy=0.1)
+        dim_h(ax, -9, 9, 0, "18", off=-0.95)
+        seg_label(ax, 3, by, -3, -by, "14", frac=0.5, dx=0.55, dy=0.0, fs=7)
+        ax.set_xlim(-12, 12)
+        ax.set_ylim(-9, 9)
+    elif n == 12:
+        pts = _pgram_labeled(9, 4, 2.5)
+        _pgram_angle_arcs(
+            pts,
+            {
+                0: (0, 42, r"$(2x+10)°$"),
+                2: (180, 222, r"$(4x-30)°$"),
+            },
+        )
+        ax.set_xlim(-2, 13.5)
+        ax.set_ylim(-1.5, 6.5)
+    elif n == 13:
+        _rhombus_diag(30, 16)
+        dim_v(ax, 0, -15, 15, "30", off=0.95)
+        dim_h(ax, -8, 8, 0, "16", off=-0.85)
+        ax.set_xlim(-11, 11)
+        ax.set_ylim(-18.5, 18.5)
+    elif n == 14:
+        _rhombus_diag(8, 6)
+        seg_label(ax, 0, 3, 3, 0, "5", frac=0.5, dx=0.3, dy=0.12)
+        dim_v(ax, 0, -3, 3, "8", off=0.75)
+        ax.set_xlim(-5.5, 5.5)
+        ax.set_ylim(-5, 5.5)
+    elif n == 15:
+        poly(ax, [(0, 0), (9, 0), (9, 6), (0, 6)], alpha=0.18, fill="#E8F4E8")
+        plain_text(ax, 4.5, 3, "מקבילית", ha="center", fontsize=8)
+        cx = 16
+        rh = [(cx, 3), (cx + 6, 0), (cx, -3), (cx - 6, 0)]
+        poly(ax, rh, alpha=0.32)
+        ax.plot([cx, cx], [-3, 3], "k--", lw=0.7)
+        ax.plot([cx - 6, cx + 6], [0, 0], "k--", lw=0.7)
+        plain_text(ax, cx, 0, "מעוין", ha="center", fontsize=8)
+        ax.set_xlim(-1.5, 24)
+        ax.set_ylim(-5, 8)
+    elif n == 16:
+        pts = _pgram_labeled(10, 4, 3)
+        _pgram_angle_arcs(pts, {0: (0, 38, r"$70°$")})
+        ax.set_xlim(-2, 15)
+        ax.set_ylim(-1.5, 6.5)
+    elif n == 17:
+        _rhombus_diag(30, 16)
+        dim_v(ax, 0, -15, 15, "30", off=0.95)
+        dim_h(ax, -8, 8, 0, "16", off=-0.85)
+        ax.set_xlim(-11, 11)
+        ax.set_ylim(-18.5, 18.5)
+    elif n == 18:
+        pts = _pgram_labeled(15, 12, 5)
+        _pgram_angle_arcs(
+            pts,
+            {
+                0: (0, 67, r"$(2x+10)°$"),
+                1: (113, 180, r"$(4x-10)°$"),
+            },
+        )
+        ax.plot([pts[2][0], pts[2][0]], [0, 12], "k--", lw=0.8)
+        dim_h(ax, 0, 15, 0, "15", off=-0.85)
+        seg_label(ax, pts[1][0], pts[1][1], pts[2][0], pts[2][1], "13", frac=0.45, dx=0.45, dy=0.1)
+        dim_v(ax, pts[2][0], 0, 12, r"$h=12$", off=0.85)
+        ax.set_xlim(-2.5, 23)
+        ax.set_ylim(-1.8, 14.5)
+    elif n == 19:
+        w, h, eb = 14.62, 6.82, 8.9
+        A, B, C, D = (0, h), (w, h), (w, 0), (0, 0)
+        E, F = (w - eb, h), (eb, 0)
+        poly(ax, [A, B, C, D], alpha=0.12, fill="#F5F5F5")
+        poly(ax, [E, B, F, D], alpha=0.38, fill="#D8E8F5")
+        for p, lb, dx, dy in [
+            (A, "A", -0.35, 0.08),
+            (B, "B", 0.1, 0.08),
+            (C, "C", 0.1, -0.35),
+            (D, "D", -0.35, -0.35),
+            (E, "E", -0.35, 0.08),
+            (F, "F", 0.1, -0.35),
+        ]:
+            mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+        dim_h(ax, 0, w, h, r"$AB$", off=0.65)
+        dim_v(ax, w, 0, h, r"$AD$", off=0.85)
+        seg_label(ax, E[0], E[1], B[0], B[1], "8.9", frac=0.5, dx=0, dy=0.2)
+        angle_arc(ax, F[0], F[1], 50, 180, r=1.0, label=r"$130°$", label_r=1.45, fs=7)
+        right_angle(ax, 0, h, 0.35, quadrant=4)
+        right_angle(ax, w, h, 0.35, quadrant=3)
+        right_angle(ax, w, 0, 0.35, quadrant=2)
+        right_angle(ax, 0, 0, 0.35, quadrant=1)
+        ax.set_xlim(-2, w + 3)
+        ax.set_ylim(-2, h + 2)
+    elif n == 20:
+        _rhombus_diag(16, 12)
+        seg_label(ax, 0, 8, 6, 0, "10", frac=0.5, dx=0.35, dy=0.12)
+        dim_h(ax, -6, 6, 0, "12", off=-0.75)
+        ax.set_xlim(-9, 9)
+        ax.set_ylim(-11, 11)
+    else:
+        poly(ax, [(0, 0), (6, 0), (7, 3), (1, 3)], alpha=0.22)
+        ax.set_xlim(-2, 9)
+        ax.set_ylim(-1, 5)
+
     save_fig(fig, stem, n)
 
 
 def gen_11(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
-    if n <= 16:
-        poly(ax, [(0, 0), (6, 0), (7, 3), (1, 3)], alpha=0.22)
+
+    def _pgram_pts(base, height, slant):
+        return [(0, 0), (base, 0), (base + slant, height), (slant, height)]
+
+    def _pgram_labeled(base, height, slant, labels=("A", "B", "C", "D"), alpha=0.28):
+        pts = _pgram_pts(base, height, slant)
+        poly(ax, pts, alpha=alpha)
+        for p, lb, dx, dy in zip(
+            pts,
+            labels,
+            [-0.35, 0.1, 0.1, -0.35],
+            [-0.3, -0.3, 0.08, 0.08],
+        ):
+            mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+        return pts
+
+    def _rhombus_diag(d_ac, d_bd, labels=("A", "B", "C", "D"), alpha=0.28):
+        ha, hb = d_ac / 2, d_bd / 2
+        pts = [(0, ha), (hb, 0), (0, -ha), (-hb, 0)]
+        poly(ax, pts, alpha=alpha)
+        ax.plot([0, 0], [-ha, ha], "k--", lw=0.7)
+        ax.plot([-hb, hb], [0, 0], "k--", lw=0.7)
+        for p, lb, dx, dy in zip(
+            pts,
+            labels,
+            [-0.15, 0.12, -0.15, -0.35],
+            [0.12, -0.28, -0.35, 0.05],
+        ):
+            mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+        return pts, ha, hb
+
+    if n == 9:
+        _rhombus_diag(8, 12)
+        dim_v(ax, 0, -4, 4, "8", off=0.75)
+        plain_text(ax, 0, -6.2, 'שטח $=48$ ס"מ$^2$', ha="center", fontsize=7)
+        ax.set_xlim(-8.5, 8.5)
+        ax.set_ylim(-7.5, 6.5)
+    elif n == 10:
+        _pgram_labeled(8, 5, 2)
+        dim_h(ax, 0, 8, 0, r"$x+3$", off=-0.75)
+        dim_v(ax, 10, 0, 5, r"$x$", off=0.75)
+        plain_text(ax, 5, 2.5, 'שטח $=40$ ס"מ$^2$', ha="center", fontsize=7)
+        ax.set_xlim(-2, 12.5)
+        ax.set_ylim(-1.5, 7)
+    elif n == 11:
+        _rhombus_diag(10, 24)
+        seg_label(ax, 0, 5, 5, 0, "13", frac=0.5, dx=0.35, dy=0.15)
+        dim_v(ax, 0, -5, 5, "10", off=0.75)
+        ax.set_xlim(-14.5, 14.5)
+        ax.set_ylim(-7, 7.5)
+    elif n == 12:
+        poly(ax, [(0, 0), (10, 0), (10, 6), (0, 6)], alpha=0.18, fill="#E8F4E8")
+        poly(ax, [(12, 0), (22, 0), (24, 6), (14, 6)], alpha=0.32)
+        dim_h(ax, 0, 10, 0, "10", off=-0.65)
+        dim_h(ax, 12, 22, 0, "10", off=-0.65)
+        dim_v(ax, 10, 0, 6, "6", off=0.7)
+        dim_v(ax, 24, 0, 6, "6", off=0.7)
+        plain_text(ax, 5, 3, "מלבן", ha="center", fontsize=8)
+        plain_text(ax, 18, 3, "מקבילית", ha="center", fontsize=8)
+        ax.set_xlim(-1.5, 26.5)
+        ax.set_ylim(-1.5, 8)
+    elif n == 13:
+        _rhombus_diag(10, 16)
+        dim_v(ax, 0, -5, 5, r"$x$", off=0.75)
+        dim_h(ax, -8, 8, 0, r"$x+6$", off=-0.75)
+        plain_text(ax, 0, -7.2, 'שטח $=80$ ס"מ$^2$', ha="center", fontsize=7)
+        ax.set_xlim(-10.5, 10.5)
+        ax.set_ylim(-8.5, 7.5)
+    elif n == 14:
+        _rhombus_diag(8, 6)
+        seg_label(ax, 0, 3, 3, 0, "5", frac=0.5, dx=0.3, dy=0.12)
+        dim_v(ax, 0, -3, 3, "8", off=0.75)
+        ax.set_xlim(-5.5, 5.5)
+        ax.set_ylim(-5, 5.5)
+    elif n == 15:
+        pts = _pgram_labeled(15, 12, 5)
+        ax.plot([pts[2][0], pts[2][0]], [0, 12], "k--", lw=0.8)
+        dim_h(ax, 0, 15, 0, "15", off=-0.85)
+        seg_label(ax, pts[1][0], pts[1][1], pts[2][0], pts[2][1], "13", frac=0.45, dx=0.45, dy=0.1)
+        dim_v(ax, pts[2][0], 0, 12, r"$h=12$", off=0.85)
+        ax.set_xlim(-2.5, 23)
+        ax.set_ylim(-1.8, 14.5)
+    elif n == 16:
+        poly(ax, [(0, 0), (9, 0), (9, 6), (0, 6)], alpha=0.18, fill="#E8F4E8")
+        dim_h(ax, 0, 9, 0, "9", off=-0.65)
+        dim_v(ax, 9, 0, 6, "6", off=0.7)
+        plain_text(ax, 4.5, 3, "מקבילית", ha="center", fontsize=8)
+        cx = 16
+        rh = [(cx, 3), (cx + 6, 0), (cx, -3), (cx - 6, 0)]
+        poly(ax, rh, alpha=0.32)
+        ax.plot([cx, cx], [-3, 3], "k--", lw=0.7)
+        ax.plot([cx - 6, cx + 6], [0, 0], "k--", lw=0.7)
+        dim_v(ax, cx, -3, 3, r"$d_2$", off=0.75)
+        dim_h(ax, cx - 6, cx + 6, 0, r"$2d_2$", off=-0.75)
+        plain_text(ax, cx, 4.2, r"$d_1=2d_2$", ha="center", fontsize=7)
+        plain_text(ax, cx, -4.5, r"$\frac{2}{3}$ שטח", ha="center", fontsize=7)
+        ax.set_xlim(-1.5, 24)
+        ax.set_ylim(-6, 8)
+    elif n == 17:
+        _rhombus_diag(30, 16)
+        dim_v(ax, 0, -15, 15, "30", off=0.95)
+        dim_h(ax, -8, 8, 0, "16", off=-0.85)
+        ax.set_xlim(-11, 11)
+        ax.set_ylim(-18.5, 18.5)
+    elif n == 18:
+        pts = _pgram_labeled(14, 9, 12)
+        foot_x = pts[1][0] + 12
+        ax.plot([foot_x, foot_x], [0, 9], "k--", lw=0.8)
+        mark_pt(ax, foot_x, 0, "H", dx=0.1, dy=-0.35)
+        dim_h(ax, 0, 14, 0, "14", off=-0.85)
+        dim_v(ax, pts[2][0], 0, 9, r"$h=9$", off=0.9)
+        seg_label(ax, pts[1][0], pts[1][1], pts[2][0], pts[2][1], "15", frac=0.45, dx=0.5, dy=0.1)
+        dim_h(ax, pts[1][0], foot_x, 0, "12", off=-1.35, fs=7)
+        plain_text(ax, (pts[1][0] + foot_x) / 2, -1.85, r"מ-$B$ ל-$H$", ha="center", fontsize=7)
+        ax.set_xlim(-2.5, 28)
+        ax.set_ylim(-2.5, 11.5)
+    elif n == 19:
+        w, h, eb = 14.62, 6.82, 8.9
+        A, B, C, D = (0, h), (w, h), (w, 0), (0, 0)
+        E, F = (w - eb, h), (eb, 0)
+        poly(ax, [A, B, C, D], alpha=0.12, fill="#F5F5F5")
+        poly(ax, [E, B, F, D], alpha=0.38, fill="#D8E8F5")
+        for p, lb, dx, dy in [
+            (A, "A", -0.35, 0.08),
+            (B, "B", 0.1, 0.08),
+            (C, "C", 0.1, -0.35),
+            (D, "D", -0.35, -0.35),
+            (E, "E", -0.35, 0.08),
+            (F, "F", 0.1, -0.35),
+        ]:
+            mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+        dim_h(ax, 0, w, h, r"$AB$", off=0.65)
+        dim_v(ax, w, 0, h, r"$AD$", off=0.85)
+        seg_label(ax, E[0], E[1], B[0], B[1], "8.9", frac=0.5, dx=0, dy=0.2)
+        angle_arc(ax, F[0], F[1], 50, 180, r=1.0, label=r"$130°$", label_r=1.45, fs=7)
+        right_angle(ax, 0, h, 0.35, quadrant=4)
+        right_angle(ax, w, h, 0.35, quadrant=3)
+        right_angle(ax, w, 0, 0.35, quadrant=2)
+        right_angle(ax, 0, 0, 0.35, quadrant=1)
+        ax.set_xlim(-2, w + 3)
+        ax.set_ylim(-2, h + 2)
+    elif n == 20:
+        ha, hb, inset = 35, 25, 15
+        A, B, C, D = (0, ha), (hb, 0), (0, -ha), (-hb, 0)
+        poly(ax, [A, B, C, D], alpha=0.22)
+        ax.plot([A[0], C[0]], [A[1], C[1]], "k--", lw=0.7)
+        ax.plot([B[0], D[0]], [B[1], D[1]], "k--", lw=0.7)
+        K = (0, ha - inset)
+        M = (0, -ha + inset)
+        I = (hb - inset, 0)
+        J = (-hb + inset, 0)
+        E = (J[0], K[1])
+        F = (I[0], K[1])
+        H = (I[0], M[1])
+        G = (J[0], M[1])
+        poly(ax, [E, F, H, G], fill="#F8F8F8", edge=C_EDGE, lw=1.2, alpha=0.85)
+        for p, lb, dx, dy in [
+            (A, "A", -0.35, 0.1),
+            (B, "B", 0.12, -0.3),
+            (C, "C", -0.15, -0.4),
+            (D, "D", -0.4, 0.05),
+            (E, "E", -0.35, 0.1),
+            (F, "F", 0.12, 0.1),
+            (H, "H", 0.12, -0.35),
+            (G, "G", -0.35, -0.35),
+            (K, "K", 0.55, 0.05),
+            (I, "I", 0.12, -0.1),
+            (M, "M", 0.55, -0.35),
+            (J, "J", -0.55, 0.05),
+        ]:
+            mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+        dim_v(ax, 0, -ha, ha, "70", off=1.15)
+        dim_h(ax, -hb, hb, 0, "50", off=-1.05)
+        seg_label(ax, A[0], A[1], K[0], K[1], "15", frac=0.45, dx=-0.55, dy=0.05, fs=7)
+        seg_label(ax, C[0], C[1], M[0], M[1], "15", frac=0.45, dx=0.55, dy=-0.05, fs=7)
+        seg_label(ax, B[0], B[1], I[0], I[1], "15", frac=0.45, dx=0.45, dy=-0.05, fs=7)
+        seg_label(ax, D[0], D[1], J[0], J[1], "15", frac=0.45, dx=-0.55, dy=0.05, fs=7)
+        plain_text(ax, 0, ha + 2.5, r"$ABCD$ — מעוין", ha="center", fontsize=7)
+        plain_text(ax, 0, 0, r"$EHGF$ — מלבן", ha="center", fontsize=7)
+        ax.set_xlim(-38, 38)
+        ax.set_ylim(-42, 42)
     else:
-        poly(ax, [(0, 0), (5, 1.5), (0, 3), (-5, 1.5)], alpha=0.28)
-    ax.set_xlim(-6, 10)
-    ax.set_ylim(-1, 6)
+        poly(ax, [(0, 0), (6, 0), (7, 3), (1, 3)], alpha=0.22)
+        ax.set_xlim(-2, 9)
+        ax.set_ylim(-1, 5)
+
     save_fig(fig, stem, n)
+
+
+def _draw_kite_ac(
+    ax,
+    ac: float,
+    ab: float,
+    cb: float,
+    *,
+    show_diag_bd: bool = True,
+    mark_o: bool = True,
+    alpha: float = 0.28,
+) -> tuple[float, float, float, float]:
+    """Convex kite: AB=AD=ab, CB=CD=cb, diagonal AC=ac (vertical). Returns (half_w, h_top, h_bot, bo)."""
+    c_len = (cb * cb - ab * ab + ac * ac) / (2 * ac)
+    a_len = ac - c_len
+    half_w = math.sqrt(max(ab * ab - a_len * a_len, 0.01))
+    bo = half_w
+    pts = [(0, a_len), (half_w, 0), (0, -c_len), (-half_w, 0)]
+    poly(ax, pts, alpha=alpha)
+    if show_diag_bd:
+        ax.plot([-half_w, half_w], [0, 0], "k--", lw=0.75)
+    ax.plot([0, 0], [a_len, -c_len], "k--", lw=0.75)
+    if mark_o:
+        mark_pt(ax, 0, 0, "O", dx=0.12, dy=0.1)
+    for p, lb, dx, dy in zip(
+        pts,
+        ("A", "B", "C", "D"),
+        [-0.15, 0.12, -0.15, -0.35],
+        [0.12, -0.28, -0.35, 0.05],
+    ):
+        mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+    return half_w, a_len, c_len, bo
+
+
+def _draw_gen_trap_ab_dc(
+    ax,
+    ab: float,
+    ad: float,
+    bc: float,
+    angle_bcd_deg: float,
+    *,
+    labels: dict[str, str] | None = None,
+    alpha: float = 0.28,
+) -> tuple[float, float, float]:
+    """General trapezoid AB || DC; returns (h, de, dc)."""
+    ang = math.radians(angle_bcd_deg)
+    h = bc * math.sin(ang)
+    de = math.sqrt(max(ad * ad - h * h, 0.01))
+    fc = bc * math.cos(ang)
+    dc = de + ab + fc
+    sc = 1.0
+    if dc > 28:
+        sc = 24.0 / dc
+    D = (0.0, 0.0)
+    C_ = (dc * sc, 0.0)
+    A = (de * sc, h * sc)
+    B = ((de + ab) * sc, h * sc)
+    E = (de * sc, 0.0)
+    F = ((de + ab) * sc, 0.0)
+    poly(ax, [A, B, C_, D], alpha=alpha)
+    ax.plot([A[0], E[0]], [A[1], E[1]], "k--", lw=0.75)
+    ax.plot([B[0], F[0]], [B[1], F[1]], "k--", lw=0.75)
+    right_angle(ax, E[0], E[1], 0.35 * sc, quadrant=2)
+    right_angle(ax, F[0], F[1], 0.35 * sc, quadrant=3)
+    for p, lb, dx, dy in [
+        (A, "A", -0.35, 0.1),
+        (B, "B", 0.12, 0.1),
+        (C_, "C", 0.12, -0.35),
+        (D, "D", -0.35, -0.35),
+        (E, "E", -0.35, -0.35),
+        (F, "F", 0.12, -0.35),
+    ]:
+        mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+    angle_arc(
+        ax,
+        C_[0],
+        C_[1],
+        180 - angle_bcd_deg,
+        180,
+        r=0.55 * sc,
+        label=rf"${angle_bcd_deg}°$",
+        label_r=0.95 * sc,
+        fs=7,
+    )
+    if labels:
+        if "ab" in labels:
+            dim_h(ax, A[0], B[0], A[1], labels["ab"], off=0.65)
+        if "ad" in labels:
+            seg_label(ax, D[0], D[1], A[0], A[1], labels["ad"], frac=0.45, dx=-0.55, dy=0.0)
+        if "bc" in labels:
+            seg_label(ax, B[0], B[1], C_[0], C_[1], labels["bc"], frac=0.45, dx=0.45, dy=0.0)
+    return h, de, dc
 
 
 def gen_12(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
-    poly(ax, [(0, 0), (8, 0), (6, 3), (2, 3)], alpha=0.28)
-    if n >= 17:
-        poly(ax, [(0, 0), (12, 0), (10, 4), (2, 4)], alpha=0.25)
-        ax.plot([2, 2], [0, 4], "k--", lw=0.7)
-        ax.plot([10, 10], [0, 4], "k--", lw=0.7)
-    ax.set_xlim(-1, 14)
-    ax.set_ylim(-1, 7)
+
+    if n == 9:
+        _draw_iso_trap(ax, 20, 8, 8, labels={"bottom": "20", "top": "8", "leg": "10"})
+        ax.set_xlim(-2.5, 23)
+        ax.set_ylim(-2, 11)
+    elif n == 10:
+        h = 4.0
+        off_l, off_r = 1.5, 3.5
+        A = (off_l, h)
+        B = (off_l + 10, h)
+        C = (20, 0)
+        D = (0, 0)
+        poly(ax, [A, B, C, D], alpha=0.28)
+        for p, lb, dx, dy in zip(
+            [A, B, C, D],
+            ("A", "B", "C", "D"),
+            [-0.35, 0.12, 0.12, -0.35],
+            [0.1, 0.1, -0.35, -0.35],
+        ):
+            mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+        angle_arc(ax, A[0], A[1], 180, 260, r=0.65, label=r"$80°$", label_r=1.0, fs=7)
+        angle_arc(ax, B[0], B[1], 280, 360, r=0.65, label=r"$60°$", label_r=1.0, fs=7)
+        dim_h(ax, A[0], B[0], A[1], r"$AB$", off=0.55)
+        ax.set_xlim(-2, 22)
+        ax.set_ylim(-1.5, 6)
+    elif n == 11:
+        b_big, b_small = 48.0, 12.0
+        h = 18.0 * math.tan(math.radians(40))
+        off = _draw_iso_trap(
+            ax,
+            b_big,
+            b_small,
+            h,
+            labels={"bottom": "48", "top": "12"},
+            vertices={"A": 3, "B": 0, "C": 1, "D": 2},
+        )
+        ax.plot([off, off], [0, h], "k--", lw=0.75)
+        ax.plot([b_big - off, b_big - off], [0, h], "k--", lw=0.75)
+        mark_pt(ax, off, 0, "G", dx=-0.1, dy=-0.35)
+        mark_pt(ax, b_big - off, 0, "H", dx=0.1, dy=-0.35)
+        right_angle(ax, off, 0, 0.45, quadrant=2)
+        right_angle(ax, b_big - off, 0, 0.45, quadrant=3)
+        angle_arc(ax, b_big, 0, 140, 180, r=0.75, label=r"$40°$", label_r=1.05, fs=7)
+        ax.set_xlim(-3, 52)
+        ax.set_ylim(-2, h + 2.5)
+    elif n == 12:
+        half_w, a_len, c_len, _ = _draw_kite_ac(ax, 8, 5, 7)
+        dim_v(ax, 0, -c_len, a_len, "8", off=0.85)
+        seg_label(ax, 0, a_len, half_w, 0, "5", frac=0.45, dx=-0.45, dy=0.0)
+        seg_label(ax, half_w, 0, 0, -c_len, "7", frac=0.45, dx=0.45, dy=0.0)
+        ax.set_xlim(-half_w - 2.5, half_w + 2.5)
+        ax.set_ylim(-c_len - 2, a_len + 2)
+    elif n == 13:
+        h = math.sqrt(12.57**2 - 4.3**2)
+        _draw_iso_trap(
+            ax,
+            20.4,
+            11.8,
+            h,
+            labels={"bottom": "20.4", "top": "11.8", "leg": "12.57"},
+            vertices={"A": 3, "B": 2, "C": 1, "D": 0},
+        )
+        ax.set_xlim(-2.5, 23.5)
+        ax.set_ylim(-2, h + 2.5)
+    elif n == 14:
+        half_l, half_s = 5.0, 3.0
+        pts = [(0, half_s), (half_l, 0), (0, -half_s), (-half_l, 0)]
+        poly(ax, pts, alpha=0.28)
+        ax.plot([-half_l, half_l], [0, 0], "k--", lw=0.75)
+        ax.plot([0, 0], [half_s, -half_s], "k--", lw=0.75)
+        dim_h(ax, -half_l, half_l, 0, "10", off=-0.75)
+        dim_v(ax, 0, -half_s, half_s, "6", off=0.85)
+        ax.set_xlim(-7, 7)
+        ax.set_ylim(-5, 5)
+    elif n == 15:
+        b_big, b_small, c_leg, h = 20.0, 8.0, 10.0, 8.0
+        _draw_iso_trap(
+            ax,
+            b_big,
+            b_small,
+            h,
+            labels={"bottom": r"$b_1$", "top": r"$b_2$", "leg": r"$c$"},
+        )
+        ax.set_xlim(-2.5, 23)
+        ax.set_ylim(-2, 11)
+    elif n == 16:
+        _draw_iso_trap(ax, 16, 8, 6, labels={"bottom": "16", "top": "8", "leg": "5"}, alpha=0.22)
+        off = (16 - 8) / 2
+        ax.plot([0, 16], [0, 6], "k--", lw=0.7)
+        ax.plot([8, 8], [0, 6], "k--", lw=0.7)
+        plain_text(ax, 8, 3, r"$AC,\ BD$", ha="center", fontsize=8, color="#444444")
+        ax.set_xlim(-2.5, 19)
+        ax.set_ylim(-2, 9)
+    elif n == 17:
+        b_big, b_small = 48.0, 12.0
+        h = 18.0 * math.tan(math.radians(40))
+        off = _draw_iso_trap(
+            ax,
+            b_big,
+            b_small,
+            h,
+            labels={"bottom": "48", "top": "12"},
+            vertices={"A": 3, "B": 0, "C": 1, "D": 2},
+            alpha=0.18,
+        )
+        poly(ax, [(off, 0), (b_big - off, 0), (b_big - off, h), (off, h)], fill=C_GRAY, alpha=0.55)
+        ax.plot([off, off], [0, h], "k--", lw=0.75)
+        ax.plot([b_big - off, b_big - off], [0, h], "k--", lw=0.75)
+        mark_pt(ax, off, 0, "G", dx=-0.1, dy=-0.35)
+        mark_pt(ax, b_big - off, 0, "H", dx=0.1, dy=-0.35)
+        right_angle(ax, off, 0, 0.45, quadrant=2)
+        right_angle(ax, b_big - off, 0, 0.45, quadrant=3)
+        angle_arc(ax, b_big, 0, 140, 180, r=0.75, label=r"$40°$", label_r=1.05, fs=7)
+        plain_text(ax, (off + b_big - off) / 2, h / 2, "אפור", ha="center", fontsize=8, color="#333333")
+        ax.set_xlim(-3, 52)
+        ax.set_ylim(-2, h + 2.5)
+    elif n == 18:
+        h, de, dc = _draw_gen_trap_ab_dc(
+            ax,
+            17,
+            13,
+            15,
+            53,
+            labels={"ab": "17", "ad": "13", "bc": "15"},
+        )
+        sc = 24.0 / dc if dc > 28 else 1.0
+        ax.set_xlim(-2, dc * sc + 3)
+        ax.set_ylim(-2, h * sc + 2.5)
+    elif n == 19:
+        h = math.sqrt(12.57**2 - 4.3**2)
+        _draw_iso_trap(
+            ax,
+            20.4,
+            11.8,
+            h,
+            labels={"bottom": "20.4", "top": "11.8", "leg": "12.57"},
+            vertices={"A": 3, "B": 2, "C": 1, "D": 0},
+        )
+        ax.plot([0, 20.4], [0, h], "k--", lw=0.65, alpha=0.55)
+        plain_text(ax, 10, h / 2 - 0.8, r"$\triangle ACD$", ha="center", fontsize=8, color="#444444")
+        ax.set_xlim(-2.5, 23.5)
+        ax.set_ylim(-2, h + 2.5)
+    elif n == 20:
+        h = math.sqrt(13**2 - 8**2)
+        _draw_iso_trap(
+            ax,
+            26,
+            10,
+            h,
+            labels={"bottom": "26", "top": "10", "leg": "13"},
+            vertices={"A": 3, "B": 2, "C": 1, "D": 0},
+        )
+        ax.set_xlim(-2.5, 29)
+        ax.set_ylim(-2, h + 2.5)
+    else:
+        poly(ax, [(0, 0), (8, 0), (6, 3), (2, 3)], alpha=0.28)
+        ax.set_xlim(-1, 10)
+        ax.set_ylim(-1, 5)
+
     save_fig(fig, stem, n)
 
 
 def gen_13(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
-    circle(ax, (0, 0), 3, fill="#E8F4FF", ec=C_EDGE)
-    ax.plot([0], [0], "ko", ms=4)
-    ax.set_xlim(-4, 4)
-    ax.set_ylim(-4, 4)
+    if n == 13:
+        # ריבוע 10×10 עם מעגל חסום
+        s = 10.0
+        poly(ax, [(0, 0), (s, 0), (s, s), (0, s)], alpha=0.12)
+        circle(ax, (s / 2, s / 2), s / 2, fill="#DDDDDD")
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.35)
+        mark_pt(ax, s, 0, "B", dx=0.12, dy=-0.35)
+        mark_pt(ax, s, s, "C", dx=0.12, dy=0.08)
+        mark_pt(ax, 0, s, "D", dx=-0.35, dy=0.08)
+        dim_h(ax, 0, s, 0, "10", off=-0.85)
+        dim_v(ax, s, 0, s, "10", off=0.85)
+        ax.set_xlim(-2, 13)
+        ax.set_ylim(-2, 13)
+    elif n == 14:
+        # מיתר AB = רדיוס → משולש שווה-צלעות OAB
+        r = 3.5
+        Ox, Oy = 0.0, 0.0
+        circle(ax, (Ox, Oy), r, fill="#E8F4FF")
+        ax.plot([Ox, r], [Oy, Oy], "k-", lw=1.2)
+        ax.plot([Ox, r / 2], [Oy, r * math.sqrt(3) / 2], "k-", lw=1.2)
+        ax.plot([r, r / 2], [Oy, r * math.sqrt(3) / 2], "k-", lw=1.2)
+        mark_pt(ax, Ox, Oy, "O", dx=-0.35, dy=-0.35)
+        mark_pt(ax, r, Oy, "A", dx=0.12, dy=-0.35)
+        mark_pt(ax, r / 2, r * math.sqrt(3) / 2, "B", dx=-0.05, dy=0.1)
+        seg_label(ax, Ox, Oy, r, Oy, r"$r$", frac=0.55, dy=0.22)
+        seg_label(ax, Ox, Oy, r / 2, r * math.sqrt(3) / 2, r"$r$", frac=0.55, dx=-0.3, dy=0.0)
+        seg_label(ax, r, Oy, r / 2, r * math.sqrt(3) / 2, r"$r$", frac=0.5, dx=0.3, dy=0.0)
+        ax.set_xlim(-2.5, 5)
+        ax.set_ylim(-2.5, 5)
+    elif n == 15:
+        # שלושה מעגלים קונצנטריים: רדיוסים 3, 6, 9
+        for rad, alpha in [(9, 0.08), (6, 0.14), (3, 0.22)]:
+            circle(ax, (0, 0), rad, fill="#E8F4FF", ec=C_EDGE, lw=1.2)
+        mark_pt(ax, 0, 0, "O", dx=-0.35, dy=-0.35)
+        dim_h(ax, 0, 3, 0, "3", off=-0.75)
+        dim_h(ax, 0, 6, 0, "6", off=-1.35)
+        dim_h(ax, 0, 9, 0, "9", off=-1.95)
+        ax.set_xlim(-11, 11)
+        ax.set_ylim(-11, 11)
+    elif n == 16:
+        # תרגיל 17 במרקדאון: מעגלים קונצנטריים 30 ו-20
+        R, r = 3.0, 2.0
+        circle(ax, (0, 0), R, fill="#E8F4FF", ec=C_EDGE)
+        circle(ax, (0, 0), r, fill="white", ec=C_EDGE)
+        mark_pt(ax, 0, 0, "O", dx=-0.35, dy=-0.35)
+        dim_h(ax, 0, R, 0, "30", off=-0.75)
+        dim_h(ax, 0, r, 0, "20", off=0.65)
+        plain_text(ax, 0, 0.5, "רצועה", ha="center", fontsize=8, color="#444444")
+        ax.set_xlim(-4, 4)
+        ax.set_ylim(-4, 4)
+    elif n == 17:
+        # תרגיל 18 במרקדאון: r=5, P על המעגל, Q על קוטר OQ=2
+        r = 5.0
+        circle(ax, (0, 0), r, fill="#E8F4FF")
+        ax.plot([-r, r], [0, 0], "k--", lw=0.8)
+        mark_pt(ax, 0, 0, "O", dx=-0.35, dy=-0.35)
+        mark_pt(ax, r, 0, "P", dx=0.12, dy=-0.35)
+        mark_pt(ax, 2, 0, "Q", dx=-0.05, dy=0.12)
+        dim_h(ax, 0, r, 0, "5", off=-0.75)
+        dim_h(ax, 0, 2, 0, "2", off=0.55)
+        ax.set_xlim(-7, 7)
+        ax.set_ylim(-7, 7)
+    elif n == 18:
+        # תרגיל 19 במרקדאון: r=8, OM=3, מיתר AB דרך M
+        r, d = 8.0, 3.0
+        half = math.sqrt(r * r - d * d)
+        circle(ax, (0, 0), r, fill="#E8F4FF")
+        ax.plot([d, d], [-half, half], "k-", lw=1.4)
+        ax.plot([0, d], [0, 0], "k--", lw=0.8)
+        mark_pt(ax, 0, 0, "O", dx=-0.35, dy=-0.35)
+        mark_pt(ax, d, 0, "M", dx=0.12, dy=-0.35)
+        mark_pt(ax, d, half, "A", dx=0.12, dy=0.05)
+        mark_pt(ax, d, -half, "B", dx=0.12, dy=-0.35)
+        dim_h(ax, 0, r, 0, "8", off=-0.85)
+        dim_h(ax, 0, d, 0, "3", off=0.55)
+        ax.set_xlim(-10, 10)
+        ax.set_ylim(-10, 10)
+    elif n == 19:
+        # תרגיל 20 במרקדאון: ריבוע צלע 2r, מעגל חסום רדיוס r
+        r = 5.0
+        s = 2 * r
+        poly(ax, [(0, 0), (s, 0), (s, s), (0, s)], alpha=0.12)
+        circle(ax, (r, r), r, fill="#DDDDDD")
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.35)
+        mark_pt(ax, s, 0, "B", dx=0.12, dy=-0.35)
+        mark_pt(ax, s, s, "C", dx=0.12, dy=0.08)
+        mark_pt(ax, 0, s, "D", dx=-0.35, dy=0.08)
+        dim_h(ax, 0, s, 0, r"$2r$", off=-0.85)
+        seg_label(ax, r, r, s, r, r"$r$", frac=0.5, dy=0.22)
+        ax.set_xlim(-2, 13)
+        ax.set_ylim(-2, 13)
+    elif n == 20:
+        # תרגיל 20ד: r=7 — שטחים מספריים
+        r = 7.0
+        s = 2 * r
+        poly(ax, [(0, 0), (s, 0), (s, s), (0, s)], alpha=0.12)
+        circle(ax, (r, r), r, fill="#DDDDDD")
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.35)
+        mark_pt(ax, s, 0, "B", dx=0.12, dy=-0.35)
+        mark_pt(ax, s, s, "C", dx=0.12, dy=0.08)
+        mark_pt(ax, 0, s, "D", dx=-0.35, dy=0.08)
+        dim_h(ax, 0, s, 0, "14", off=-0.85)
+        seg_label(ax, r, r, s, r, "7", frac=0.5, dy=0.22)
+        plain_text(ax, r, r, "מעגל", ha="center", fontsize=8, color="#333333")
+        ax.set_xlim(-2, 17)
+        ax.set_ylim(-2, 17)
+    else:
+        circle(ax, (0, 0), 3, fill="#E8F4FF", ec=C_EDGE)
+        ax.plot([0], [0], "ko", ms=4)
+        ax.set_xlim(-4, 4)
+        ax.set_ylim(-4, 4)
     save_fig(fig, stem, n)
+
+
+def _iso_trap_pts(b_big: float, b_small: float, h: float) -> tuple[list[tuple[float, float]], float]:
+    """Isosceles trapezoid: large base on y=0, small base at y=h."""
+    off = (b_big - b_small) / 2
+    return [(0, 0), (b_big, 0), (b_big - off, h), (off, h)], off
+
+
+def _draw_iso_trap(
+    ax,
+    b_big: float,
+    b_small: float,
+    h: float,
+    *,
+    labels: dict[str, str] | None = None,
+    vertices: dict[str, int] | None = None,
+    alpha: float = 0.28,
+) -> float:
+    pts, off = _iso_trap_pts(b_big, b_small, h)
+    poly(ax, pts, alpha=alpha)
+    if labels:
+        if "bottom" in labels:
+            dim_h(ax, 0, b_big, 0, labels["bottom"], off=-0.85)
+        if "top" in labels:
+            dim_h(ax, off, b_big - off, h, labels["top"], off=0.65)
+        if "height" in labels:
+            dim_v(ax, b_big, 0, h, labels["height"], off=0.9)
+        if "leg" in labels:
+            seg_label(ax, 0, 0, off, h, labels["leg"], frac=0.45, dx=-0.55, dy=0.0)
+    if vertices:
+        names = ["A", "B", "C", "D"]
+        offsets = [(-0.35, -0.35), (0.12, -0.35), (0.12, 0.1), (-0.35, 0.1)]
+        for name, idx in vertices.items():
+            x, y = pts[idx]
+            dx, dy = offsets[idx]
+            mark_pt(ax, x, y, name, dx=dx, dy=dy)
+    ax.plot([off, off], [0, h], "k--", lw=0.6, alpha=0.45)
+    return off
 
 
 def gen_14(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
-    if n in (9, 18):
-        poly(ax, [(0, 0), (20, 0), (14, 8), (6, 8)], alpha=0.22)
-    elif n in (3, 4, 10, 11, 16, 17):
-        circle(ax, (0, 0), 3, fill="#E8F4FF")
+    if n == 9:
+        _draw_iso_trap(
+            ax,
+            20,
+            8,
+            8,
+            labels={"bottom": "20", "top": "8", "leg": "10"},
+        )
+        ax.set_xlim(-2.5, 23)
+        ax.set_ylim(-2, 11)
+    elif n == 10:
+        r = 10.0
+        circle(ax, (0, 0), r, fill="#E8F4FF")
+        seg_label(ax, 0, 0, r, 0, r"$C=20\pi$", frac=0.55, dy=0.3, fs=8)
+        ax.set_xlim(-13, 13)
+        ax.set_ylim(-13, 13)
+    elif n == 11:
+        r = 8.0
+        circle(ax, (0, 0), r, fill="#E8F4FF")
+        dim_h(ax, 0, r, 0, "8", off=-0.75)
+        plain_text(ax, 0, 0, r"$S=64\pi$", ha="center", fontsize=8, color="#333333")
+        ax.set_xlim(-11, 11)
+        ax.set_ylim(-11, 11)
+    elif n == 12:
+        _draw_iso_trap(
+            ax,
+            12,
+            8,
+            6,
+            labels={"top": "8", "height": "6"},
+        )
+        plain_text(ax, 6, 3, r"$S=60$", ha="center", fontsize=8, color="#444444")
+        ax.set_xlim(-2.5, 15)
+        ax.set_ylim(-2, 9)
+    elif n == 13:
+        _draw_iso_trap(
+            ax,
+            16,
+            8,
+            4,
+            labels={"bottom": r"$3x-2$", "top": r"$x+2$", "height": "4"},
+        )
+        plain_text(ax, 8, 2, r"$S=48$", ha="center", fontsize=8, color="#444444")
+        ax.set_xlim(-2.5, 19)
+        ax.set_ylim(-2, 7)
     elif n == 14:
-        poly(ax, [(0, 0), (10, 0), (10, 10), (0, 10)], alpha=0.12)
-        circle(ax, (5, 5), 5, fill="#DDDDDD")
+        s = 10.0
+        poly(ax, [(0, 0), (s, 0), (s, s), (0, s)], alpha=0.12)
+        circle(ax, (s / 2, s / 2), s / 2, fill="#DDDDDD")
+        dim_h(ax, 0, s, 0, "10", off=-0.85)
+        dim_v(ax, s, 0, s, "10", off=0.85)
+        seg_label(ax, s / 2, s / 2, s, s / 2, "5", frac=0.5, dy=0.22)
+        ax.set_xlim(-2, 13)
+        ax.set_ylim(-2, 13)
     elif n == 15:
-        poly(ax, [(0, 0), (12, 0), (12, 6), (0, 6)], alpha=0.12)
-        arc = mpatches.Wedge((12, 0), 6, 90, 270, width=6, facecolor="#DDDDDD", edgecolor=C_EDGE)
-        ax.add_patch(arc)
+        w, h_rect, r = 12.0, 5.0, 6.0
+        poly(ax, [(0, 0), (w, 0), (w, h_rect), (0, h_rect)], alpha=0.12)
+        theta = np.linspace(0, np.pi, 80)
+        ax.fill(
+            np.append(w / 2 + r * np.cos(theta), [0, w]),
+            np.append(h_rect + r * np.sin(theta), [h_rect, h_rect]),
+            color="#DDDDDD",
+            edgecolor=C_EDGE,
+            lw=1.2,
+        )
+        dim_h(ax, 0, w, 0, "12", off=-0.85)
+        dim_v(ax, w, 0, h_rect, "5", off=0.85)
+        seg_label(ax, w / 2, h_rect, w / 2 + r, h_rect, "6", frac=0.5, dy=0.25)
+        ax.set_xlim(-2, 15)
+        ax.set_ylim(-2, 13)
+    elif n == 16:
+        for cx, rad, lbl in [(0, 3, r"$r$"), (8, 6, r"$2r$")]:
+            circle(ax, (cx, 0), rad, fill="#E8F4FF")
+            dim_h(ax, cx, cx + rad, 0, lbl, off=-0.75)
+        plain_text(ax, 4, 4.5, "הכפלת רדיוס פי 2", ha="center", fontsize=8)
+        ax.set_xlim(-5, 16)
+        ax.set_ylim(-5, 8)
+    elif n == 17:
+        R, r = 30.0, 20.0
+        scale = 0.1
+        Rs, rs = R * scale, r * scale
+        circle(ax, (0, 0), Rs, fill="#C8C8C8", ec=C_EDGE)
+        circle(ax, (0, 0), rs, fill="white", ec=C_EDGE)
+        mark_pt(ax, 0, 0, "O", dx=-0.35, dy=-0.35)
+        dim_h(ax, 0, Rs, 0, "30", off=-0.75)
+        dim_h(ax, 0, rs, 0, "20", off=0.65)
+        plain_text(ax, 0, 0.35, "אפור", ha="center", fontsize=8, color="#444444")
+        ax.set_xlim(-4.5, 4.5)
+        ax.set_ylim(-4.5, 4.5)
+    elif n == 18:
+        _draw_iso_trap(
+            ax,
+            20,
+            8,
+            8,
+            labels={"bottom": "20", "top": "8", "leg": "10"},
+            vertices={"A": 0, "B": 1, "C": 2, "D": 3},
+        )
+        ax.set_xlim(-2.5, 23)
+        ax.set_ylim(-2, 11)
     elif n == 19:
-        poly(ax, [(0, 0), (25, 0), (25, 10), (0, 10)], alpha=0.1)
-        circle(ax, (12, 5), 3, fill="#E8E8E8")
+        w, h_field, r_pool = 20.0, 10.0, 3.0
+        poly(ax, [(0, 0), (w, 0), (w, h_field), (0, h_field)], alpha=0.1)
+        circle(ax, (w / 2, h_field / 2), r_pool, fill="#E8E8E8")
+        dim_h(ax, 0, w, 0, "20 מ'", off=-0.9)
+        dim_v(ax, w, 0, h_field, "10 מ'", off=0.9)
+        dim_h(ax, w / 2, w / 2 + r_pool, h_field / 2, "3 מ'", off=0.65, fs=7)
+        plain_text(ax, w / 2, h_field / 2, "בריכה", ha="center", fontsize=8, color="#555555")
+        ax.set_xlim(-3, 24)
+        ax.set_ylim(-2, 14)
     elif n == 20:
-        poly(ax, [(0, 0), (26, 0), (18, 12), (10, 12)], alpha=0.2)
-        circle(ax, (18, 6), 6, fill="#E8E8E8")
+        b_big, b_small, leg = 26.0, 10.0, 13.0
+        off = (b_big - b_small) / 2
+        h = math.sqrt(leg * leg - off * off)
+        pts, _ = _iso_trap_pts(b_big, b_small, h)
+        poly(ax, pts, alpha=0.2)
+        cx, cy = b_big / 2, h / 2
+        circle(ax, (cx, cy), h / 2, fill="#E8E8E8")
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.35)
+        mark_pt(ax, b_big, 0, "B", dx=0.12, dy=-0.35)
+        mark_pt(ax, b_big - off, h, "C", dx=0.12, dy=0.1)
+        mark_pt(ax, off, h, "D", dx=-0.35, dy=0.1)
+        dim_h(ax, 0, b_big, 0, "26", off=-0.95)
+        dim_h(ax, off, b_big - off, h, "10", off=0.7)
+        seg_label(ax, 0, 0, off, h, "13", frac=0.45, dx=-0.55, dy=0.0)
+        seg_label(ax, b_big, 0, b_big - off, h, "13", frac=0.45, dx=0.55, dy=0.0)
+        ax.plot([off, off], [0, h], "k--", lw=0.6, alpha=0.45)
+        plain_text(ax, cx, cy, "קוטר = גובה", ha="center", fontsize=7, color="#444444")
+        ax.set_xlim(-3, 30)
+        ax.set_ylim(-2, h + 3)
     else:
         poly(ax, [(0, 0), (10, 0), (8, 4), (2, 4)], alpha=0.25)
-    ax.set_xlim(-4, 28)
-    ax.set_ylim(-4, 16)
+        ax.set_xlim(-1, 12)
+        ax.set_ylim(-1, 6)
     save_fig(fig, stem, n)
 
 
 def _factory_plan(ax, show_values: bool = False) -> None:
     """MAHAT factory: CDFG 22×5, extension ABCG 20×5, rooms ABCG / ADEF / rest."""
-    sqrt13 = math.sqrt(13)
     C, D, G = (0, 0), (22, 0), (0, 5)
     D_top, F, J, A, B = (22, 5), (10, 5), (20, 5), (0, 10), (20, 10)
-    E = (16, 5 + sqrt13)
+    # E: equidistant from D and F with DE = FE = 7 (35% of AB)
+    mid_df = ((D[0] + F[0]) / 2, (D[1] + F[1]) / 2)
+    half_df = math.dist(D, F) / 2
+    h_alt = math.sqrt(49 - half_df**2)
+    E = (mid_df[0] + h_alt * 5 / 13, mid_df[1] + h_alt * 12 / 13)
 
     poly(ax, [C, D, D_top, J, B, A, G], alpha=0.14, edge=C_EDGE)
     poly(ax, [A, B, J, G], fill="#D8E8F5", alpha=0.62, edge=C_EDGE)
@@ -650,7 +2366,7 @@ def _factory_plan(ax, show_values: bool = False) -> None:
     dim_v(ax, 0, 5, 10, "5", off=-1.3)
     dim_h(ax, 10, 22, 5, "12" if show_values else "60%", off=0.7)
     dim_h(ax, 0, 10, 5, "10", off=0.45, fs=7)
-    seg_label(ax, D_top[0], D_top[1], E[0], E[1], "7" if show_values else "35%", frac=0.42, dx=0.6, dy=0.05)
+    seg_label(ax, D[0], D[1], E[0], E[1], "7" if show_values else "35%", frac=0.42, dx=0.6, dy=-0.15)
     seg_label(ax, F[0], F[1], E[0], E[1], "7" if show_values else "35%", frac=0.42, dx=-0.6, dy=0.05)
 
     right_angle(ax, 0, 10, 0.35, quadrant=4)
@@ -681,9 +2397,10 @@ def gen_15(stem: str, n: int) -> None:
         dim_h(ax, 0, 15, 0, "15", off=-0.75)
         dim_v(ax, 0, 0, 8, "8", off=-0.85)
         dim_h(ax, 8, 15, 8, "7", off=0.55)
+        dim_h(ax, 0, 8, 13, "8", off=0.55)
         dim_v(ax, 8, 8, 13, "5", off=-0.75)
         plain_text(ax, 7.5, 4, "חלק א'", ha="center", fontsize=8)
-        plain_text(ax, 11.5, 10.5, "חלק ב'", ha="center", fontsize=8)
+        plain_text(ax, 4, 10.5, "חלק ב'", ha="center", fontsize=8)
         ax.set_xlim(-2.5, 16.5)
         ax.set_ylim(-1.5, 14.5)
     elif n == 11:
@@ -721,13 +2438,24 @@ def gen_15(stem: str, n: int) -> None:
         ax.set_xlim(-2.5, 39)
         ax.set_ylim(-1.5, 25)
     elif n == 14:
-        poly(
-            ax,
-            [(2, 0), (14, 0), (16, 2), (16, 14), (14, 16), (2, 16), (0, 14), (0, 2)],
-            alpha=0.35,
-        )
-        for ox, oy in [(0, 0), (14, 0), (14, 14), (0, 14)]:
-            ax.plot([ox, ox + 2, ox + 2, ox, ox], [oy, oy, oy + 2, oy + 2, oy], "r--", lw=0.8)
+        c, s = 2, 16
+        outer = [
+            (c, 0),
+            (s - c, 0),
+            (s - c, c),
+            (s, c),
+            (s, s - c),
+            (s - c, s - c),
+            (s - c, s),
+            (c, s),
+            (c, s - c),
+            (0, s - c),
+            (0, c),
+            (c, c),
+        ]
+        poly(ax, outer, alpha=0.35)
+        for ox, oy in [(0, 0), (s - c, 0), (s - c, s - c), (0, s - c)]:
+            ax.plot([ox, ox + c, ox + c, ox, ox], [oy, oy, oy + c, oy + c, oy], "r--", lw=0.8)
         dim_h(ax, 0, 16, 0, "16", off=-0.85)
         dim_v(ax, 16, 0, 16, "16", off=0.85)
         dim_h(ax, 0, 2, 0, "2", off=-1.55)
@@ -822,33 +2550,211 @@ def gen_15(stem: str, n: int) -> None:
 
 def gen_16(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
-    poly(ax, [(0, 0), (18, 0), (18, 10), (0, 10)], alpha=0.12)
-    if n in (9, 10, 17):
-        poly(ax, [(0, 0), (6, 0), (6, 10), (0, 10)], fill=C_GRAY, alpha=0.45)
-        ax.plot([6, 18], [10, 0], "k-", lw=1)
+
+    def _abcd_rect(w, h, alpha=0.12):
+        poly(ax, [(0, 0), (w, 0), (w, h), (0, h)], alpha=alpha)
+        mark_pt(ax, 0, 0, "A", dx=-0.35, dy=-0.28)
+        mark_pt(ax, w, 0, "B", dx=0.1, dy=-0.28)
+        mark_pt(ax, w, h, "C", dx=0.1, dy=0.08)
+        mark_pt(ax, 0, h, "D", dx=-0.35, dy=0.08)
+        right_angle(ax, 0, 0, min(0.35, w * 0.06, h * 0.06), quadrant=1)
+
+    def _square_abcd(s, alpha=0.12):
+        _abcd_rect(s, s, alpha=alpha)
+
+    def _rhombus_diagonal_rect(ha, hb, d, shade_all=False, shade_corner_a=False):
+        A, B, C, D = (0, ha), (hb, 0), (0, -ha), (-hb, 0)
+        K = (0, ha - d)
+        M = (0, -ha + d)
+        I = (hb - d, 0)
+        J = (-hb + d, 0)
+        TL = (-hb + d, ha - d)
+        TR = (hb - d, ha - d)
+        BR = (hb - d, -ha + d)
+        BL = (-hb + d, -ha + d)
+        R = [TL, TR, BR, BL]
+        E = K
+        F = I
+        H = M
+        G = J
+        poly(ax, [A, B, C, D], alpha=0.15)
+        if shade_all:
+            poly(ax, [A, B, C, D], fill=C_GRAY, alpha=0.35)
+            poly(ax, R, fill="#F8F8F8", edge=C_EDGE, lw=1.2, alpha=0.95)
+        elif shade_corner_a:
+            x_top = hb * d / ha
+            p_r = (x_top, K[1])
+            p_l = (-x_top, K[1])
+            poly(ax, [A, p_r, TR, TL, p_l], fill=C_GRAY, alpha=0.45)
+            poly(ax, R, fill="#F8F8F8", edge=C_EDGE, lw=1.2, alpha=0.95)
+        else:
+            poly(ax, R, fill="#F8F8F8", edge=C_EDGE, lw=1.2, alpha=0.9)
+        ax.plot([A[0], C[0]], [A[1], C[1]], "k--", lw=0.7)
+        ax.plot([B[0], D[0]], [B[1], D[1]], "k--", lw=0.7)
+        for p, lb, dx, dy in [
+            (A, "A", -0.35, 0.1),
+            (B, "B", 0.12, -0.3),
+            (C, "C", -0.15, -0.4),
+            (D, "D", -0.4, 0.05),
+            (TL, "E", -0.35, 0.08),
+            (TR, "F", 0.12, 0.08),
+            (BR, "H", 0.12, -0.35),
+            (BL, "G", -0.35, -0.35),
+            (K, "K", 0.45, 0.05),
+            (I, "I", 0.45, -0.1),
+            (M, "M", 0.45, 0.05),
+            (J, "J", -0.55, 0.05),
+        ]:
+            mark_pt(ax, p[0], p[1], lb, dx=dx, dy=dy)
+        dim_v(ax, 0, -ha, ha, "70", off=1.15)
+        dim_h(ax, -hb, hb, 0, "50", off=-1.05)
+        seg_label(ax, A[0], A[1], K[0], K[1], "15", frac=0.45, dx=-0.55, dy=0.05, fs=7)
+        seg_label(ax, B[0], B[1], I[0], I[1], "15", frac=0.45, dx=0.45, dy=-0.05, fs=7)
+        seg_label(ax, C[0], C[1], M[0], M[1], "15", frac=0.45, dx=0.45, dy=0.05, fs=7)
+        seg_label(ax, D[0], D[1], J[0], J[1], "15", frac=0.45, dx=-0.55, dy=-0.05, fs=7)
+        rw, rh = 2 * (hb - d), 2 * (ha - d)
+        dim_h(ax, TL[0], TR[0], ha - d, str(int(rw)), off=0.55, fs=7)
+        dim_v(ax, hb - d, BR[1], TR[1], str(int(rh)), off=1.05, fs=7)
+        ax.set_xlim(-hb - 6, hb + 6)
+        ax.set_ylim(-ha - 6, ha + 6)
+
+    if n == 9:
+        w, h, ae = 18.0, 10.0, 6.0
+        _abcd_rect(w, h)
+        poly(ax, [(0, 0), (ae, 0), (w, h)], fill=C_GRAY, alpha=0.42)
+        ax.plot([0, ae, w], [0, 0, h], "k-", lw=1.1)
+        mark_pt(ax, ae, 0, "E", dx=0.1, dy=-0.28)
+        dim_h(ax, 0, w, 0, "18", off=-0.85)
+        dim_v(ax, w, 0, h, "10", off=0.85)
+        dim_h(ax, 0, ae, 0, r"$AE$", off=-1.35, fs=7)
+        dim_h(ax, ae, w, 0, r"$EB$", off=-1.35, fs=7)
+        plain_text(ax, w / 2, -1.55, r"$AE:EB=1:2$", ha="center", fontsize=7)
+        ax.set_xlim(-2.5, w + 3)
+        ax.set_ylim(-2.2, h + 2)
+    elif n == 10:
+        s, be = 12.0, 3.0
+        _square_abcd(s)
+        poly(ax, [(0, 0), (s, 0), (s, be)], fill=C_GRAY, alpha=0.42)
+        ax.plot([0, s, s], [0, 0, be], "k-", lw=1.1)
+        mark_pt(ax, s, be, "E", dx=0.1, dy=0.05)
+        dim_h(ax, 0, s, 0, "12", off=-0.85)
+        dim_v(ax, s, 0, be, r"$BE$", off=0.65, fs=7)
+        dim_v(ax, s, be, s, r"$EC$", off=0.65, fs=7)
+        plain_text(ax, s / 2, -1.45, r"$BE:EC=1:3$", ha="center", fontsize=7)
+        ax.set_xlim(-1.8, s + 2.5)
+        ax.set_ylim(-1.8, s + 2)
     elif n == 11:
-        poly(ax, [(30, 15), (48, 15), (48, 35), (33, 35), (33, 25), (30, 25)], fill=C_GRAY, alpha=0.4)
+        w, h, be, bf = 50.0, 20.0, 10.0, 5.0
+        _abcd_rect(w, h)
+        poly(ax, [(w, 0), (w - bf, 0), (w, be)], fill=C_GRAY, alpha=0.45)
+        ax.plot([w, w - bf, w], [0, 0, be], "k-", lw=1.1)
+        right_angle(ax, w, 0, 0.9, quadrant=3)
+        dim_h(ax, w - bf, w, 0, "5", off=-0.85)
+        dim_v(ax, w, 0, be, "10", off=0.85)
+        dim_h(ax, 0, w, h, "50", off=0.55)
+        dim_v(ax, 0, 0, h, "20", off=-1.1)
+        for px, py, lb, dx, dy in [
+            (0, 0, "A", -1.1, -0.55),
+            (w, 0, "B", 0.12, -0.35),
+            (w, h, "C", 0.12, 0.08),
+            (0, h, "D", -0.55, 0.08),
+            (w, be, "E", 0.1, 0.05),
+            (w - bf, 0, "F", 0.1, -0.55),
+        ]:
+            mark_pt(ax, px, py, lb, dx=dx, dy=dy)
+        ax.set_xlim(-5, w + 4)
+        ax.set_ylim(-2, h + 2)
     elif n == 12:
-        circle(ax, (0, 0), 10, fill=None)
-        circle(ax, (0, 0), 6, fill="#F0F0F0")
-    elif n in (13, 14, 15):
-        poly(ax, [(0, 0), (25, 0), (25, 48), (0, 48)], alpha=0.08)
-        poly(ax, [(0, 0), (10, 0), (10, 48), (0, 48)], fill=C_GRAY, alpha=0.35)
+        R, r = 10.0, 6.0
+        circle(ax, (0, 0), R, fill=C_GRAY, ec=C_EDGE, lw=1.4)
+        circle(ax, (0, 0), r, fill="white", ec=C_EDGE, lw=1.4)
+        mark_pt(ax, 0, 0, "O", dx=-0.35, dy=-0.35)
+        dim_h(ax, 0, R, 0, r"$R=10$", off=-0.85)
+        dim_h(ax, 0, r, 0, r"$r=6$", off=0.65)
+        ax.set_xlim(-12.5, 12.5)
+        ax.set_ylim(-12.5, 12.5)
+    elif n in (13, 19):
+        w, h, be = 25.0, 48.0, 32.0
+        _abcd_rect(w, h, alpha=0.1)
+        poly(ax, [(0, 0), (w, 0), (w, be)], fill=C_GRAY, alpha=0.38)
+        ax.plot([0, w], [0, be], "k-", lw=1.0)
+        mark_pt(ax, w, be, "E", dx=0.1, dy=0.05)
+        dim_h(ax, 0, w, 0, "25", off=-1.1)
+        dim_v(ax, w, 0, h, "48", off=1.1)
+        dim_v(ax, w, 0, be, r"$BE$", off=1.55, fs=7)
+        dim_v(ax, w, be, h, r"$EC$", off=1.55, fs=7)
+        plain_text(ax, w + 0.2, h / 2, r"$BE=2\cdot EC$", fontsize=7)
+        ax.set_xlim(-3, w + 5)
+        ax.set_ylim(-2, h + 2)
+    elif n == 14:
+        s, be = 12.0, 4.0
+        _square_abcd(s)
+        poly(ax, [(0, 0), (s, 0), (s, be)], fill=C_GRAY, alpha=0.42)
+        ax.plot([0, s, s], [0, 0, be], "k-", lw=1.1)
+        mark_pt(ax, s, be, "E", dx=0.1, dy=0.05)
+        dim_h(ax, 0, s, 0, r"$a$", off=-0.85)
+        dim_v(ax, s, 0, be, r"$\frac{a}{3}$", off=0.7)
+        dim_v(ax, s, be, s, r"$\frac{2a}{3}$", off=0.7)
+        ax.set_xlim(-1.8, s + 2.5)
+        ax.set_ylim(-1.8, s + 2)
+    elif n == 15:
+        w, h, be = 8.0, 15.0, 10.0
+        _abcd_rect(w, h)
+        poly(ax, [(0, 0), (w, 0), (w, be)], fill=C_GRAY, alpha=0.35)
+        ax.plot([0, w], [0, be], "k-", lw=1.0)
+        mark_pt(ax, w, be, "E", dx=0.1, dy=0.05)
+        dim_h(ax, 0, w, 0, "8", off=-0.85)
+        dim_v(ax, w, 0, h, "15", off=0.85)
+        dim_v(ax, w, 0, be, r"$BE$", off=1.35, fs=7)
+        dim_v(ax, w, be, h, r"$EC$", off=1.35, fs=7)
+        plain_text(ax, w + 0.15, h / 2, r"$BE=2\cdot EC$", fontsize=7)
+        ax.set_xlim(-2.2, w + 3)
+        ax.set_ylim(-1.5, h + 1.5)
     elif n == 16:
-        poly(ax, [(0, 0), (10, 0), (10, 10), (0, 10)], alpha=0.1)
-        poly(ax, [(3, 3), (7, 3), (7, 7), (3, 7)], fill="#555555", alpha=0.5)
+        _rhombus_diagonal_rect(35, 25, 15, shade_all=True)
+    elif n == 17:
+        w, h = 7.5, 4.5
+        _abcd_rect(w, h)
+        e_x = w * 2 / 3
+        mark_pt(ax, e_x, h, "E", dx=0.08, dy=0.05)
+        ax.plot([0, e_x], [0, h], "k-", lw=0.9)
+        ax.plot([e_x, w], [h, 0], "k-", lw=0.9)
+        ax.plot([0, w], [0, h], "k--", lw=0.7)
+        dim_h(ax, 0, w, 0, "7.5 מ'", off=-0.85)
+        dim_v(ax, w, 0, h, "4.5 מ'", off=0.85)
+        dim_h(ax, 0, e_x, h, r"$DE$", off=0.55, fs=7)
+        dim_h(ax, e_x, w, h, r"$EC$", off=0.55, fs=7)
+        plain_text(ax, e_x / 2, h + 0.35, r"$DE=2\cdot EC$", ha="center", fontsize=7)
+        ax.set_xlim(-1.8, w + 2.2)
+        ax.set_ylim(-1.5, h + 1.8)
     elif n == 18:
-        poly(ax, [(0, 0), (10, 5), (20, 0), (10, -5)], alpha=0.15)
-        poly(ax, [(4, -3), (16, -3), (16, 3), (4, 3)], alpha=0.12)
-    elif n == 19:
-        poly(ax, [(0, 0), (12, 0), (12, 12), (0, 12)], alpha=0.1)
-        poly(ax, [(0, 12), (12, 12), (6, 20)], alpha=0.25)
-        circle(ax, (6, 6), 6, fill="#CCCCCC")
+        w, h, be, bf = 50.0, 20.0, 10.0, 5.0
+        _abcd_rect(w, h, alpha=0.1)
+        poly(ax, [(w, 0), (w - bf, 0), (w, be)], fill=C_GRAY, alpha=0.45)
+        ax.plot([w, w - bf, w], [0, 0, be], "k-", lw=1.2)
+        right_angle(ax, w, 0, 0.9, quadrant=3)
+        dim_h(ax, w - bf, w, 0, "5", off=-0.85)
+        dim_v(ax, w, 0, be, "10", off=0.85)
+        dim_h(ax, 0, w, h, "50", off=0.55)
+        dim_v(ax, 0, 0, h, "20", off=-1.1)
+        for px, py, lb, dx, dy in [
+            (0, 0, "A", -1.1, -0.55),
+            (w, 0, "B", 0.12, -0.35),
+            (w, h, "C", 0.12, 0.08),
+            (0, h, "D", -0.55, 0.08),
+            (w, be, "E", 0.1, 0.05),
+            (w - bf, 0, "F", 0.1, -0.55),
+        ]:
+            mark_pt(ax, px, py, lb, dx=dx, dy=dy)
+        ax.set_xlim(-5, w + 4)
+        ax.set_ylim(-2, h + 2)
     elif n == 20:
-        poly(ax, [(0, 0), (16, 0), (16, 16), (0, 16)], alpha=0.08)
-        poly(ax, [(4, 4), (12, 4), (12, 12), (4, 12)], fill=C_GRAY, alpha=0.35)
-    ax.set_xlim(-5, 52)
-    ax.set_ylim(-6, 52)
+        _rhombus_diagonal_rect(35, 25, 15, shade_corner_a=True)
+    else:
+        _abcd_rect(10, 6)
+        ax.set_xlim(-2, 13)
+        ax.set_ylim(-2, 9)
+
     save_fig(fig, stem, n)
 
 
@@ -862,12 +2768,30 @@ def _coord_poly(ax, pts, labels, shade_idx=None):
         poly(ax, sub, fill=C_GRAY, alpha=0.45)
 
 
+def _fmt_coord(v):
+    return str(int(v)) if v == int(v) else str(v)
+
+
+def _coord_poly_pts(ax, pts, letters, shade_idx=None, alpha=0.25):
+    poly(ax, pts, alpha=alpha)
+    for (x, y), lb in zip(pts, letters):
+        mark_pt(ax, x, y, f"{lb}({_fmt_coord(x)},{_fmt_coord(y)})")
+    if shade_idx is not None:
+        sub = [pts[i] for i in shade_idx]
+        poly(ax, sub, fill=C_GRAY, alpha=0.45)
+
+
+def _plane_for_pts(pts, pad=1.5):
+    xs = [p[0] for p in pts]
+    ys = [p[1] for p in pts]
+    return (min(xs) - pad, max(xs) + pad), (min(ys) - pad, max(ys) + pad)
+
+
 def gen_17(stem: str, n: int) -> None:
     if n <= 8:
         fig, ax = coord_plane((-5, 5), (-5, 5))
         if n == 1:
-            ax.text(1, 4, r"$x$", fontsize=10)
-            ax.text(4, 1, r"$y$", fontsize=10)
+            pass
         elif n == 2:
             poly(ax, [(0, 0), (3, 0), (3, 3), (0, 3)], fill="#E3F2FD", alpha=0.5)
         elif n == 3:
@@ -877,9 +2801,9 @@ def gen_17(stem: str, n: int) -> None:
         elif n == 5:
             poly(ax, [(0, -3), (3, -3), (3, 0), (0, 0)], fill="#E3F2FD", alpha=0.4)
         elif n == 6:
-            mark_pt(ax, 4, 0, r"$y=0$")
+            mark_pt(ax, 4, 0)
         elif n == 7:
-            mark_pt(ax, 0, 5, r"$x=0$")
+            mark_pt(ax, 0, 5)
         elif n == 8:
             mark_pt(ax, 0, 0, "O")
     elif n == 9:
@@ -895,14 +2819,23 @@ def gen_17(stem: str, n: int) -> None:
         fig, ax = coord_plane((-2, 8), (-6, 2))
         mark_pt(ax, 5, -3, "Q")
     elif n == 12:
-        fig, ax = coord_plane((-1, 5), (-1, 5))
-        for x, y in [(2, 2), (-2, 2), (-2, -2), (2, -2)]:
-            poly(ax, [(0, 0), (x, 0), (x, y), (0, y)], fill="#E3F2FD", alpha=0.15)
+        fig, ax = coord_plane((-3, 3), (-3, 3))
+        for (cx, cy), lb in zip(
+            [(2, 2), (-2, 2), (-2, -2), (2, -2)],
+            ["A", "B", "C", "D"],
+        ):
+            poly(
+                ax,
+                [(cx - 1, cy - 1), (cx + 1, cy - 1), (cx + 1, cy + 1), (cx - 1, cy + 1)],
+                fill="#E3F2FD",
+                alpha=0.4,
+            )
+            plain_text(ax, cx, cy, lb, ha="center", va="center", fontsize=10)
     elif n == 13:
         fig, ax = coord_plane((-7, 2), (-2, 2))
         mark_pt(ax, -5, 0, "R")
     elif n == 14:
-        fig, ax = coord_plane((-2, 6), (-5, 2))
+        fig, ax = coord_plane((-2, 6), (-2, 8))
         mark_pt(ax, 0, 7, "S")
     elif n == 15:
         fig, ax = coord_plane((-1, 10), (-1, 2))
@@ -915,26 +2848,40 @@ def gen_17(stem: str, n: int) -> None:
     elif n == 17:
         fig, ax = coord_plane((-1, 5), (-2, 4))
         pts = [(0, -1), (4, -1), (4, 2), (0, 2)]
-        _coord_poly(ax, pts, ["A", "B", "C", "D"])
+        labels = [f"{lb}({x},{y})" for (x, y), lb in zip(pts, ["A", "B", "C", "D"])]
+        _coord_poly(ax, pts, labels)
     elif n == 18:
         fig, ax = coord_plane((-6, 5), (-6, 4))
         for x, y, lb in [(3, -2, "P"), (-4, 1, "Q"), (0, -5, "R"), (-2, 0, "S")]:
             mark_pt(ax, x, y, lb)
     elif n == 19:
         fig, ax = coord_plane((-2, 8), (-5, 2))
-        mark_pt(ax, 5, 0, "A")
-        mark_pt(ax, 0, -3, "B")
+        mark_pt(ax, 5, 0, "A(5,0)")
+        mark_pt(ax, 0, -3, "B(0,-3)")
         ax.plot([5, 0], [0, -3], "k-", lw=1.2)
+        dim_h(ax, 0, 5, 0, "5", off=-0.65)
+        dim_v(ax, 0, 0, -3, "3", off=0.65)
     elif n == 20:
         fig, ax = coord_plane((-5, 5), (-4, 4))
         pts = [(-3, 2), (3, 2), (3, -2), (-3, -2)]
-        _coord_poly(ax, pts, ["A", "B", "C", "D"])
+        labels = [f"{lb}({x},{y})" for (x, y), lb in zip(pts, ["A", "B", "C", "D"])]
+        _coord_poly(ax, pts, labels)
     save_fig(fig, stem, n)
 
 
 def gen_18(stem: str, n: int) -> None:
     if n <= 8:
-        fig, ax = coord_plane((-4, 6), (-4, 6))
+        plane_limits = {
+            1: ((-4, 6), (-4, 6)),
+            2: ((-4, 6), (-4, 6)),
+            3: ((-4, 6), (-4, 6)),
+            4: ((-4, 6), (-4, 6)),
+            5: ((-4, 6), (-6, 6)),
+            6: ((-4, 6), (-4, 6)),
+            7: ((-4, 6), (-4, 8)),
+            8: ((-4, 6), (-4, 8)),
+        }
+        fig, ax = coord_plane(*plane_limits[n])
         if n == 1:
             mark_pt(ax, 3, 4, "A")
             mark_pt(ax, -2, 5, "B")
@@ -943,173 +2890,331 @@ def gen_18(stem: str, n: int) -> None:
         elif n in (4, 5, 6, 7, 8):
             mark_pt(ax, -2, 0, "B") if n == 4 else None
             if n == 5:
-                mark_pt(ax, 0, -5, "C")
+                mark_pt(ax, 0, -5, "C(0,-5)")
             if n == 6:
                 mark_pt(ax, 3, 4, "P")
                 mark_pt(ax, 4, 3, "Q")
             if n == 7:
-                mark_pt(ax, -3, 7, "D")
+                pass
             if n == 8:
-                mark_pt(ax, 0, 6, "(0,6)")
+                pass
+    elif n == 9:
+        fig, ax = coord_plane((-2, 10), (-4, 8))
+        for x, y, lb in [(1, 3, "A"), (7, 3, "B"), (4, -1, "C")]:
+            mark_pt(ax, x, y, lb)
+        ax.plot([1, 7], [3, 3], "k--", lw=0.8)
+    elif n == 10:
+        fig, ax = coord_plane((-2, 10), (-4, 8))
+        mark_pt(ax, 2, 4, "A")
+        mark_pt(ax, 8, 4, "B")
+        ax.plot([2, 8], [4, 4], "k-", lw=1.0)
+    elif n == 11:
+        fig, ax = coord_plane((-4, 10), (-4, 8))
+        mark_pt(ax, -3, 4, "A")
+        mark_pt(ax, 5, 4, "B")
+        ax.plot([-3, 5], [4, 4], "k-", lw=1.0)
+    elif n == 12:
+        fig, ax = coord_plane((-2, 10), (-4, 8))
+        mark_pt(ax, 0, 6, "P")
+        mark_pt(ax, 8, 0, "Q")
+        ax.plot([0, 8], [6, 0], "k-", lw=1.0)
+    elif n == 13:
+        fig, ax = coord_plane((-2, 10), (-4, 8))
+        ax.axhline(-2, color="gray", lw=0.8, ls=":")
+        mark_pt(ax, -1, -2, "T(-1,-2)")
+        plain_text(ax, 1.2, -1.55, "5 יח' ימינה", ha="left", fontsize=8)
+    elif n == 14:
+        fig, ax = coord_plane((-2, 10), (-4, 8))
+        ax.axvline(4, color="gray", lw=0.8, ls=":")
+        dim_v(ax, 4, 0, -3, "3", off=0.65)
+        plain_text(ax, 4.8, -1.5, "K?", ha="left", fontsize=9)
+    elif n == 15:
+        fig, ax = coord_plane((-2, 10), (-4, 8))
+        ax.axhline(5, color="gray", lw=0.8, ls=":")
+    elif n == 16:
+        fig, ax = coord_plane((-2, 10), (-4, 8))
+        ax.axvline(-2, color="gray", lw=0.8, ls=":")
+    elif n == 17:
+        pts = [(0, -1), (4, -1), (4, 2), (0, 2)]
+        xlim, ylim = _plane_for_pts(pts)
+        fig, ax = coord_plane(xlim, ylim)
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+    elif n == 18:
+        pts = [(0, 0), (5, 0), (5, 12), (0, 12)]
+        xlim, ylim = _plane_for_pts(pts)
+        fig, ax = coord_plane(xlim, ylim)
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+    elif n == 19:
+        pts = [(0, 0), (8, 0), (8, 6), (0, 6)]
+        xlim, ylim = _plane_for_pts(pts)
+        fig, ax = coord_plane(xlim, ylim)
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        mark_pt(ax, 3, 0, "E(3,0)")
+        ax.plot([3, 8], [0, 6], "k-", lw=1)
+    elif n == 20:
+        boundary = [(0, 0), (10, 0), (10, 8), (0, 8)]
+        pool = [(2, 2), (6, 2), (6, 6), (2, 6)]
+        xlim, ylim = _plane_for_pts(boundary + pool, pad=1.5)
+        fig, ax = coord_plane(xlim, ylim)
+        poly(ax, boundary, alpha=0.2)
+        poly(ax, pool, fill=C_GRAY, alpha=0.45)
+        for (x, y), lb in zip(
+            boundary + pool,
+            ["A", "B", "C", "D", "P", "Q", "R", "S"],
+        ):
+            mark_pt(ax, x, y, f"{lb}({_fmt_coord(x)},{_fmt_coord(y)})")
     else:
         fig, ax = coord_plane((-2, 10), (-4, 8))
-        if n == 9:
-            for x, y, lb in [(1, 3, "A"), (7, 3, "B"), (4, -1, "C")]:
-                mark_pt(ax, x, y, lb)
-            ax.plot([1, 7], [3, 3], "k--", lw=0.8)
-        elif n == 10:
-            mark_pt(ax, 2, 4, "A")
-            mark_pt(ax, 8, 4, "B")
-            mark_pt(ax, 5, 4, "M", dx=0, dy=0.25)
-        elif n == 11:
-            mark_pt(ax, -3, 4, "A")
-            mark_pt(ax, 5, 4, "B")
-            mark_pt(ax, 1, 4, "M", dx=0, dy=0.25)
-        elif n == 12:
-            mark_pt(ax, 0, 6, "P")
-            mark_pt(ax, 8, 0, "Q")
-            mark_pt(ax, 4, 3, "mid")
-        elif n == 13:
-            mark_pt(ax, 4, -2, "N")
-            mark_pt(ax, -1, -2, "T")
-        elif n == 14:
-            mark_pt(ax, 4, -3, "K")
-        elif n == 15:
-            ax.axhline(5, color="gray", lw=0.8, ls=":")
-        elif n == 16:
-            ax.axvline(-2, color="gray", lw=0.8, ls=":")
-        elif n == 17:
-            pts = [(0, -1), (4, -1), (4, 2), (0, 2)]
-            _coord_poly(ax, pts, ["A", "B", "C", "D"])
-        elif n == 18:
-            _coord_poly(ax, [(0, 0), (5, 0), (5, 12), (0, 12)], ["A", "B", "C", "D"])
-        elif n == 19:
-            _coord_poly(ax, [(0, 0), (8, 0), (8, 6), (0, 6)], ["A", "B", "C", "D"])
-            mark_pt(ax, 3, 0, "E")
-            ax.plot([3, 8], [0, 6], "k-", lw=1)
-        elif n == 20:
-            fig2, ax2 = coord_plane((-1, 12), (-1, 10))
-            poly(
-                ax2,
-                [(0, 0), (10, 0), (10, 8), (6, 8), (6, 6), (2, 6), (2, 2), (0, 2)],
-                alpha=0.25,
-            )
-            plt.close(fig)
-            fig = fig2
-            ax = ax2
     save_fig(fig, stem, n)
 
 
 def gen_19(stem: str, n: int) -> None:
-    if n <= 8:
+    def _pt(ax, x, y, lb):
+        mark_pt(ax, x, y, f"{lb}({_fmt_coord(x)},{_fmt_coord(y)})")
+
+    if n == 1:
         fig, ax = coord_plane((-2, 10), (-4, 8))
-        pts_data = [
-            ([(1, 3), (7, 3)], "horizontal"),
-            ([(4, -2), (4, 5)], "vertical"),
-            ([(-3, 2), (5, 2)], None),
-            ([(2, -4), (2, 3)], None),
-            ([(0, 0), (6, 0)], None),
-            ([(-5, 4), (3, 4)], None),
-            ([(0, 7), (0, -2)], None),
-        ]
-        if 1 <= n <= 7:
-            p = pts_data[n - 1][0]
-            ax.plot([p[0][0], p[1][0]], [p[0][1], p[1][1]], "o-", lw=2)
-        else:
-            ax.text(2, 5, r"$|AB| = b-a$", fontsize=9)
+        _pt(ax, 1, 3, "A")
+        _pt(ax, 7, 3, "B")
+        ax.plot([1, 7], [3, 3], "k-", lw=1.5)
+    elif n == 2:
+        fig, ax = coord_plane((-2, 10), (-4, 8))
+        _pt(ax, 4, -2, "C")
+        _pt(ax, 4, 5, "D")
+        ax.plot([4, 4], [-2, 5], "k-", lw=1.5)
+    elif n == 3:
+        fig, ax = coord_plane((-5, 8), (-4, 6))
+        _pt(ax, -3, 2, "E")
+        _pt(ax, 5, 2, "F")
+        ax.plot([-3, 5], [2, 2], "k-", lw=1.5)
+    elif n == 4:
+        fig, ax = coord_plane((-2, 8), (-6, 6))
+        _pt(ax, 2, -4, "G")
+        _pt(ax, 2, 3, "H")
+        ax.plot([2, 2], [-4, 3], "k-", lw=1.5)
+    elif n == 5:
+        fig, ax = coord_plane((-2, 8), (-4, 6))
+        _pt(ax, 0, 0, "P")
+        _pt(ax, 6, 0, "Q")
+        ax.plot([0, 6], [0, 0], "k-", lw=1.5)
+    elif n == 6:
+        fig, ax = coord_plane((-7, 6), (-4, 8))
+        _pt(ax, -5, 4, "M")
+        _pt(ax, 3, 4, "N")
+        ax.plot([-5, 3], [4, 4], "k-", lw=1.5)
+    elif n == 7:
+        fig, ax = coord_plane((-2, 10), (-4, 8))
+        _pt(ax, 0, 7, "A")
+        _pt(ax, 0, -2, "B")
+        ax.plot([0, 0], [7, -2], "k-", lw=1.5)
+    elif n == 8:
+        fig, ax = coord_plane((-2, 10), (-4, 8))
+        _pt(ax, 2, 0, "A")
+        _pt(ax, 7, 0, "B")
+        ax.plot([2, 7], [0, 0], "k-", lw=1.5)
+        dim_h(ax, 2, 7, 0, r"$b-a$", off=-0.65)
+        ax.text(2, -0.35, r"$a$", fontsize=8, ha="center")
+        ax.text(7, -0.35, r"$b$", fontsize=8, ha="center")
     elif n == 9:
-        fig, ax = coord_plane((-1, 5), (-1, 4))
-        _coord_poly(ax, [(0, -1), (4, -1), (4, 2), (0, 2)], ["A", "B", "C", "D"])
+        pts = [(0, -1), (4, -1), (4, 2), (0, 2)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
     elif n == 10:
         fig, ax = coord_plane((-2, 8), (-5, 2))
-        mark_pt(ax, 5, 0, "P")
-        mark_pt(ax, 0, -3, "Q")
+        _pt(ax, 5, 0, "P")
+        _pt(ax, 0, -3, "Q")
         ax.plot([5, 0], [0, -3], "k-", lw=1.2)
+        dim_h(ax, 0, 5, 0, "5", off=-0.65)
+        dim_v(ax, 0, 0, -3, "3", off=0.65)
     elif n == 11:
-        fig, ax = coord_plane((-1, 8), (-1, 6))
-        _coord_poly(ax, [(0, 0), (6, 0), (6, 4), (0, 4)], ["A", "B", "C", "D"])
+        pts = [(0, 0), (6, 0), (6, 4), (0, 4)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
     elif n == 12:
-        fig, ax = coord_plane((-1, 8), (-1, 8))
-        _coord_poly(ax, [(1, 1), (5, 1), (5, 5), (1, 5)], ["P", "Q", "R", "S"])
+        pts = [(1, 1), (5, 1), (5, 5), (1, 5)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["P", "Q", "R", "S"])
     elif n == 13:
-        fig, ax = coord_plane((-6, 4), (-3, 5))
-        _coord_poly(ax, [(-4, 3), (2, 3), (2, -1)], ["A", "B", "C"])
+        pts = [(-4, 3), (2, 3), (2, -1)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C"])
+        right_angle(ax, 2, 3, 0.35, quadrant=4)
     elif n == 14:
-        fig, ax = coord_plane((-2, 10), (-2, 8))
-        _coord_poly(ax, [(0, 0), (8, 0), (8, 6)], ["A", "B", "C"])
+        pts = [(0, 0), (8, 0), (8, 6)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C"])
+        right_angle(ax, 8, 0, 0.35, quadrant=1)
     elif n == 15:
-        fig, ax = coord_plane((-2, 12), (-2, 12))
-        poly(ax, [(1, 2), (9, 8), (9, 2), (1, 8)], alpha=0.15)
-        mark_pt(ax, 1, 2, "A")
-        mark_pt(ax, 9, 8, "C")
+        pts = [(1, 2), (9, 2), (9, 8), (1, 8)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
     elif n == 16:
         fig, ax = coord_plane((-2, 12), (-2, 10))
-        mark_pt(ax, 2, 0, "A")
-        mark_pt(ax, 9, 0, "B")
-        mark_pt(ax, 0, 1, "C")
-        mark_pt(ax, 0, 7, "D")
-    elif n >= 17:
-        fig, ax = coord_plane((-4, 10), (-4, 10))
-        _coord_poly(ax, [(0, 0), (6, 0), (6, 4), (0, 4)], ["A", "B", "C", "D"])
+        _pt(ax, 2, 0, "A")
+        _pt(ax, 9, 0, "B")
+        _pt(ax, 0, 1, "C")
+        _pt(ax, 0, 7, "D")
+        dim_h(ax, 2, 9, 0, "7", off=-0.65)
+        dim_v(ax, 0, 1, 7, "6", off=0.65)
+    elif n == 17:
+        pts = [(0, -1), (4, -1), (4, 2), (0, 2)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+    elif n == 18:
+        pts = [(0, 0), (5, 0), (5, 12), (0, 12)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        right_angle(ax, 5, 0, 0.35, quadrant=1)
+    elif n == 19:
+        pts = [(0, 0), (12, 0), (12, 9)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["X", "Y", "Z"])
+        right_angle(ax, 12, 0, 0.35, quadrant=2)
+        dim_h(ax, 0, 12, 0, "12", off=-0.75)
+        dim_v(ax, 12, 0, 9, "9", off=0.75)
+    elif n == 20:
+        pts = [(0, 0), (8, 0), (8, 6), (0, 6)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        _pt(ax, 3, 0, "E")
+        ax.plot([3, 8], [0, 6], "k-", lw=1.2)
     save_fig(fig, stem, n)
 
 
 def gen_20(stem: str, n: int) -> None:
-    fig, ax = coord_plane((-2, 28), (-2, 52))
     if n == 1:
-        _coord_poly(ax, [(0, 0), (5, 0), (5, 3), (0, 3)], ["A", "B", "C", "D"])
+        pts = [(0, 0), (5, 0), (5, 3), (0, 3)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
     elif n == 2:
-        _coord_poly(ax, [(1, 1), (5, 1), (5, 5), (1, 5)], ["P", "Q", "R", "S"])
+        pts = [(1, 1), (5, 1), (5, 5), (1, 5)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["P", "Q", "R", "S"])
     elif n == 3:
-        _coord_poly(ax, [(0, 0), (6, 0), (6, 4)], ["A", "B", "C"])
+        pts = [(0, 0), (6, 0), (6, 4)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C"])
+        right_angle(ax, 6, 0, 0.45, quadrant=2)
     elif n == 4:
-        _coord_poly(ax, [(0, 0), (8, 0), (0, 5)], ["D", "E", "F"])
+        pts = [(0, 0), (8, 0), (0, 5)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["D", "E", "F"])
+        right_angle(ax, 0, 0, 0.45, quadrant=1)
     elif n == 5:
-        _coord_poly(ax, [(2, 1), (7, 1), (7, 4), (2, 4)], ["A", "B", "C", "D"])
+        pts = [(2, 1), (7, 1), (7, 4), (2, 4)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
     elif n == 6:
-        _coord_poly(ax, [(3, 2), (9, 2), (9, 6)], ["A", "B", "C"])
+        pts = [(3, 2), (9, 2), (9, 6)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C"])
+        right_angle(ax, 9, 2, 0.45, quadrant=2)
     elif n == 7:
-        poly(ax, [(1, 2), (7, 6), (7, 2), (1, 8)], alpha=0.12)
-        mark_pt(ax, 1, 2, "A")
-        mark_pt(ax, 7, 6, "C")
+        pts = [(1, 2), (7, 2), (7, 6), (1, 6)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        dim_h(ax, 1, 7, 2, "6", off=-0.65)
+        dim_v(ax, 7, 2, 6, "4", off=0.65)
     elif n == 8:
-        mark_pt(ax, 0, 0, "A")
-        mark_pt(ax, 4, 0, "B")
+        fig, ax = coord_plane((-1, 5), (-1, 5))
+        mark_pt(ax, 0, 0, "A(0,0)", dx=-0.1, dy=-0.35)
+        mark_pt(ax, 4, 0, "B(4,0)", dx=-0.15, dy=-0.35)
+        dim_h(ax, 0, 4, 0, "4", off=-0.65)
     elif n == 9:
-        _coord_poly(ax, [(0, -1), (4, -1), (4, 2), (0, 2)], ["A", "B", "C", "D"])
-        mark_pt(ax, 2, -0.5, "M")
+        pts = [(0, -1), (4, -1), (4, 2), (0, 2)]
+        fig, ax = coord_plane(*_plane_for_pts(pts, pad=2))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        mark_pt(ax, 2, 0.5, "M(2,0.5)", dx=0.12, dy=0.12)
+        ax.plot([0, 4], [2, -1], "k--", lw=0.7)
+        ax.plot([0, 4], [-1, 2], "k--", lw=0.7)
     elif n == 10:
-        _coord_poly(ax, [(0, 0), (10, 0), (4, 6)], ["A", "B", "C"])
+        pts = [(0, 0), (10, 0), (4, 6)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C"])
     elif n == 11:
-        _coord_poly(ax, [(0, 0), (10, 0), (8, 4), (2, 4)], ["A", "B", "C", "D"])
+        pts = [(0, 0), (10, 0), (8, 4), (2, 4)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        dim_h(ax, 0, 10, 0, "10", off=-0.75)
+        dim_h(ax, 2, 8, 4, "6", off=0.55, fs=7)
+        dim_v(ax, 0, 0, 4, "4", off=-0.75)
     elif n == 12:
-        _coord_poly(ax, [(0, 0), (6, 0), (6, 5), (0, 5)], ["A", "B", "C", "D"])
-        mark_pt(ax, 2, 0, "E")
+        pts = [(0, 0), (6, 0), (6, 5), (0, 5)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        mark_pt(ax, 2, 0, "E(2,0)", dx=0.1, dy=-0.35)
         ax.plot([2, 6], [0, 5], "k-", lw=1)
     elif n == 13:
-        _coord_poly(ax, [(0, 0), (9, 0), (9, 12)], ["P", "Q", "R"])
+        pts = [(0, 0), (9, 0), (9, 12)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["P", "Q", "R"])
+        right_angle(ax, 9, 0, 0.55, quadrant=2)
     elif n == 14:
-        _coord_poly(ax, [(0, 0), (12, 0), (10, 5), (2, 5)], ["A", "B", "C", "D"])
+        pts = [(0, 0), (12, 0), (10, 5), (2, 5)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        dim_h(ax, 0, 12, 0, "12", off=-0.85)
+        dim_h(ax, 2, 10, 5, "8", off=0.55, fs=7)
+        dim_v(ax, 0, 0, 5, "5", off=-0.85)
     elif n == 15:
-        _coord_poly(ax, [(1, 1), (9, 1), (9, 6), (1, 6)], ["A", "B", "C", "D"])
-        mark_pt(ax, 9, 3.5, "E")
+        pts = [(1, 1), (9, 1), (9, 6), (1, 6)]
+        fig, ax = coord_plane(*_plane_for_pts(pts))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        mark_pt(ax, 9, 3.5, "E(9,3.5)", dx=0.12, dy=0.05)
         ax.plot([1, 9], [1, 3.5], "k-", lw=1)
     elif n == 16:
-        _coord_poly(ax, [(0, 2), (4, 0), (6, 4), (2, 6)], ["A", "B", "C", "D"])
+        pts = [(0, 2), (4, 0), (6, 4), (2, 6)]
+        fig, ax = coord_plane((-1, 7), (-1, 7))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
     elif n == 17:
-        _coord_poly(ax, [(0, -1), (4, -1), (4, 2), (0, 2)], ["A", "B", "C", "D"])
+        pts = [(0, -1), (4, -1), (4, 2), (0, 2)]
+        fig, ax = coord_plane(*_plane_for_pts(pts, pad=2))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        mark_pt(ax, 2, 0.5, "M(2,0.5)", dx=0.12, dy=0.12)
+        ax.plot([0, 4], [2, -1], "k--", lw=0.7)
+        ax.plot([0, 4], [-1, 2], "k--", lw=0.7)
     elif n == 18:
-        _coord_poly(ax, [(0, 0), (25, 0), (25, 48), (0, 48)], ["A", "B", "C", "D"])
-        mark_pt(ax, 25, 32, "E")
+        pts = [(0, 0), (25, 0), (25, 48), (0, 48)]
+        fig, ax = coord_plane((-3, 30), (-5, 55), grid_step_x=5, grid_step_y=5)
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        mark_pt(ax, 25, 32, "E(25,32)", dx=0.15, dy=0.1)
+        dim_h(ax, 0, 25, 0, "25", off=-2.5)
+        dim_v(ax, 25, 0, 48, "48", off=2.5)
+        dim_v(ax, 25, 0, 32, r"$BE$", off=3.2, fs=7)
+        dim_v(ax, 25, 32, 48, r"$EC$", off=3.2, fs=7)
     elif n == 19:
-        _coord_poly(ax, [(0, 0), (10, 0), (10, 8), (0, 8)], ["A", "B", "C", "D"])
-        _coord_poly(ax, [(2, 2), (6, 2), (6, 6), (2, 6)], ["P", "Q", "R", "S"], shade_idx=None)
-        poly(ax, [(2, 2), (6, 2), (6, 6), (2, 6)], fill="#B0BEC5", alpha=0.5)
+        fig, ax = coord_plane((-1, 11), (-1, 9), figsize=(7.2, 6.0))
+        poly(ax, [(0, 0), (10, 0), (10, 8), (0, 8)], alpha=0.15)
+        poly(ax, [(2, 2), (6, 2), (6, 6), (2, 6)], fill="#B0BEC5", alpha=0.55, edge=C_EDGE, lw=1.5)
+        for x, y, lb, dx, dy in [
+            (0, 0, "A(0,0)", -0.1, -0.55),
+            (10, 0, "B(10,0)", -0.35, -0.55),
+            (10, 8, "C(10,8)", -0.45, 0.15),
+            (0, 8, "D(0,8)", -0.15, 0.15),
+            (2, 2, "P(2,2)", -0.15, -0.55),
+            (6, 2, "Q(6,2)", 0.1, -0.55),
+            (6, 6, "R(6,6)", 0.1, 0.12),
+            (2, 6, "S(2,6)", -0.15, 0.12),
+        ]:
+            mark_pt(ax, x, y, lb, dx=dx, dy=dy)
+        plain_text(ax, 1, 1, "א'\n2×2", ha="center", fontsize=7)
+        plain_text(ax, 8, 4, "ב'\n4×8", ha="center", fontsize=7)
+        plain_text(ax, 4, 7, "ג'", ha="center", fontsize=8)
+        plain_text(ax, 4, 1, "ג'", ha="center", fontsize=8)
+        plain_text(ax, 4, 4, "בריכה\n4×4", ha="center", fontsize=7, color="#333333")
+        dim_h(ax, 0, 10, -0.6, "10", off=0, fs=7)
+        dim_v(ax, -0.6, 0, 8, "8", off=0, fs=7)
     elif n == 20:
-        _coord_poly(ax, [(0, 0), (15, 0), (15, 8), (0, 8)], ["A", "B", "C", "D"])
-        mark_pt(ax, 5, 8, "E")
-        mark_pt(ax, 15, 4, "F")
+        pts = [(0, 0), (15, 0), (15, 8), (0, 8)]
+        fig, ax = coord_plane((-2, 18), (-2, 10))
+        _coord_poly_pts(ax, pts, ["A", "B", "C", "D"])
+        mark_pt(ax, 5, 8, "E(5,8)", dx=-0.15, dy=0.12)
+        mark_pt(ax, 15, 4, "F(15,4)", dx=0.12, dy=0.05)
         poly(ax, [(0, 8), (5, 8), (15, 4)], fill=C_GRAY, alpha=0.35)
+        ax.plot([0, 5, 15], [8, 8, 4], "k-", lw=1.1)
+        dim_h(ax, 0, 15, 0, "15", off=-0.85)
+        dim_v(ax, 15, 0, 8, "8", off=0.85)
+        dim_h(ax, 0, 5, 8, r"$DE$", off=0.55, fs=7)
     save_fig(fig, stem, n)
 
 
