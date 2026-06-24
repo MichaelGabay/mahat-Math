@@ -18,7 +18,6 @@ import matplotlib.pyplot as plt  # noqa: E402
 import matplotlib.patches as mpatches  # noqa: E402
 from matplotlib.axes import Axes  # noqa: E402
 import numpy as np  # noqa: E402
-from bidi.algorithm import get_display  # noqa: E402
 
 WORKSPACE = os.path.dirname(os.path.abspath(__file__))
 CHAPTER_DIR = os.path.join(WORKSPACE, "6 - מבוא להנדסה")
@@ -32,8 +31,12 @@ HEBREW_RE = re.compile(r"[\u0590-\u05FF]")
 
 
 def rtl_text(value):
-    if isinstance(value, str) and HEBREW_RE.search(value):
-        return get_display(value)
+    # NOTE: matplotlib in this environment already shapes Hebrew right-to-left
+    # natively (via libraqm). Running python-bidi/get_display() on top of that
+    # DOUBLE-reverses the text, producing unreadable output (e.g. "ס\"מ" -> "מ\"ס",
+    # "גינה" -> "הניג"). We therefore pass strings through unchanged and rely on
+    # matplotlib's native RTL shaping. Keep this an identity function unless you
+    # are on a matplotlib build WITHOUT native bidi (verify by rendering a PNG).
     return value
 
 
@@ -748,13 +751,13 @@ def gen_5(stem: str, n: int) -> None:
         w, h = 6, 18
         poly(ax, [(0, 0), (w, 0), (w, h), (0, h)], alpha=0.2)
         poly(ax, [(-0.3, -0.3), (w + 2, -0.3), (w + 2, h + 2), (-0.3, h + 2)], alpha=0.12, fill="#E8F4E8")
-        dim_h(ax, 0, w, 0, r"$w$", off=-0.7)
+        dim_h(ax, 0, w, 0, r"$w$", off=-0.6)
         dim_v(ax, w, 0, h, r"$3w$", off=0.8)
-        dim_h(ax, -0.3, w + 2, -0.3, r"$w+2$", off=-0.55, fs=7)
+        dim_h(ax, -0.3, w + 2, -0.3, r"$w+2$", off=-1.25, fs=7)
         dim_v(ax, w + 2, -0.3, h + 2, r"$3w+2$", off=0.75, fs=7)
         plain_text(ax, w / 2, h + 1.2, "+2 ס\"מ לכל ממד", ha="center", fontsize=7)
         ax.set_xlim(-1.5, w + 3.5)
-        ax.set_ylim(-1.5, h + 2.5)
+        ax.set_ylim(-2.2, h + 2.5)
     elif n == 17:
         w, h = 7.5, 4.5
         _rect_abcd(ax, w, h)
@@ -2470,13 +2473,40 @@ def gen_15(stem: str, n: int) -> None:
         ax.set_xlim(-6, 66)
         ax.set_ylim(-6, 66)
     elif n == 17:
-        _factory_plan(ax, show_values=False)
-        ax.set_xlim(-3.5, 25)
-        ax.set_ylim(-2, 13)
+        # House cross-section: rectangle 12x9 + isosceles roof (height 8, slant 10)
+        poly(ax, [(0, 0), (12, 0), (12, 9), (0, 9)], alpha=0.30)
+        poly(ax, [(0, 9), (12, 9), (6, 17)], fill=C_FILL, alpha=0.55, edge=C_EDGE)
+        ax.plot([0, 12], [9, 9], "k--", lw=0.8)
+        dim_h(ax, 0, 12, 0, "12", off=-0.85)
+        dim_v(ax, 0, 0, 9, "9", off=-0.95)
+        dim_v(ax, 6, 9, 17, "8", off=0.7, fs=8)
+        seg_label(ax, 12, 9, 6, 17, "10", frac=0.5, dx=0.55, dy=0.3, fs=8)
+        plain_text(ax, 6, 4.5, "מלבן", ha="center", fontsize=8)
+        plain_text(ax, 3.4, 12.0, "גג", ha="center", fontsize=8)
+        right_angle(ax, 0, 0, 0.4, quadrant=1)
+        right_angle(ax, 12, 0, 0.4, quadrant=2)
+        ax.set_xlim(-2.5, 14.5)
+        ax.set_ylim(-2.0, 18.8)
     elif n == 20:
-        _factory_plan(ax, show_values=True)
-        ax.set_xlim(-3.5, 25)
-        ax.set_ylim(-2, 13)
+        # Window: rectangle 10x12 + semicircle radius 5 on top
+        poly(ax, [(0, 0), (10, 0), (10, 12), (0, 12)], alpha=0.30)
+        theta = np.linspace(0, np.pi, 100)
+        arc_x = 5 + 5 * np.cos(theta)
+        arc_y = 12 + 5 * np.sin(theta)
+        ax.fill_between(arc_x, 12, arc_y, color=C_FILL, alpha=0.45)
+        ax.plot(arc_x, arc_y, "-", color=C_EDGE, lw=1.6)
+        ax.plot([0, 10], [12, 12], "k--", lw=0.8)
+        ax.plot([5, 8.54], [12, 15.54], ":", color="#555555", lw=1.0)
+        mark_pt(ax, 5, 12, "", dx=0, dy=0)
+        dim_h(ax, 0, 10, 0, "10", off=-0.85)
+        dim_v(ax, 10, 0, 12, "12", off=0.85)
+        plain_text(ax, 6.9, 13.5, r"$r=5$", ha="left", fontsize=8)
+        plain_text(ax, 5, 6, "מלבן", ha="center", fontsize=8)
+        plain_text(ax, 5, 18.0, "חצי-עיגול", ha="center", fontsize=8)
+        right_angle(ax, 0, 0, 0.4, quadrant=1)
+        right_angle(ax, 10, 0, 0.4, quadrant=2)
+        ax.set_xlim(-2.5, 13)
+        ax.set_ylim(-2.0, 19.2)
     elif n == 18:
         poly(ax, [(0, 0), (12, 0), (12, 8), (0, 8)], alpha=0.15)
         theta = np.linspace(0, np.pi, 80)
