@@ -183,6 +183,70 @@ def mark_pt(ax, x, y, lbl=None, dx=0.12, dy=0.12):
         ax.text(x + dx, y + dy, lbl, fontsize=8)
 
 
+def plain_text(ax, x, y, s, **kwargs):
+    """Hebrew on diagrams: logical order, no python-bidi."""
+    return _orig_text(ax, x, y, s, **kwargs)
+
+
+_DIM_ARROW = dict(arrowstyle="<->", color="#333333", lw=0.85, mutation_scale=8)
+
+
+def dim_h(ax, x1, x2, y, label, off=-0.55, fs=8):
+    ya = y + off
+    ax.annotate("", xy=(x1, ya), xytext=(x2, ya), arrowprops=_DIM_ARROW)
+    ax.plot([x1, x1], [y, ya], color="#555555", lw=0.5)
+    ax.plot([x2, x2], [y, ya], color="#555555", lw=0.5)
+    ax.text(
+        (x1 + x2) / 2,
+        ya + (0.28 if off < 0 else -0.38),
+        label,
+        ha="center",
+        fontsize=fs,
+        bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none", alpha=0.9),
+    )
+
+
+def dim_v(ax, x, y1, y2, label, off=-0.55, fs=8):
+    xa = x + off
+    ax.annotate("", xy=(xa, y1), xytext=(xa, y2), arrowprops=_DIM_ARROW)
+    ax.plot([x, xa], [y1, y1], color="#555555", lw=0.5)
+    ax.plot([x, xa], [y2, y2], color="#555555", lw=0.5)
+    ax.text(
+        xa + (0.35 if off < 0 else -0.55),
+        (y1 + y2) / 2,
+        label,
+        va="center",
+        fontsize=fs,
+        bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none", alpha=0.9),
+    )
+
+
+def seg_label(ax, x1, y1, x2, y2, label, frac=0.5, dx=0.0, dy=0.18, fs=7):
+    mx = x1 + frac * (x2 - x1) + dx
+    my = y1 + frac * (y2 - y1) + dy
+    ax.text(
+        mx,
+        my,
+        label,
+        ha="center",
+        va="center",
+        fontsize=fs,
+        bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="#CCCCCC", alpha=0.92),
+    )
+
+
+def right_angle(ax, x, y, size=0.35, quadrant=1):
+    """quadrant: 1=NE, 2=NW, 3=SW, 4=SE corner at (x,y)."""
+    sx = size if quadrant in (1, 4) else -size
+    sy = size if quadrant in (1, 2) else -size
+    ax.plot([x, x + sx, x + sx], [y, y, y + sy], color="#444444", lw=0.7)
+
+
+def plain_text(ax, x, y, s, **kwargs):
+    """Hebrew on diagrams: logical order, no python-bidi."""
+    return _orig_text(ax, x, y, s, **kwargs)
+
+
 def number_line(ax, points, labels, xlim=None):
     """points: list of x positions; labels: same length."""
     if xlim is None:
@@ -545,94 +609,210 @@ def gen_14(stem: str, n: int) -> None:
     save_fig(fig, stem, n)
 
 
-def _factory_plan(ax) -> None:
-    """MAHAT-style factory: CDFG 22×5 + extension ABCG 20×5, triangle DEF inside."""
+def _factory_plan(ax, show_values: bool = False) -> None:
+    """MAHAT factory: CDFG 22×5, extension ABCG 20×5, rooms ABCG / ADEF / rest."""
     sqrt13 = math.sqrt(13)
     C, D, G = (0, 0), (22, 0), (0, 5)
-    D_top, F, B_j, A, B = (22, 5), (10, 5), (20, 5), (0, 10), (20, 10)
+    D_top, F, J, A, B = (22, 5), (10, 5), (20, 5), (0, 10), (20, 10)
     E = (16, 5 + sqrt13)
-    poly(ax, [C, D, D_top, F, B_j, B, A, G], alpha=0.18)
-    poly(ax, [A, B, B_j, G], fill="#D8E8F5", alpha=0.55)
-    poly(ax, [D_top, F, E], fill="#E8E8E8", alpha=0.55)
-    ax.plot([G[0], B_j[0]], [G[1], B_j[1]], "k--", lw=0.9)
-    ax.plot([A[0], E[0], D_top[0]], [A[1], E[1], D_top[1]], "k--", lw=0.9)
-    ax.plot([E[0], F[0]], [E[1], F[1]], "k--", lw=0.9)
-    for x, y, lb in [
-        (A[0], A[1], "A"),
-        (B[0], B[1], "B"),
-        (C[0], C[1], "C"),
-        (D[0], D[1], "D"),
-        (E[0], E[1], "E"),
-        (F[0], F[1], "F"),
-        (G[0], G[1], "G"),
+
+    poly(ax, [C, D, D_top, J, B, A, G], alpha=0.14, edge=C_EDGE)
+    poly(ax, [A, B, J, G], fill="#D8E8F5", alpha=0.62, edge=C_EDGE)
+    poly(ax, [A, D, E, F], fill="#E8EEF5", alpha=0.45, edge=C_EDGE)
+    poly(ax, [D_top, F, E], fill="#E0E0E0", alpha=0.7, edge=C_EDGE)
+
+    ax.plot([G[0], J[0]], [G[1], J[1]], "k--", lw=1.0)
+    ax.plot([A[0], E[0], D[0], F[0], A[0]], [A[1], E[1], D[1], F[1], A[1]], "k--", lw=0.9)
+
+    for x, y, lb, dx, dy in [
+        (A[0], A[1], "A", -0.35, 0.25),
+        (B[0], B[1], "B", 0.2, 0.25),
+        (C[0], C[1], "C", -0.35, -0.45),
+        (D[0], D[1], "D", 0.2, -0.45),
+        (E[0], E[1], "E", 0.15, 0.2),
+        (F[0], F[1], "F", -0.2, 0.22),
+        (G[0], G[1], "G", -0.35, 0.15),
     ]:
-        mark_pt(ax, x, y, lb, dx=-0.35 if x < 1 else 0.2, dy=0.2)
+        mark_pt(ax, x, y, lb, dx=dx, dy=dy)
+
+    ax.plot([D_top[0], J[0]], [D_top[1], J[1]], "k-", lw=1.2)
+    ax.plot([J[0], J[0]], [J[1], B[1]], "k-", lw=1.2)
+
+    ax.text(10, 7.5, "ABCG", ha="center", fontsize=8, color="#333333")
+    ax.text(11, 2.5, "CDFG", ha="center", fontsize=8, color="#444444")
+    ax.text(8.5, 4.2, "ADEF", ha="center", fontsize=7, color="#555555")
+    ax.text(15.5, 7.0, "DEF", ha="center", fontsize=7, color="#555555")
+
+    dim_h(ax, 0, 22, 0, "22", off=-0.9)
+    dim_v(ax, 0, 0, 5, "5", off=-0.9)
+    dim_h(ax, 0, 20, 10, "20", off=0.8)
+    dim_v(ax, 20, 5, 10, "5", off=0.8)
+    dim_v(ax, 0, 5, 10, "5", off=-1.3)
+    dim_h(ax, 10, 22, 5, "12" if show_values else "60%", off=0.7)
+    dim_h(ax, 0, 10, 5, "10", off=0.45, fs=7)
+    seg_label(ax, D_top[0], D_top[1], E[0], E[1], "7" if show_values else "35%", frac=0.42, dx=0.6, dy=0.05)
+    seg_label(ax, F[0], F[1], E[0], E[1], "7" if show_values else "35%", frac=0.42, dx=-0.6, dy=0.05)
+
+    right_angle(ax, 0, 10, 0.35, quadrant=4)
+    right_angle(ax, 20, 10, 0.35, quadrant=3)
+    right_angle(ax, 0, 5, 0.35, quadrant=1)
+    right_angle(ax, 0, 0, 0.35, quadrant=1)
+    right_angle(ax, 22, 0, 0.35, quadrant=2)
 
 
 def gen_15(stem: str, n: int) -> None:
     fig, ax = fig_axes_plain()
     if n == 9:
-        poly(ax, [(0, 0), (12, 0), (12, 10), (10, 10), (10, 4), (2, 4), (2, 10), (0, 10)], alpha=0.35)
-        ax.set_xlim(-1, 13)
-        ax.set_ylim(-1, 11)
+        outer = [(0, 0), (12, 0), (12, 10), (10, 10), (10, 4), (2, 4), (2, 10), (0, 10)]
+        poly(ax, outer, alpha=0.35)
+        ax.plot([2, 10, 10, 2, 2], [4, 4, 10, 10, 4], "k--", lw=0.9)
+        dim_h(ax, 0, 12, 0, "12", off=-0.7)
+        dim_v(ax, 12, 0, 10, "10", off=0.75)
+        dim_h(ax, 2, 10, 10, "8", off=0.65)
+        dim_v(ax, 10, 4, 10, "6", off=0.65)
+        dim_h(ax, 0, 2, 10, "2", off=0.55)
+        dim_h(ax, 10, 12, 10, "2", off=0.55)
+        ax.set_xlim(-2, 14)
+        ax.set_ylim(-1.5, 12)
     elif n == 10:
         poly(ax, [(0, 0), (15, 0), (15, 8), (8, 8), (8, 13), (0, 13)], alpha=0.35)
-        ax.set_xlim(-1, 16)
-        ax.set_ylim(-1, 14)
+        ax.plot([8, 15], [8, 8], "k--", lw=0.8)
+        ax.plot([0, 8], [8, 8], "k--", lw=0.8)
+        dim_h(ax, 0, 15, 0, "15", off=-0.75)
+        dim_v(ax, 0, 0, 8, "8", off=-0.85)
+        dim_h(ax, 8, 15, 8, "7", off=0.55)
+        dim_v(ax, 8, 8, 13, "5", off=-0.75)
+        plain_text(ax, 7.5, 4, "חלק א'", ha="center", fontsize=8)
+        plain_text(ax, 11.5, 10.5, "חלק ב'", ha="center", fontsize=8)
+        ax.set_xlim(-2.5, 16.5)
+        ax.set_ylim(-1.5, 14.5)
     elif n == 11:
-        poly(ax, [(4, 0), (12, 0), (12, 12), (0, 12), (0, 4)], alpha=0.35)
-        ax.set_xlim(-1, 13)
-        ax.set_ylim(-1, 13)
+        b, a = 4, 12
+        poly(ax, [(b, 0), (a, 0), (a, a), (0, a), (0, b), (b, b)], alpha=0.35)
+        ax.plot([0, b, b, 0], [b, b, 0, 0], "r--", lw=0.9)
+        dim_h(ax, 0, a, 0, r"$a$", off=-0.75)
+        dim_v(ax, a, 0, a, r"$a$", off=0.75)
+        dim_h(ax, 0, b, b, r"$b$", off=-0.55)
+        dim_v(ax, b, 0, b, r"$b$", off=-0.75)
+        ax.set_xlim(-2, 14)
+        ax.set_ylim(-1.5, 14)
     elif n == 12:
         poly(ax, [(0, 0), (20, 0), (20, 15), (0, 15)], alpha=0.12)
         poly(ax, [(3, 3), (17, 3), (17, 12), (3, 12)], fill="#F8F8F8", edge=C_EDGE, lw=1.2)
-        ax.set_xlim(-1, 21)
-        ax.set_ylim(-1, 16)
+        dim_h(ax, 0, 20, 0, "20", off=-0.75)
+        dim_v(ax, 20, 0, 15, "15", off=0.75)
+        dim_h(ax, 3, 17, 3, "14", off=0.55)
+        dim_v(ax, 17, 3, 12, "9", off=0.75)
+        plain_text(ax, 10, 7.5, "חלל", ha="center", fontsize=8, color="#666666")
+        ax.set_xlim(-2.5, 22.5)
+        ax.set_ylim(-1.5, 17)
     elif n == 13:
         poly(ax, [(0, 0), (30, 0), (30, 20), (0, 20)], alpha=0.12)
-        poly(ax, [(10, 20), (14, 20), (14, 23), (10, 23)], fill=C_FILL, alpha=0.55)
-        poly(ax, [(30, 8), (36, 8), (36, 10), (30, 10)], fill=C_FILL, alpha=0.55)
-        ax.set_xlim(-2, 38)
-        ax.set_ylim(-1, 25)
+        poly(ax, [(10, 20), (14, 20), (14, 23), (10, 23)], fill=C_FILL, alpha=0.55, edge=C_EDGE)
+        poly(ax, [(30, 8), (36, 8), (36, 10), (30, 10)], fill=C_FILL, alpha=0.55, edge=C_EDGE)
+        dim_h(ax, 0, 30, 0, "30", off=-0.85)
+        dim_v(ax, 30, 0, 20, "20", off=0.85)
+        dim_h(ax, 10, 14, 23, "4", off=0.55)
+        dim_v(ax, 14, 20, 23, "3", off=0.75)
+        dim_h(ax, 30, 36, 8, "6", off=-0.55)
+        dim_v(ax, 36, 8, 10, "2", off=0.65)
+        plain_text(ax, 12, 21.5, "כניסה 4×3", ha="center", fontsize=7)
+        plain_text(ax, 33, 9, "קיר 6×2", ha="center", fontsize=7)
+        ax.set_xlim(-2.5, 39)
+        ax.set_ylim(-1.5, 25)
     elif n == 14:
         poly(
             ax,
             [(2, 0), (14, 0), (16, 2), (16, 14), (14, 16), (2, 16), (0, 14), (0, 2)],
             alpha=0.35,
         )
-        ax.set_xlim(-1, 17)
-        ax.set_ylim(-1, 17)
+        for ox, oy in [(0, 0), (14, 0), (14, 14), (0, 14)]:
+            ax.plot([ox, ox + 2, ox + 2, ox, ox], [oy, oy, oy + 2, oy + 2, oy], "r--", lw=0.8)
+        dim_h(ax, 0, 16, 0, "16", off=-0.85)
+        dim_v(ax, 16, 0, 16, "16", off=0.85)
+        dim_h(ax, 0, 2, 0, "2", off=-1.55)
+        dim_v(ax, 2, 0, 2, "2", off=-1.55)
+        plain_text(ax, 8, 8, "4 פינות\nחתוכות", ha="center", fontsize=7, color="#AA3333")
+        ax.set_xlim(-2.5, 18.5)
+        ax.set_ylim(-2.5, 18.5)
     elif n == 15:
         poly(ax, [(0, 0), (10, 0), (10, 6), (5, 10), (0, 6)], alpha=0.35)
-        ax.set_xlim(-1, 11)
-        ax.set_ylim(-1, 11)
+        ax.plot([0, 10], [6, 6], "k--", lw=0.7)
+        dim_h(ax, 0, 10, 0, "10", off=-0.75)
+        dim_v(ax, 10, 0, 6, "6", off=0.75)
+        dim_v(ax, 5, 6, 10, "4", off=0.65)
+        plain_text(ax, 5, 3, "מלבן", ha="center", fontsize=8)
+        plain_text(ax, 5, 8.2, "משולש", ha="center", fontsize=8)
+        ax.set_xlim(-2, 12.5)
+        ax.set_ylim(-1.5, 11.5)
     elif n == 16:
         poly(ax, [(0, 0), (60, 0), (60, 60), (0, 60)], alpha=0.12)
         for ox, oy in [(15, 15), (30, 15), (15, 30), (30, 30)]:
-            poly(ax, [(ox, oy), (ox + 15, oy), (ox + 15, oy + 15), (ox, oy + 15)], fill="#F0F0F0", edge=C_EDGE)
-        ax.set_xlim(-2, 62)
-        ax.set_ylim(-2, 62)
-    elif n in (17, 20):
-        _factory_plan(ax)
-        ax.set_xlim(-2, 24)
-        ax.set_ylim(-1, 12)
+            poly(
+                ax,
+                [(ox, oy), (ox + 15, oy), (ox + 15, oy + 15), (ox, oy + 15)],
+                fill="#F0F0F0",
+                edge=C_EDGE,
+            )
+        dim_h(ax, 0, 60, 0, "60", off=-2.5)
+        dim_v(ax, 60, 0, 60, "60", off=2.5)
+        dim_h(ax, 15, 30, 15, "15", off=0.55)
+        dim_v(ax, 30, 15, 30, "15", off=0.55)
+        ax.text(7.5, 7.5, "15", ha="center", fontsize=7, color="#666666")
+        plain_text(ax, 30, 30, "חלונות", ha="center", fontsize=8, color="#666666")
+        ax.set_xlim(-6, 66)
+        ax.set_ylim(-6, 66)
+    elif n == 17:
+        _factory_plan(ax, show_values=False)
+        ax.set_xlim(-3.5, 25)
+        ax.set_ylim(-2, 13)
+    elif n == 20:
+        _factory_plan(ax, show_values=True)
+        ax.set_xlim(-3.5, 25)
+        ax.set_ylim(-2, 13)
     elif n == 18:
         poly(ax, [(0, 0), (12, 0), (12, 8), (0, 8)], alpha=0.15)
-        theta = np.linspace(0, np.pi, 60)
+        theta = np.linspace(0, np.pi, 80)
         ax.plot(6 + 2 * np.cos(theta), 2 * np.sin(theta), "k-", lw=1.5)
         poly(ax, [(0, 5), (3, 5), (3, 8), (0, 8)], fill="#F0F0F0", edge=C_EDGE, lw=1.2)
-        ax.set_xlim(-1, 13)
-        ax.set_ylim(-1, 9)
+        dim_h(ax, 0, 12, 0, "12", off=-1.05)
+        dim_v(ax, 12, 0, 8, "8", off=0.85)
+        dim_h(ax, 0, 3, 8, "3", off=0.55)
+        dim_v(ax, 3, 5, 8, "3", off=0.65)
+        ax.text(6, 2.3, r"$r=2$", ha="center", fontsize=9)
+        dim_h(ax, 4, 8, 0, "4", off=-0.45, fs=7)
+        plain_text(ax, 6, -1.45, "חזית", ha="center", fontsize=8)
+        plain_text(ax, 6, 8.55, "אחור", ha="center", fontsize=8)
+        plain_text(ax, 1.5, 6.5, "מטבח\n3×3", ha="center", fontsize=7, color="#555555")
+        right_angle(ax, 3, 5, 0.3, quadrant=1)
+        right_angle(ax, 0, 8, 0.3, quadrant=4)
+        ax.set_xlim(-1.5, 14)
+        ax.set_ylim(-2.0, 10)
     elif n == 19:
         plt.close(fig)
-        fig, ax = coord_plane((-1, 11), (-1, 9), figsize=(6.8, 5.6))
+        fig, ax = coord_plane((-1, 11), (-1, 9), figsize=(7.2, 6.0))
         poly(ax, [(0, 0), (10, 0), (10, 8), (0, 8)], alpha=0.15)
-        poly(ax, [(2, 2), (6, 2), (6, 6), (2, 6)], fill="#B8D4E8", alpha=0.7)
-        for x, y, lb in [(0, 0, "A"), (10, 0, "B"), (10, 8, "C"), (0, 8, "D"), (2, 2, "P"), (6, 6, "R")]:
-            mark_pt(ax, x, y, lb)
-        ax.text(1, 4.2, "א'", fontsize=8, ha="center")
-        ax.text(8, 4.2, "ב'", fontsize=8, ha="center")
-        ax.text(4, 7.2, "ג'", fontsize=8, ha="center")
+        poly(ax, [(2, 2), (6, 2), (6, 6), (2, 6)], fill="#B8D4E8", alpha=0.7, edge=C_EDGE, lw=1.5)
+        for x, y, lb, dx, dy in [
+            (0, 0, "A(0,0)", -0.1, -0.55),
+            (10, 0, "B(10,0)", -0.35, -0.55),
+            (10, 8, "C(10,8)", -0.45, 0.15),
+            (0, 8, "D(0,8)", -0.15, 0.15),
+            (2, 2, "P(2,2)", -0.15, -0.55),
+            (6, 2, "Q(6,2)", 0.1, -0.55),
+            (6, 6, "R(6,6)", 0.1, 0.12),
+            (2, 6, "S(2,6)", -0.15, 0.12),
+        ]:
+            mark_pt(ax, x, y, lb, dx=dx, dy=dy)
+        plain_text(ax, 1, 4.2, "א'\n2×8", ha="center", fontsize=7)
+        plain_text(ax, 8, 4.2, "ב'\n4×8", ha="center", fontsize=7)
+        plain_text(ax, 4, 7.2, "ג'", ha="center", fontsize=8)
+        plain_text(ax, 4, 1.2, "ג'", ha="center", fontsize=8)
+        plain_text(ax, 4, 4, "בריכה\n4×4", ha="center", fontsize=7, color="#333333")
+        dim_h(ax, 0, 10, -0.8, "10", off=0, fs=7)
+        dim_v(ax, -0.8, 0, 8, "8", off=0, fs=7)
+        dim_h(ax, 0, 2, 4.2, "2", off=0, fs=7)
+        dim_h(ax, 6, 10, 4.2, "4", off=0, fs=7)
     else:
         poly(ax, [(0, 0), (10, 0), (10, 6), (3, 6), (3, 3), (0, 3)], alpha=0.3)
         ax.set_xlim(-1, 12)
