@@ -480,7 +480,6 @@ def gen_2(stem: str, n: int) -> None:
         mark_pt(ax, w, h, "C", dx=0.08, dy=0.05)
         mark_pt(ax, 0, h, "D", dx=-0.28, dy=0.05)
         angle_arc(ax, w, 0, 180 - 63, 180, r=0.55, label=r"$63°$", label_r=0.88, fs=8)
-        _orig_text(ax, w * 0.42, h * 0.28, r"$BD=15.6$", fontsize=8)
         ax.set_xlim(-0.55, w + 0.55)
         ax.set_ylim(-0.55, h + 0.55)
     save_fig(fig, stem, n)
@@ -491,7 +490,7 @@ def gen_3(stem: str, n: int) -> None:
     if n == 13:
         poly(ax, [(0, 0), (8, 0), (8, 6), (0, 6)], alpha=0.35)
         dim_h(ax, 0, 8, 0, "8", off=-0.75)
-        dim_v(ax, 8, 0, 6, "6", off=0.75)
+        dim_v(ax, 8, 0, 6, "?", off=0.75)
         plain_text(ax, 4, 3, "ריצוף", ha="center", fontsize=9)
         ax.set_xlim(-1.5, 10)
         ax.set_ylim(-1.5, 8)
@@ -650,9 +649,17 @@ def gen_4(stem: str, n: int) -> None:
         ax.plot([w, 0], [0, h], "k--", lw=0.8)
         ax.plot([mx, mx], [my, h], "k-", lw=1.0)
         angle_arc(ax, w, 0, 117, 180, r=0.65, label=r"$63°$", label_r=0.95, fs=8)
-        seg_label(ax, w, h, mx, my, r"$CM=7.8$", frac=0.5, dx=0.45, dy=0.0, fs=7)
+        seg_label(ax, w, h, mx, my, r"$CM=7.8$", frac=0.36, dx=0.55, dy=0.45, fs=7)
         plain_text(ax, w / 2, -0.55, r"$\angle ABD=63°$", ha="center", fontsize=7)
-        plain_text(ax, mx + 0.35, (my + h) / 2, r"$ME \parallel AD$", fontsize=7)
+        plain_text(
+            ax,
+            mx - 0.3,
+            my + 1.9,
+            r"$ME \parallel AD$",
+            ha="right",
+            fontsize=7,
+            bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none", alpha=0.9),
+        )
         ax.set_xlim(-1.8, w + 2.5)
         ax.set_ylim(-1.5, h + 1.8)
     elif n == 20:
@@ -774,19 +781,19 @@ def gen_5(stem: str, n: int) -> None:
         dim_v(ax, w, 0, e_y, r"$BE$", off=1.35, fs=7)
         dim_v(ax, w, e_y, h, r"$EC$", off=1.35, fs=7)
         seg_label(ax, 0, 0, w, h, r"$AC$", frac=0.45, dx=0.5, dy=0.3, fs=7)
-        plain_text(ax, w + 0.15, 6, r"$AB=BE$", fontsize=7)
+        plain_text(ax, w / 2, h + 0.85, r"$AB=BE$", ha="center", fontsize=8)
         ax.set_xlim(-2, w + 3)
-        ax.set_ylim(-1.5, h + 1.5)
+        ax.set_ylim(-1.5, h + 2)
     elif n == 19:
         l_vis, w_vis = 14, 7
         poly(ax, [(0, 0), (l_vis, 0), (l_vis, w_vis), (0, w_vis)], alpha=0.28)
         dim_h(ax, 0, l_vis, 0, r"$2w$", off=-1.1)
         dim_v(ax, l_vis, 0, w_vis, r"$w$", off=1.1)
         plain_text(ax, l_vis / 2, w_vis / 2, "מגרש", ha="center", fontsize=9)
-        plain_text(ax, l_vis / 2, -0.55, r"אורך $= 2 \times$ רוחב", ha="center", fontsize=7)
+        plain_text(ax, l_vis / 2, -2.0, r"אורך $= 2 \times$ רוחב", ha="center", fontsize=7)
         plain_text(ax, l_vis / 2, w_vis + 0.75, r"היקף $= 84$ מ'", ha="center", fontsize=8)
         ax.set_xlim(-3, l_vis + 4)
-        ax.set_ylim(-2, w_vis + 2.5)
+        ax.set_ylim(-2.8, w_vis + 2.5)
     elif n == 20:
         w, h = 8, 15
         _rect_abcd(ax, w, h)
@@ -798,11 +805,11 @@ def gen_5(stem: str, n: int) -> None:
         dim_v(ax, w, 0, h, "15 ס\"מ", off=1.0)
         dim_v(ax, w, 0, e_y, r"$BE$", off=1.45, fs=7)
         dim_v(ax, w, e_y, h, r"$EC$", off=1.45, fs=7)
-        plain_text(ax, w + 0.15, 5, r"$BE=2 \cdot EC$", fontsize=7)
+        plain_text(ax, w / 2, h + 0.85, r"$BE=2 \cdot EC$", ha="center", fontsize=8)
         seg_label(ax, 0, 0, w, e_y, r"$\triangle ABE$", frac=0.35, dx=-0.6, dy=0.2, fs=7)
         seg_label(ax, 0, 0, w, h, r"$\triangle AEC$", frac=0.55, dx=0.6, dy=0.2, fs=7)
         ax.set_xlim(-2.2, w + 3)
-        ax.set_ylim(-1.5, h + 1.5)
+        ax.set_ylim(-1.5, h + 2)
     save_fig(fig, stem, n)
 
 
