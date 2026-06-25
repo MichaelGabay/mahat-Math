@@ -7,7 +7,7 @@ import matplotlib.patches as mpatches
 import numpy as np
 import os
 
-CHAPTER_DIR = "/Users/mq/Desktop/\u05de\u05ea\u05de\u05d8\u05d9\u05e7\u05d4 - \u05d0\u05d5\u05e8\u05d8/mahat-Math/7 - \u05d4\u05e0\u05d3\u05e1\u05d4 \u05d0\u05e0\u05dc\u05d9\u05d8\u05d9\u05ea"
+CHAPTER_DIR = "/Users/amitay/Desktop/ort - math/mahat-Math/7 - \u05d4\u05e0\u05d3\u05e1\u05d4 \u05d0\u05e0\u05dc\u05d9\u05d8\u05d9\u05ea"
 IMAGES_DIR = os.path.join(CHAPTER_DIR, "images")
 os.makedirs(IMAGES_DIR, exist_ok=True)
 
@@ -26,11 +26,20 @@ CF = '#AED6F1'   # Shape fill: light blue
 # ── Helpers ────────────────────────────────────────────────────────────────
 
 def make_fig(xlim=(-8, 8), ylim=(-8, 8)):
-    """Coordinate plane with axes through origin."""
+    """Coordinate plane with axes through origin.
+
+    When 0 is not inside a limit (real-world graphs that start far from the
+    origin) the corresponding spine is kept at the panel edge instead of being
+    placed at zero, so the data is not squeezed into a thin strip.
+    """
     fig, ax = plt.subplots(figsize=(6, 6), facecolor='white')
     ax.set_facecolor('white')
-    ax.spines['left'].set_position('zero')
-    ax.spines['bottom'].set_position('zero')
+    x_axis_at_zero = ylim[0] <= 0 <= ylim[1]   # horizontal axis y=0 visible
+    y_axis_at_zero = xlim[0] <= 0 <= xlim[1]    # vertical axis x=0 visible
+    if x_axis_at_zero:
+        ax.spines['bottom'].set_position('zero')
+    if y_axis_at_zero:
+        ax.spines['left'].set_position('zero')
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     ax.spines['left'].set_linewidth(1.5)
@@ -47,8 +56,10 @@ def make_fig(xlim=(-8, 8), ylim=(-8, 8)):
     ax.set_xticks(xt)
     ax.set_yticks(yt)
     ax.tick_params(labelsize=7)
-    ax.text(xlim[1] + xr * 0.025, 0, 'x', fontsize=10, ha='left', va='center')
-    ax.text(xr * 0.015, ylim[1], 'y', fontsize=10, ha='left', va='top')
+    y_lbl = 0 if x_axis_at_zero else ylim[0]
+    x_lbl = 0 if y_axis_at_zero else xlim[0]
+    ax.text(xlim[1] + xr * 0.025, y_lbl, 'x', fontsize=10, ha='left', va='center')
+    ax.text(x_lbl + xr * 0.015, ylim[1], 'y', fontsize=10, ha='left', va='top')
     return fig, ax
 
 
@@ -258,7 +269,7 @@ def _f4_18():
     dpt(ax, 1.75, 7.5, 'P(1.75,7.5)', color=CI)
     save(fig, '7_4_ex18.png')
 _f4_18()
-_f4(19, [(3, -1, 'y=3x-1')], [(2,5,'P(2,5) \u2208 \u2113',.15,.15)],
+_f4(19, [(3, -1, 'y=3x-1')], [(2,8,'P(2,8)',.15,.15),(2,5,'Q(2,5)',.15,-.5)],
     xlim=(-2, 5), ylim=(-5, 12))
 def _f4_20():
     fig, ax = make_fig((-4, 6), (-7, 9))
@@ -934,8 +945,17 @@ _f3(15, [(2,-3,'y=2x-3')],
     pts=[(0,-3,'(0,-3)',.15,.15),(4,5,'(4,5)',.15,.15)])
 _f3(16, [(1.5,20,'y=1.5x+20')], xlim=(-2,14), ylim=(15,42))
 _f3(17, [(2.5,50,'y=2.5x+50')], xlim=(-5,80), ylim=(40,260))
-_f3(18, [(8,60,'\u05e1\u05e4\u05e7 \u05d0: y=8x+60'),(10,20,'\u05e1\u05e4\u05e7 \u05d1: y=10x+20')],
-    pts=[(20,220,'x=20',.5,.5)], xlim=(-2,35), ylim=(-10,360))
+def _f3_18():
+    fig, ax = make_fig((-2,35),(-10,360))
+    dline(ax,8,60,(-2,35),color=C1,lw=2)
+    dline(ax,10,20,(-2,35),color=C2,lw=2)
+    ax.text(2,94,'\u05e1\u05e4\u05e7 \u05d0: y=8x+60',color=C1,fontsize=7,
+            bbox=dict(facecolor='white',alpha=0.6,edgecolor='none',pad=1))
+    ax.text(6,52,'\u05e1\u05e4\u05e7 \u05d1: y=10x+20',color=C2,fontsize=7,
+            bbox=dict(facecolor='white',alpha=0.6,edgecolor='none',pad=1))
+    dpt(ax,20,220,'x=20',color=CP,dx=.5,dy=.5)
+    save(fig,'7_3_ex18.png')
+_f3_18()
 _f3(19, [(2,-6,'y=2x-6')],
     pts=[(0,-6,'(0,-6)',.15,.15),(3,0,'(3,0)',.15,.15)])
 _f3(20, [(2,110,'y=2x+110')], xlim=(-2,55), ylim=(100,225))
@@ -982,8 +1002,12 @@ def _f6_17():
 _f6_17()
 def _f6_18():
     fig, ax = make_fig((-5,6),(-2,12))
-    dline(ax,-3,9,(-5,6),color=C1,label='\u05db\u05d1\u05d9\u05e9 \u05d0: y=-3x+9')
-    dline(ax,0.5,2,(-5,6),color=C2,label='\u05db\u05d1\u05d9\u05e9 \u05d1: y=0.5x+2')
+    dline(ax,-3,9,(-5,6),color=C1)
+    dline(ax,0.5,2,(-5,6),color=C2)
+    ax.text(-1.4,10.4,'\u05db\u05d1\u05d9\u05e9 \u05d0: y=-3x+9',color=C1,fontsize=7,
+            bbox=dict(facecolor='white',alpha=0.6,edgecolor='none',pad=1))
+    ax.text(3.3,4.4,'\u05db\u05d1\u05d9\u05e9 \u05d1: y=0.5x+2',color=C2,fontsize=7,
+            bbox=dict(facecolor='white',alpha=0.6,edgecolor='none',pad=1))
     dpt(ax,3,0,'(3,0)',color=C1,dy=-.5)
     dpt(ax,0,9,'(0,9)',color=C1,dx=.15)
     dpt(ax,-4,0,'(-4,0)',color=C2,dy=-.5)
