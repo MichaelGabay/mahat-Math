@@ -14,7 +14,8 @@ import os
 import re
 from bidi.algorithm import get_display
 
-CHAPTER_DIR = "/Users/mq/Desktop/מתמטיקה - אורט/mahat-Math/8 - הפונקציה הריבועית והפרבולה"
+WORKSPACE = os.path.dirname(os.path.abspath(__file__))
+CHAPTER_DIR = os.path.join(WORKSPACE, "8 - הפונקציה הריבועית והפרבולה")
 IMAGES_DIR = os.path.join(CHAPTER_DIR, "images")
 os.makedirs(IMAGES_DIR, exist_ok=True)
 
@@ -24,8 +25,6 @@ plt.rcParams['axes.unicode_minus'] = False
 HEBREW_RE = re.compile(r'[\u0590-\u05FF]')
 
 def rtl_text(value):
-    if isinstance(value, str) and HEBREW_RE.search(value):
-        return get_display(value)
     return value
 
 _orig_set_title = Axes.set_title
@@ -577,6 +576,8 @@ def gen_2_2():
             labels = ['A', 'B']
             for k, (px, py_) in enumerate(pts):
                 mark_pt(ax, px, py_, labels[k] if k < 2 else '', ROOT_COLOR)
+            if n in (19, 20):
+                mark_vertex(ax, a, b, c, 'C')
         else:
             mark_roots(ax, a, b, c)
             mark_vertex(ax, a, b, c)
@@ -602,7 +603,7 @@ def gen_2_3():
         ( 1,-4, 3, None,None, 'שלושה מצבים (Δ>0)'),  # representative
         ( 1, 6, 9, None,None, 'y=x²+6x+9, Δ=0'),
         ( 1, 1, 5, None,None, 'y=x²+x+5, Δ<0'),
-        ( 1,-2,-24,None,None, 'מרחק 8: נק׳ (−3,0) ו(5,0)'),
+        ( 1,-2,-15,None,None, 'מרחק 8: נק׳ (−3,0) ו(5,0)'),
         ( 1, -6,-16,None,None,'מרחק 10: x₁=−2, x₂=8'),
         ( 1,-2, -8,None,None, 'y=x²−2x−8, מרחק 6'),
         (-1, 6, -4,None,None, 'y=−x²+6x−4, מרחק 2√5'),
@@ -694,26 +695,26 @@ def gen_3_1():
     print(f"\n── Subtopic {sub} ──")
 
     exercises = [
-        (1,-4, 1, None,None, 'y=x²−4x+1, ציר x=2'),
-        (1, 6, 5, None,None, 'y=x²+6x+5, ציר x=−3'),
-        (-1,8,-3, None,None, 'y=−x²+8x−3, ציר x=4'),
-        (2,-12,7, None,None, 'y=2x²−12x+7, ציר x=3'),
-        (1, 1,-12,None,None, 'y=x²+x−12, ציר x=−½'),
-        (-1,2, 8, None,None, 'y=−x²+2x+8, ציר x=1'),
-        (4,-16,3, None,None, 'y=4x²−16x+3, ציר x=2'),
-        (1,-2,-35,None,None, 'y=x²−2x−35, ציר x=1'),
-        (2,-8, 3, None,None, 'y=2x²−8x+3, ציר x=2'),
-        (-1,6,-4, None,None, 'y=−x²+6x−4, ציר x=3'),
-        (1, 6, 0, None,None, 'y=x²+6x+c, ציר x=−3 → b=6'),
-        (1,-8, 7, None,None, 'שורשים (1,0),(7,0) → ציר x=4'),
-        (1,-2,-15,None,None, 'שורשים (−3,0),(5,0) → ציר x=1'),
-        (1,-2,-4, None,None, 'y=x²−2x−4, ציר x=1'),
-        (1,-4, 5, None,None, 'y=x²−4x+5, ציר x=2, (0,5)'),
-        (1, 4,-12,None,None, 'y=x²+4x−12, ציר x=−2'),
-        (1, 1,-12,None,None, 'y=x²+x−12, קודקוד (מה"ט)'),
-        (1,-2,-4,  1,  6,   'y=x²−2x−4 ו y=x+6'),
-        (-1,4,  0, None,None,'y=−x²+4x, ציר x=2'),
-        (1,-6, 13, None,None,'שתי פרבולות 1.'),
+        (1,-4, 1, None,None, 'y=x²−4x+1'),
+        (1, 6, 5, None,None, 'y=x²+6x+5'),
+        (-1,8,-3, None,None, 'y=−x²+8x−3'),
+        (2,-12,7, None,None, 'y=2x²−12x+7'),
+        (1, 1,-12,None,None, 'y=x²+x−12'),
+        (-1,2, 8, None,None, 'y=−x²+2x+8'),
+        (4,-16,3, None,None, 'y=4x²−16x+3'),
+        (1,-2,-35,None,None, 'y=x²−2x−35'),
+        (2,-8, 3, None,None, 'y=2x²−8x+3'),
+        (-1,6,-4, None,None, 'y=−x²+6x−4'),
+        (1, 6, 0, None,None, 'y=x²+bx+c, ציר x=−3'),
+        (1,-8, 7, None,None, 'שורשים (1,0) ו-(7,0)'),
+        (1,-2,-15,None,None, 'שורשים (−3,0) ו-(5,0)'),
+        (1,-2,-4, None,None, 'y=x²−2x−4'),
+        (1,-4, 5, None,None, 'ציר x=2, עוברת דרך (0,5)'),
+        (1, 4,-12,None,None, 'y=x²+4x−12'),
+        (1, 1,-12,None,None, 'y=x²+x−12'),
+        (1,-2,-4,  1,  6,   'y=x²−2x−4 ו-y=x+6'),
+        (-1,4,  0, None,None,'y=−x²+4x'),
+        (1,-6, 13, None,None,'y=x²−6x+13 ו-y=−x²+8x−7'),
     ]
 
     for i, (a, b, c, lm, ln, title) in enumerate(exercises):
@@ -783,7 +784,8 @@ def gen_3_2():
         fig, ax = make_fig()
         xl = xlim_auto(a, b, c)
         draw_para(ax, a, b, c, xl)
-        xv, yv = mark_vertex(ax, a, b, c)
+        vlabel = 'C' if n == 19 else 'V'
+        xv, yv = mark_vertex(ax, a, b, c, label=vlabel)
         mark_roots(ax, a, b, c)
 
         # Extra: annotate min/max value
@@ -821,77 +823,133 @@ def gen_3_3():
     sub = '3.3'
     print(f"\n── Subtopic {sub} ──")
 
-    # Each entry: (a,b,c, px, py_val, title)
-    # px = x-coordinate of original point; py_val will be computed
-    # sym_x = 2*xv - px
-    exercises = [
-        # simple axis/point examples
-        (1,-6, 5,  1, None, 'ציר x=3, P ב-x=1, סימטרית ב-x=5'),   # ex1
-        (1,-10,24, 2, None, 'ציר x=5, P ב-x=2, סימטרית ב-x=8'),   # ex2
-        (-1,-2, 3, 4, None, 'ציר x=−1, P ב-x=4, סימטרית ב-x=−6'), # ex3
-        (1,-4, 3,  0, None, 'y=x²−4x+3, A(0,3), A′(4,3)'),         # ex4 illustrative
-        (1,-4, 3,  0, None, 'y=x²−4x+3: A(0,3) ↔ A′(4,3)'),       # ex5
-        (1,-6, 5,  1, None, 'y=x²−6x+5: (1,0) ↔ (5,0)'),          # ex6
-        (-1,2, 8, -1, None, 'y=−x²+2x+8: (−1,5) ↔ (3,5)'),        # ex7
-        (1,-2,-35,-5,None,  'y=x²−2x−35: A(−5,0) ↔ (7,0)'),       # ex8
-        (1,-8, 7,  1, None, 'y=x²−8x+7: (1,0) ↔ (7,0)'),          # ex9
-        (1,-4, 5,  0, None, 'y=x²−4x+5: A(0,5) ↔ A′(4,5)'),       # ex10
-        (-1,6,-5,  1, None, 'y=−x²+6x−5: (1,0) ↔ (5,0)'),         # ex11
-        (1, 2,-8,  2, None, 'y=x²+2x−8: P(2,0) ↔ (−4,0)'),        # ex12
-        (1,-2,-4,  0, None, 'y=x²−2x−4: (0,−4) ↔ (2,−4)'),        # ex13
-        (2,-8, 3,  0, None, 'y=2x²−8x+3: B(0,3) ↔ B′(4,3)'),      # ex14
-        (1,-6, 8,  1, None, 'y=x²−6x+8: A(1,3) ↔ B(5,3)'),        # ex15
-        (-1,8,-7,  1, None, 'y=−x²+8x−7: C(1,0) ↔ (7,0)'),        # ex16
-        (1,-4, 5,  0, None, 'y=x²−4x+5: A(0,5), B(4,5), C(2,1)'), # ex17
-        (1, 0, 0,  -1,None, 'y=x² ו y=3x+4: A(−1,1), B(4,16)'),   # ex18 special
-        (1,-5,-1,  -2,None, 'y=x²−5x−1, ציר 5/2, A→A′'),          # ex19
-        (-1,2, 8,  0, None, 'y=−x²+2x+8: A,B,D,C'),                # ex20
-    ]
+    def draw_sym_pair(ax, a, b, c, px, plabel='P', splabel="P'",
+                      show_roots=True, show_vertex=True):
+        xl = xlim_auto(a, b, c, extra=[px])
+        draw_para(ax, a, b, c, xl)
+        xv, _ = vertex(a, b, c)
+        ppy = py(a, b, c, px)
+        sym_x = 2 * xv - px
+        spy = py(a, b, c, sym_x)
+        mark_pt(ax, px, ppy, plabel, PT_COLOR)
+        mark_pt(ax, sym_x, spy, splabel, SYM_COLOR, xytext=(6, 6))
+        ax.axvline(xv, color='purple', ls='--', lw=1.2, alpha=0.7,
+                   label=f'ציר x={xv:.2g}')
+        if abs(ppy - spy) < 0.01:
+            ax.annotate('', (sym_x, spy), (px, ppy),
+                        arrowprops=dict(arrowstyle='<->', color='purple', lw=1.0))
+        if show_roots:
+            mark_roots(ax, a, b, c)
+        if show_vertex:
+            mark_vertex(ax, a, b, c)
+        setup_axes(ax)
+        ax.set_xlim(*xl)
+        ax.legend(fontsize=8)
+        return xl
 
-    for i, (a, b, c, px, _py, title) in enumerate(exercises):
-        n = i + 1
+    sym_specs = {
+        1:  (1, -6,  5,   1, 'P', "P'", False, False, 'ציר x=3, P ב-x=1, סימטרית ב-x=5'),
+        2:  (1, -10, 24,  2, 'P', "P'", False, False, 'ציר x=5, P ב-x=2, סימטרית ב-x=8'),
+        3:  (-1, -2, 3,   4, 'P', "P'", False, False, 'ציר x=−1, P ב-x=4, סימטרית ב-x=−6'),
+        5:  (1, -4,  3,   0, 'A', "A'", True,  True,  'y=x²−4x+3: A(0,3) ↔ A′(4,3)'),
+        6:  (1, -6,  5,   1, 'P', "P'", True,  True,  'y=x²−6x+5: (1,0) ↔ (5,0)'),
+        7:  (-1, 2,  8,  -1, 'P', "P'", True,  True,  'y=−x²+2x+8: (−1,5) ↔ (3,5)'),
+        8:  (1, -2, -35, -5, 'A', "A'", True,  True,  'y=x²−2x−35: A(−5,0) ↔ (7,0)'),
+        9:  (1, -8,  7,   1, 'P', "P'", True,  True,  'y=x²−8x+7: (1,0) ↔ (7,0)'),
+        10: (1, -4,  5,   0, 'A', "A'", True,  True,  'y=x²−4x+5: A(0,5) ↔ A′(4,5)'),
+        11: (-1, 6, -5,   1, 'P', "P'", True,  True,  'y=−x²+6x−5: (1,0) ↔ (5,0)'),
+        12: (1,  2, -8,   2, 'P', "P'", True,  True,  'y=x²+2x−8: P(2,0) ↔ (−4,0)'),
+        13: (1, -2, -4,   0, 'P', "P'", True,  True,  'y=x²−2x−4: (0,−4) ↔ (2,−4)'),
+        14: (2, -8,  3,   0, 'B', "B'", True,  True,  'y=2x²−8x+3: B(0,3) ↔ B′(4,3)'),
+        15: (1, -6,  8,   1, 'A', 'B',  True,  True,  'y=x²−6x+8: A(1,3) ↔ B(5,3)'),
+        16: (-1, 8, -7,   1, 'C', "C'", True,  True,  'y=−x²+8x−7: C(1,0) ↔ (7,0)'),
+    }
+
+    for n in range(1, 21):
         fig, ax = make_fig()
 
-        if n == 18:
-            # y=x² and line y=3x+4
-            xl = (-3, 6)
+        if n == 4:
+            xl = (-4, 4)
+            draw_para(ax, 1, 0, 0, xl)
+            mark_pt(ax, -2, 4, 'P', PT_COLOR)
+            mark_pt(ax, 2, 4, "P'", SYM_COLOR, xytext=(6, 6))
+            ax.axvline(0, color='purple', ls='--', lw=1.2, alpha=0.7, label='ציר x=0')
+            ax.annotate('', (2, 4), (-2, 4),
+                        arrowprops=dict(arrowstyle='<->', color='purple', lw=1.0))
+            setup_axes(ax)
+            ax.set_xlim(*xl)
+            ax.legend(fontsize=8)
+            ax.set_title('נקודות סימטריות: אותו שיעור y', fontsize=9)
+
+        elif n == 17:
+            a, b, c = 1, -4, 5
+            xl = xlim_auto(a, b, c)
+            draw_para(ax, a, b, c, xl)
+            xv, yv = vertex(a, b, c)
+            mark_pt(ax, 0, 5, 'A', PT_COLOR)
+            mark_pt(ax, 4, 5, 'B', SYM_COLOR, xytext=(6, 6))
+            mark_pt(ax, xv, yv, 'C', VTX_COLOR)
+            ax.axvline(xv, color='purple', ls='--', lw=1.2, alpha=0.7,
+                       label=f'ציר x={xv:.2g}')
+            ax.annotate('', (4, 5), (0, 5),
+                        arrowprops=dict(arrowstyle='<->', color='purple', lw=1.0))
+            setup_axes(ax)
+            ax.set_xlim(*xl)
+            ax.legend(fontsize=8)
+            ax.set_title('y=x²−4x+5: A(0,5), B(4,5), C(2,1)', fontsize=9)
+
+        elif n == 18:
+            xl = (-5, 6)
             draw_para(ax, 1, 0, 0, xl, PARA_COLOR, label='y=x²')
             draw_line(ax, 3, 4, xl, LINE_COLOR, label='y=3x+4')
             mark_pt(ax, -1, 1,  'A', ROOT_COLOR)
             mark_pt(ax,  4, 16, 'B', ROOT_COLOR)
-            mark_pt(ax, -4, 16, 'C', SYM_COLOR, xytext=(6, 4))  # symmetric to B
-            mark_pt(ax,  0, 0,  'D', VTX_COLOR)                 # vertex
+            mark_pt(ax, -4, 16, 'C', SYM_COLOR, xytext=(6, 4))
+            mark_pt(ax,  0, 0,  'D', VTX_COLOR)
             ax.scatter([0], [0], color=VTX_COLOR, s=80, zorder=6)
             ax.legend(fontsize=8)
-            setup_axes(ax); ax.set_xlim(*xl)
-        else:
-            xl = xlim_auto(a, b, c, extra=[px])
+            setup_axes(ax)
+            ax.set_xlim(*xl)
+            ax.set_title('y=x² ו y=3x+4: A(−1,1), B(4,16), C(−4,16)', fontsize=9)
+
+        elif n == 19:
+            a, b, c = 1, -5, -1
+            xl = xlim_auto(a, b, c, extra=[-2, 4, 7], m2=-3, n2=7)
             draw_para(ax, a, b, c, xl)
-            xv, _ = vertex(a, b, c)
-
-            # original point
-            ppy = py(a, b, c, px)
-            mark_pt(ax, px, ppy, 'P', PT_COLOR)
-
-            # symmetric point
-            sym_x = 2 * xv - px
-            spy   = py(a, b, c, sym_x)
-            mark_pt(ax, sym_x, spy, "P'", SYM_COLOR, xytext=(6, 6))
-
-            # show axis of symmetry
-            ax.axvline(xv, color='purple', ls='--', lw=1.2, alpha=0.7, label=f'ציר x={xv:.2g}')
-
-            # connect with arrow
-            if abs(ppy - spy) < 0.01:  # same height (expected)
-                ax.annotate('', (sym_x, spy), (px, ppy),
-                            arrowprops=dict(arrowstyle='<->', color='purple', lw=1.0))
-
-            mark_roots(ax, a, b, c)
-            mark_vertex(ax, a, b, c)
-            setup_axes(ax); ax.set_xlim(*xl)
+            draw_line(ax, -3, 7, xl, LINE_COLOR, label='y=−3x+7')
+            mark_pt(ax, -2, 13, 'A', PT_COLOR)
+            mark_pt(ax,  4, -5, 'B', ROOT_COLOR)
+            mark_pt(ax,  7, 13, "A'", SYM_COLOR, xytext=(6, 6))
+            mark_pt(ax, -2,  0, 'D', 'gray', xytext=(6, -12))
+            ax.axvline(2.5, color='purple', ls='--', lw=1.2, alpha=0.7, label='ציר x=5/2')
+            ax.annotate('', (7, 13), (-2, 13),
+                        arrowprops=dict(arrowstyle='<->', color='purple', lw=1.0))
+            setup_axes(ax)
+            ax.set_xlim(*xl)
             ax.legend(fontsize=8)
+            ax.set_title('y=x²−5x−1, חיתוך עם y=−3x+7', fontsize=9)
 
-        ax.set_title(title, fontsize=9)
+        elif n == 20:
+            a, b, c = -1, 2, 8
+            xl = xlim_auto(a, b, c)
+            draw_para(ax, a, b, c, xl)
+            mark_pt(ax, -2, 0, 'A', ROOT_COLOR)
+            mark_pt(ax,  4, 0, 'D', ROOT_COLOR, xytext=(6, 9))
+            mark_pt(ax,  0, 8, 'B', PT_COLOR)
+            mark_pt(ax,  2, 8, 'C', SYM_COLOR, xytext=(6, 6))
+            ax.axvline(1, color='purple', ls='--', lw=1.2, alpha=0.7, label='ציר x=1')
+            ax.annotate('', (2, 8), (0, 8),
+                        arrowprops=dict(arrowstyle='<->', color='purple', lw=1.0))
+            setup_axes(ax)
+            ax.set_xlim(*xl)
+            ax.legend(fontsize=8)
+            ax.set_title('y=−x²+2x+8: A(−2,0), B(0,8), C(2,8), D(4,0)', fontsize=9)
+
+        elif n in sym_specs:
+            a, b, c, px, pl, sl, roots, vtx, title = sym_specs[n]
+            draw_sym_pair(ax, a, b, c, px, pl, sl, roots, vtx)
+            ax.set_title(title, fontsize=9)
+
         save_fig(fig, sub, n)
 
 
