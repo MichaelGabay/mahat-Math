@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, FancyArrow
 import numpy as np, os, sys
 
-DIR = "/Users/mq/Desktop/\u05de\u05ea\u05de\u05d8\u05d9\u05e7\u05d4 - \u05d0\u05d5\u05e8\u05d8/mahat-Math/10 - \u05d8\u05e8\u05d9\u05d2\u05d5\u05e0\u05d5\u05de\u05d8\u05e8\u05d9\u05d4"
+DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                   "10 - \u05d8\u05e8\u05d9\u05d2\u05d5\u05e0\u05d5\u05de\u05d8\u05e8\u05d9\u05d4")
 IMG = os.path.join(DIR, "images")
 os.makedirs(IMG, exist_ok=True)
 
@@ -290,10 +291,10 @@ def ch12():
     # 19: XYZ with XY=41, XZ=40, YZ=9 → right angle at Z
     fig, ax = nax()
     sc = s4(40, 9)
-    Z, X, Y = np.array([0,0]), np.array([0, 9*sc]), np.array([40*sc, 0])
+    Z, X, Y = np.array([0,0]), np.array([40*sc, 0]), np.array([0, 9*sc])
     pg(ax, [X,Y,Z]); rm(ax, Z, X, Y)
     vl(ax, X, 'X', [Y,Z]); vl(ax, Y, 'Y', [X,Z]); vl(ax, Z, 'Z', [X,Y])
-    ml(ax, Z, X, 'YZ=9'); ml(ax, Z, Y, 'XZ=40', s=-1); ml(ax, X, Y, 'XY=41', k=0.27)
+    ml(ax, Z, X, 'XZ=40', s=-1); ml(ax, Z, Y, 'YZ=9'); ml(ax, X, Y, 'XY=41', k=0.27)
     al(ax, [X,Y,Z]); sv(fig, pr+"19.png")
 
     # 20: Hyp=3×short leg (=8), find long leg b=16√2
@@ -684,62 +685,82 @@ def ch42():
     ml(ax, A, C, 'AC=9'); ml(ax, C, B, 'BC=12', s=-1); ml(ax, A, B, 'AB=?', k=0.27, c='red')
     al(ax, [A,B,C]); sv(fig, pr+"15.png")
 
-    # 16: Pendulum 4m, horizontal offset=2m → angle of deviation
+    # 16: Pendulum 4m from ceiling height 5m, horizontal offset=2m → angle of deviation
     fig, ax = nax()
-    O = np.array([0, 3.46]); hang = np.array([0, 0]); child = np.array([2, 0])
-    ln(ax, O, hang, lw=1, c='dimgray', ls='--')  # vertical reference
-    ln(ax, O, child, lw=2.5, c='royalblue')        # actual rope
+    # Ground y=0; suspension at height 5; rope 4m; offset 2m → child height ≈1.54
+    O = np.array([0.0, 5.0])
+    hang = np.array([0.0, 1.0])          # vertical free-hang end
+    child = np.array([2.0, 5.0 - 4.0 * np.cos(np.radians(30))])  # ≈(2, 1.536)
+    ground_l, ground_r = np.array([-1.2, 0.0]), np.array([3.2, 0.0])
+    ln(ax, ground_l, ground_r, lw=2, c='dimgray')             # ground
+    ln(ax, O, hang, lw=1, c='dimgray', ls='--')               # vertical reference
+    ln(ax, O, child, lw=2.5, c='royalblue')                   # actual rope
     ln(ax, hang, child, lw=1.5, c='dimgray', ls=':')
-    rm(ax, child, O, hang)
-    aoa(ax, O, hang, child, r=0.5, col='crimson', lbl='\u03b1=?')
-    ml(ax, O, child, '4m', k=0.28, c='royalblue'); ml(ax, hang, child, 'x=2m', s=-1)
+    rm(ax, hang, O, child)
+    aoa(ax, O, hang, child, r=0.55, col='crimson', lbl='\u03b1=?')
+    ml(ax, O, child, '4m', k=0.28, c='royalblue')
+    ml(ax, hang, child, 'x=2m', s=-1)
+    ml(ax, np.array([-0.9, 0]), np.array([-0.9, 5]), '5m', s=1, c='saddlebrown')
+    ln(ax, np.array([-0.55, 0]), np.array([-0.55, 5]), lw=1, c='saddlebrown', ls=':')
     ax.plot(*O, 'ko', ms=6); ax.plot(*child, 'ro', ms=8)
-    al(ax, [O, hang, child]); sv(fig, pr+"16.png")
+    al(ax, [O, hang, child, ground_l, ground_r]); sv(fig, pr+"16.png")
 
-    # 17: Slide+ladder complex: AC=2.5m, angle ACD=46°, angle ABD=63°
+    # 17: Slide+ladder: A top, B slide-foot, C ladder-foot, D foot of height
+    # AC=2.5m (ladder), ∠ACD=46°, ∠ABD=63° → AD≈1.80, BD≈0.92, CD≈1.74, AB≈2.02
     fig, ax = nax()
-    D = np.array([0, 0]); A = np.array([0, 1.8]); B_sl = np.array([-2.0, 1.8])
-    ln(ax, D, A, lw=2, c='saddlebrown')  # ladder (vertical)
-    ln(ax, A, D, lw=2, c='saddlebrown')  # same
-    ln(ax, D, B_sl, lw=2, c='royalblue')  # slide
-    ln(ax, A, B_sl, lw=2, c='dimgray')
-    rm(ax, D, A, B_sl)
-    aoa(ax, A, D, B_sl, r=0.35, col='royalblue', lbl='46°')
-    aoa(ax, B_sl, D, A, r=0.5, col='crimson', lbl='63°')
-    ml(ax, A, D, 'AC=2.5m')
-    ml(ax, D, B_sl, '?', s=-1, c='red')
-    vl(ax, D, 'D', [A, B_sl]); vl(ax, A, 'A=C', [D, B_sl]); vl(ax, B_sl, 'B', [D, A])
-    al(ax, [D, A, B_sl]); sv(fig, pr+"17.png")
+    AD, BD, CD = 1.80, 0.92, 1.74
+    D = np.array([0.0, 0.0]); A = np.array([0.0, AD])
+    B = np.array([-BD, 0.0]); C = np.array([CD, 0.0])
+    ln(ax, B, C, lw=2, c='dimgray')                # ground BC
+    ln(ax, A, C, lw=2.5, c='saddlebrown')          # ladder AC
+    ln(ax, A, B, lw=2.5, c='royalblue')            # slide AB
+    ln(ax, A, D, lw=1.5, c='dimgray', ls='--')     # height AD
+    rm(ax, D, A, B); rm(ax, D, A, C)
+    aoa(ax, C, A, D, r=0.35, col='saddlebrown', lbl='46°')
+    aoa(ax, B, A, D, r=0.40, col='royalblue', lbl='63°')
+    ml(ax, A, C, 'AC=2.5m', k=0.28, c='saddlebrown')
+    ml(ax, A, B, 'AB=?', k=0.28, c='royalblue')
+    ml(ax, A, D, 'AD=?', k=0.22, c='red')
+    ml(ax, B, D, 'BD=?', s=-1, c='red')
+    vl(ax, A, 'A', [B, C]); vl(ax, B, 'B', [A, D])
+    vl(ax, C, 'C', [A, D]); vl(ax, D, 'D', [A, B])
+    al(ax, [A, B, C, D]); sv(fig, pr+"17.png")
 
-    # 18: Right triangle ABC, C=90°, BD⊥AC, BD=14.3, angle CDB=68°
+    # 18: Right △ABC, ∠C=90°, median BD to AC; BD=14.3, ∠CDB=68°
+    # CD≈5.36, BC≈13.26, AC≈10.72
     fig, ax = nax()
-    sc = s4(5.36, 13.26)
-    C = np.array([0,0]); D = np.array([5.36*sc, 0]); B = np.array([5.36*sc, 13.26*sc])
-    A = np.array([0, 13.26*sc])
-    pg(ax, [A,B,C])
+    sc = s4(13.26, 10.72)
+    C = np.array([0.0, 0.0]); B = np.array([13.26*sc, 0.0])
+    A = np.array([0.0, 10.72*sc]); D = np.array([0.0, 5.36*sc])
+    pg(ax, [A, B, C])
     ln(ax, B, D, lw=2, c='royalblue', ls='--')
-    rm(ax, C, A, B); rm(ax, D, C, B)
-    vl(ax, A, 'A', [B,C]); vl(ax, B, 'B', [A,C])
-    vl(ax, C, 'C', [A,B]); vl(ax, D, 'D', [B,C])
-    aoa(ax, D, C, B, r=0.35, col='royalblue', lbl='68°')
-    ml(ax, B, D, 'BD=14.3', k=0.3, c='royalblue')
+    rm(ax, C, A, B)
+    vl(ax, A, 'A', [B, C]); vl(ax, B, 'B', [A, C])
+    vl(ax, C, 'C', [A, B]); vl(ax, D, 'D', [B, C])
+    aoa(ax, D, C, B, r=0.40, col='royalblue', lbl='68°')
+    ml(ax, B, D, 'BD=14.3', k=0.30, c='royalblue')
+    ml(ax, C, D, 'CD=?', k=0.22, c='red')
+    ml(ax, C, B, 'BC=?', s=-1, c='red')
     al(ax, [A, B, C, D]); sv(fig, pr+"18.png")
 
-    # 19: Bridge at 37°, length=15m, wall 7m
+    # 19: Bridge at 37°, length=15m; wall 7m at the NEAR (low) end
+    # Bridge rises to h≈9.03 over horiz≈12; red line wall-top → bridge-top (for part ד)
     fig, ax = nax()
-    sc = s4(12, 9)
-    O = np.array([0, 0]); top = np.array([0, 9*sc]); far = np.array([12*sc, 0])
-    wall_top = np.array([12*sc, 7*sc])
-    ln(ax, O, far, lw=2, c='dimgray')
-    ln(ax, O, top, lw=2, c='dimgray')
-    ln(ax, O, wall_top, lw=2.5, c='royalblue')  # bridge
-    ln(ax, far, wall_top, lw=2, c='saddlebrown')  # wall
-    rm(ax, O, top, far)
-    aoa(ax, O, far, wall_top, r=0.5, col='royalblue', lbl='37°')
-    ml(ax, O, wall_top, '15m', k=0.28, c='royalblue')
-    ml(ax, far, wall_top, '7m', c='saddlebrown')
+    sc = s4(12, 9.03)
+    O = np.array([0.0, 0.0]); far = np.array([12*sc, 0.0])
+    bridge_top = np.array([12*sc, 9.03*sc]); wall_top = np.array([0.0, 7*sc])
+    ln(ax, O, far, lw=1.5, c='dimgray', ls='--')           # ground / horiz
+    ln(ax, far, bridge_top, lw=1.5, c='dimgray', ls='--')  # height h
+    ln(ax, O, bridge_top, lw=2.5, c='royalblue')           # bridge
+    ln(ax, O, wall_top, lw=2.5, c='saddlebrown')           # wall at near end
+    ln(ax, wall_top, bridge_top, lw=1.5, c='crimson', ls=':')
+    rm(ax, far, O, bridge_top)
+    aoa(ax, O, far, bridge_top, r=0.55, col='royalblue', lbl='37°')
+    ml(ax, O, bridge_top, '15m', k=0.28, c='royalblue')
+    ml(ax, O, wall_top, '7m', k=0.22, c='saddlebrown')
     ml(ax, O, far, 'horiz=?', s=-1)
-    al(ax, [O, top, far, wall_top]); sv(fig, pr+"19.png")
+    ml(ax, far, bridge_top, 'h=?', k=0.22, c='red')
+    al(ax, [O, far, bridge_top, wall_top]); sv(fig, pr+"19.png")
 
     # 20: Lighthouse: two ships A and B, angles 12° and 20°
     fig, ax = nax()
@@ -914,9 +935,10 @@ def ch51():
     rm(ax, D, A, B)
     vl(ax, A, 'A', [B, C]); vl(ax, B, 'B', [A, C]); vl(ax, C, 'C', [A, B])
     vl(ax, D, 'D', [A, B]); vl(ax, E, 'E', [A, B])
-    ml(ax, A, D, 'AD=15', c='royalblue'); ml(ax, B, C, 'BC=24', s=-1)
+    ml(ax, A, D, 'AD=?', c='royalblue'); ml(ax, B, C, 'BC=24', s=-1)
     ml(ax, D, E, 'DE=?', c='red', k=0.28)
-    al(ax, [A, B, C, D, E]); sv(fig, pr+"17.png")
+    ax.text(0, 15*sc + 0.55, 'Area=180 cm\u00b2', fontsize=10, ha='center', va='bottom', color='royalblue')
+    al(ax, [A, B, C, D, E], pad=0.75); sv(fig, pr+"17.png")
 
     # 18: Right triangle ABC, B=90°, AB=7, BC=24, altitude BD⊥AC
     fig, ax = nax()
@@ -997,7 +1019,7 @@ def ch52():
         return A, B, C, D
 
     def draw_rhombus_diag(ax, d1, d2, lbl_d1=None, lbl_d2=None,
-                          lbl_side=None, lbl_ang=None):
+                          lbl_side=None, lbl_ang=None, ang_vertex='D'):
         sc = s4(d1/2, d2/2)
         A = np.array([0, d2/2*sc]); B = np.array([d1/2*sc, 0])
         C = np.array([0, -d2/2*sc]); D = np.array([-d1/2*sc, 0])
@@ -1008,10 +1030,18 @@ def ch52():
         rm(ax, O, A, B)
         vl(ax, A, 'A', [B,D]); vl(ax, B, 'B', [A,C])
         vl(ax, C, 'C', [B,D]); vl(ax, D, 'D', [A,C])
-        if lbl_d1: ml(ax, B, D, lbl_d1, s=-1)
-        if lbl_d2: ml(ax, A, C, lbl_d2)
+        # Labels on half-diagonals (away from O) to avoid overlap at the center
+        if lbl_d1: ml(ax, O, B, lbl_d1, k=0.28, s=-1)
+        if lbl_d2: ml(ax, O, A, lbl_d2, k=0.28)
         if lbl_side: ml(ax, A, B, lbl_side)
-        if lbl_ang: aoa(ax, D, A, B, r=0.3, col='royalblue', lbl=lbl_ang)
+        if lbl_ang:
+            # Full vertex angle between the two sides (not side+diagonal)
+            if ang_vertex == 'A':
+                aoa(ax, A, D, B, r=0.3, col='royalblue', lbl=lbl_ang)
+            elif ang_vertex == 'B':
+                aoa(ax, B, A, C, r=0.3, col='royalblue', lbl=lbl_ang)
+            else:
+                aoa(ax, D, A, C, r=0.3, col='royalblue', lbl=lbl_ang)
         al(ax, [A,B,C,D])
         return A, B, C, D, O
 
@@ -1086,15 +1116,28 @@ def ch52():
     sv(fig, pr+"12.png")
 
     # 13: Rectangle, short side=9, diagonal=15 → long side=12
+    # Part ג asks angle between diagonal and SHORT side → mark ∠CAD, not ∠BAC
     fig, ax = nax()
-    draw_rect_diag(ax, 12, 9, lbl_w='long=?', lbl_h='9', lbl_d='d=15', lbl_ang='?°')
+    sc = s4(12, 9)
+    A = np.array([0.0, 0.0]); B = np.array([12*sc, 0.0])
+    C = np.array([12*sc, 9*sc]); D = np.array([0.0, 9*sc])
+    pg(ax, [A, B, C, D]); rm(ax, A, B, D)
+    ln(ax, A, C, lw=2, c='royalblue', ls='--')
+    vl(ax, A, 'A', [B, D]); vl(ax, B, 'B', [A, C])
+    vl(ax, C, 'C', [B, D]); vl(ax, D, 'D', [A, C])
+    ml(ax, A, B, 'long=?', s=-1)
+    ml(ax, A, D, '9')
+    ml(ax, A, C, 'd=15', k=0.28, c='royalblue')
+    aoa(ax, A, D, C, r=0.45, col='crimson', lbl='?°')  # angle with short side AD
+    al(ax, [A, B, C, D])
     sv(fig, pr+"13.png")
 
     # 14: Rhombus, side=7, obtuse angle=120° → acute=60°, find diagonals
     fig, ax = nax()
     d1 = 2*7*np.cos(np.radians(30)); d2 = 7  # d2 = 2*7*sin(30)
+    # With d1>d2 the obtuse angles sit at A and C
     draw_rhombus_diag(ax, d1, d2, lbl_d1='d1=?', lbl_d2='d2=?',
-                      lbl_side='7', lbl_ang='120°')
+                      lbl_side='7', lbl_ang='120°', ang_vertex='A')
     sv(fig, pr+"14.png")
 
     # 15: Rectangle, area=60, diagonal=13 → sides 5,12
@@ -1113,50 +1156,119 @@ def ch52():
     fig, ax = nax()
     d = 2*7.8; w = d*np.cos(np.radians(63)); h = d*np.sin(np.radians(63))
     sc = s4(w, h)
-    A = np.array([0,0]); B = np.array([w*sc,0])
-    C = np.array([w*sc,h*sc]); D = np.array([0,h*sc])
-    M = (A + C) / 2  # midpoint of diagonals
-    pg(ax, [A,B,C,D])
+    A = np.array([0.0, 0.0]); B = np.array([w*sc, 0.0])
+    C = np.array([w*sc, h*sc]); D = np.array([0.0, h*sc])
+    M = (A + C) / 2
+    E = np.array([M[0], C[1]])  # on CD, ME || AD
+    pg(ax, [A, B, C, D])
     ln(ax, A, C, lw=1.5, c='dimgray', ls='--')
     ln(ax, B, D, lw=1.5, c='dimgray', ls='--')
-    # E on CD such that ME || AD
-    E = np.array([M[0], 0])  # approximate
-    E = np.array([M[0], C[1]])  # E on CD
     ln(ax, M, E, lw=2, c='royalblue')
     rm(ax, A, B, D)
-    vl(ax, A, 'A', [B,D]); vl(ax, B, 'B', [A,C])
-    vl(ax, C, 'C', [B,D]); vl(ax, D, 'D', [A,C]); vl(ax, M, 'M', [A,C])
-    aoa(ax, A, B, D, r=0.4, col='royalblue', lbl='63°')
+    vl(ax, A, 'A', [B, D]); vl(ax, B, 'B', [A, C])
+    vl(ax, C, 'C', [B, D]); vl(ax, D, 'D', [A, C])
+    vl(ax, M, 'M', [A, C]); vl(ax, E, 'E', [C, D, M])
+    aoa(ax, B, A, D, r=0.45, col='crimson', lbl='63°')  # ∠ABD
     ml(ax, C, M, 'CM=7.8', k=0.28, c='royalblue')
-    al(ax, [A,B,C,D]); sv(fig, pr+"17.png")
+    ml(ax, M, E, 'ME', k=0.22, c='royalblue')
+    al(ax, [A, B, C, D, E], pad=0.7)
+    sv(fig, pr+"17.png")
 
-    # 18: Rectangle ABCD, AB=BE, AE=11.32, EC=4
+    # 18: Rectangle ABCD, AB=BE, AE=11.32, EC=4 (do not spoil AB/BC)
     fig, ax = nax()
-    # AB=BE=8, BC=12
-    draw_rect_diag(ax, 12, 8, lbl_w='BC=12', lbl_h='AB=8', lbl_d='AC=?', lbl_ang='?°')
+    ab, ec = 8.0, 4.0
+    bc = ab + ec
+    sc = s4(ab, bc)
+    A = np.array([0.0, 0.0]); B = np.array([ab*sc, 0.0])
+    C = np.array([ab*sc, bc*sc]); D = np.array([0.0, bc*sc])
+    E = np.array([ab*sc, ab*sc])  # on BC with BE = AB
+    pg(ax, [A, B, C, D])
+    ln(ax, A, E, lw=2, c='royalblue')
+    ln(ax, A, C, lw=1.5, c='dimgray', ls='--')
+    rm(ax, A, B, D)
+    vl(ax, A, 'A', [B, D]); vl(ax, B, 'B', [A, C])
+    vl(ax, C, 'C', [B, D]); vl(ax, D, 'D', [A, C])
+    vl(ax, E, 'E', [B, C, A])
+    ml(ax, A, E, 'AE=11.32', k=0.28, c='royalblue')
+    ml(ax, E, C, 'EC=4', k=0.28, c='crimson')
+    ml(ax, A, B, 'AB=BE=?', s=-1)
+    ml(ax, B, C, 'BC=?')
+    al(ax, [A, B, C, D, E], pad=0.75)
     sv(fig, pr+"18.png")
 
-    # 19: Rhombus ABCD, AB=10.3, angle ABC=128°
+    # 19: Rhombus ABCD, AB=10.3, ∠ABC=128° (+ E,F for part ג)
     fig, ax = nax()
-    ang = 128; acute = 180 - ang  # = 52°
-    d1 = 2*10.3*np.cos(np.radians(ang/2)); d2 = 2*10.3*np.sin(np.radians(ang/2))
-    draw_rhombus_diag(ax, abs(d1), abs(d2), lbl_d1='AC=?', lbl_d2='BD=?',
-                      lbl_side='10.3', lbl_ang='128°')
+    a_side, ang = 10.3, 128.0
+    acute = 180.0 - ang  # 52°
+    sc = s4(a_side * (1 + abs(np.cos(np.radians(acute)))),
+            a_side * np.sin(np.radians(acute)))
+    A = np.array([0.0, 0.0])
+    B = np.array([a_side*sc, 0.0])
+    D = np.array([a_side*np.cos(np.radians(acute))*sc,
+                  a_side*np.sin(np.radians(acute))*sc])
+    C = B + (D - A)
+    O = (A + C) / 2  # diagonals' midpoint
+    F = np.array([D[0], 0.0])
+    E = np.array([C[0], 0.0])
+    pg(ax, [A, B, C, D])
+    ln(ax, C, E, lw=1.3, c='steelblue', ls=':')
+    ln(ax, E, F, lw=1.3, c='steelblue', ls=':')
+    ln(ax, F, D, lw=1.3, c='steelblue', ls=':')
+    ln(ax, A, C, lw=1.5, c='royalblue', ls='--')
+    ln(ax, B, D, lw=1.5, c='crimson', ls='--')
+    rm(ax, O, A, B)  # diagonals are perpendicular (not a vertex right-angle)
+    vl(ax, A, 'A', [B, D]); vl(ax, B, 'B', [A, C])
+    vl(ax, C, 'C', [B, D]); vl(ax, D, 'D', [A, C])
+    vl(ax, E, 'E', [C, B]); vl(ax, F, 'F', [D, A])
+    # ∠ABC=128° — arc at B; label placed outside to the right of B
+    aoa(ax, B, A, C, r=0.5, col='royalblue', lbl=None)
+    ax.text(B[0] + 0.55, B[1] + 0.35, '128°', fontsize=11, ha='left', va='center', color='royalblue')
+    ax.text((A[0]+B[0])/2, -0.55, 'AB=10.3', fontsize=11, ha='center', va='top')
+    ml(ax, A, C, 'AC=?', k=0.22, c='royalblue')
+    ml(ax, B, D, 'BD=?', k=0.22, c='crimson')
+    al(ax, [A, B, C, D, E, F], pad=0.85)
     sv(fig, pr+"19.png")
 
-    # 20: Rectangle 12×9 and Rhombus side=10, angle=110°
-    fig, ax = nax()
+    # 20: Rectangle ABCD 12×9 and Rhombus PQRS side=10, ∠PQR=110°
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.5, 4.4))
+    for _ax in (ax1, ax2):
+        _ax.set_aspect('equal'); _ax.axis('off')
+    fig.patch.set_facecolor('white')
+
     sc = s4(12, 9)
-    A = np.array([0,0]); B = np.array([12*sc,0])
-    C = np.array([12*sc,9*sc]); D = np.array([0,9*sc])
-    pg(ax, [A,B,C,D])
-    ln(ax, A, C, lw=2, c='royalblue', ls='--')
-    vl(ax, A, 'A', [B,D]); vl(ax, B, 'B', [A,C])
-    vl(ax, C, 'C', [B,D]); vl(ax, D, 'D', [A,C])
-    ml(ax, A, B, '12', s=-1); ml(ax, A, D, '9')
-    ml(ax, A, C, 'd=?', k=0.28, c='royalblue')
-    ax.text(6*sc, -0.6, 'Rectangle', fontsize=10, ha='center', color='steelblue')
-    al(ax, [A,B,C,D]); sv(fig, pr+"20.png")
+    A = np.array([0.0, 0.0]); B = np.array([12*sc, 0.0])
+    C = np.array([12*sc, 9*sc]); D = np.array([0.0, 9*sc])
+    pg(ax1, [A, B, C, D])
+    ln(ax1, A, C, lw=2, c='royalblue', ls='--')
+    vl(ax1, A, 'A', [B, D]); vl(ax1, B, 'B', [A, C])
+    vl(ax1, C, 'C', [B, D]); vl(ax1, D, 'D', [A, C])
+    ml(ax1, A, B, '12', s=-1); ml(ax1, A, D, '9')
+    ml(ax1, A, C, 'd=?', k=0.28, c='royalblue')
+    ax1.text(6*sc, -1.0, 'Rectangle ABCD', fontsize=10, ha='center', color='steelblue')
+    al(ax1, [A, B, C, D], pad=0.9)
+
+    half = np.radians(55)
+    Qp = np.array([0.0, 0.0])
+    Pp = np.array([10*np.cos(half), 10*np.sin(half)])
+    Rp = np.array([10*np.cos(half), -10*np.sin(half)])
+    Sp = Pp + Rp - Qp
+    scr = s4(max(Pp[0], Sp[0]), Pp[1])
+    Pp, Qp, Rp, Sp = Pp*scr, Qp*scr, Rp*scr, Sp*scr
+    Op = (Pp + Rp) / 2
+    pg(ax2, [Pp, Qp, Rp, Sp])
+    ln(ax2, Pp, Rp, lw=1.5, c='royalblue', ls='--')
+    ln(ax2, Qp, Sp, lw=1.5, c='crimson', ls='--')
+    rm(ax2, Op, Pp, Qp)
+    vl(ax2, Pp, 'P', [Qp, Sp]); vl(ax2, Qp, 'Q', [Pp, Rp])
+    vl(ax2, Rp, 'R', [Qp, Sp]); vl(ax2, Sp, 'S', [Pp, Rp])
+    ml(ax2, Pp, Qp, '10')
+    aoa(ax2, Qp, Pp, Rp, r=0.3, col='royalblue', lbl='110°')
+    ml(ax2, Op, Pp, 'd1=?', k=0.26)
+    ml(ax2, Op, Qp, 'd2=?', k=0.26, s=-1)
+    ax2.text(Op[0], Rp[1]-0.9, 'Rhombus PQRS', fontsize=10, ha='center', color='steelblue')
+    al(ax2, [Pp, Qp, Rp, Sp], pad=0.9)
+
+    sv(fig, pr+"20.png")
 
     print("  \u2713\u2713 5.2 complete (20 images)")
 
@@ -1248,7 +1360,7 @@ def ch53():
     # 08: Isosceles trap, angle=50°, leg=15 → h=15sin50°
     fig, ax = nax()
     h = 15*np.sin(np.radians(50)); ex = 15*np.cos(np.radians(50))
-    draw_iso_trap(ax, 10+2*ex, 10, h, lbl_long='long', lbl_leg='15', lbl_h='h=?', lbl_ang='50°')
+    draw_iso_trap(ax, 10+2*ex, 10, h, lbl_leg='15', lbl_h='h=?', lbl_ang='50°')
     sv(fig, pr+"08.png")
 
     # 09: ABCD, AD=12, BC=30, angle ABC=55°
@@ -1298,16 +1410,18 @@ def ch53():
     ml(ax, A, E_pt, 'h=?', c='red'); ml(ax, B, C_, 'BC=15')
     al(ax, [A,B,C_,D,E_pt,F_pt]); sv(fig, pr+"13.png")
 
-    # 14: Isosceles trap ABCD, diagonal AC=25, BC=40, angle ABC=45°
+    # 14: Isosceles trap ABCD, diagonal AC=25, BC=31, angle ABC=45° → h=7, AD=17
     fig, ax = nax()
-    draw_iso_trap(ax, 40, 10, 25*np.sin(np.radians(45)),
-                  lbl_long='BC=40', lbl_short='AD=?', lbl_h='h=?', lbl_ang='45°')
+    A, B, C_, D, E, F = draw_iso_trap(ax, 31, 17, 7,
+                  lbl_long='BC=31', lbl_short='AD=?', lbl_h='h=?', lbl_ang='45°')
+    ln(ax, A, C_, lw=1.5, c='crimson', ls='--')
+    ml(ax, A, C_, 'AC=25', k=0.32, c='crimson')
     sv(fig, pr+"14.png")
 
-    # 15: Isosceles trap, height=leg, long=30, angle=45°
+    # 15: Isosceles trap, h=6, long=30, angle=45° → leg=6√2, short=18
     fig, ax = nax()
-    draw_iso_trap(ax, 30, 16, 7, lbl_long='30', lbl_short='short=?',
-                  lbl_leg='leg=h', lbl_ang='45°')
+    draw_iso_trap(ax, 30, 18, 6, lbl_long='30', lbl_short='short=?',
+                  lbl_leg='leg=?', lbl_h='h=6', lbl_ang='45°')
     sv(fig, pr+"15.png")
 
     # 16: Isosceles trap, long=50, leg=17, h=15 → short=34
@@ -1317,14 +1431,16 @@ def ch53():
     ax.text(25*s4(50,15), 7.5*s4(50,15), 'Area=?', fontsize=10, ha='center', color='red')
     sv(fig, pr+"16.png")
 
-    # 17: Isosceles trap, AD=12, BC=48, angle DCB=40°
+    # 17: Isosceles trap, AD=12, BC=48, angle DCB=40° — feet G,H labeled
     fig, ax = nax()
     h = 18*np.tan(np.radians(40))
-    draw_iso_trap(ax, 48, 12, h, lbl_long='BC=48', lbl_short='AD=12',
-                  lbl_leg='?', lbl_h='h=?', lbl_ang='40°')
+    A, B, C_, D, G, H = draw_iso_trap(ax, 48, 12, h, lbl_long='BC=48', lbl_short='AD=12',
+                  lbl_h='h=?', lbl_ang=None)
+    vl(ax, G, 'G', [A, B]); vl(ax, H, 'H', [D, C_])
+    aoa(ax, C_, D, B, r=0.4, col='crimson', lbl='40°')
     sv(fig, pr+"17.png")
 
-    # 18: General trapezoid ABCD, AB=17, AD=13, BC=15, angle BCD=53°
+    # 18: General trapezoid ABCD, AB=17, AD=13, BC=15, angle BCD=53° — E,F labeled
     fig, ax = nax()
     h_val = 12.0; DE = 5.0; FC = 9.0
     DC_len = DE + 17 + FC
@@ -1338,23 +1454,39 @@ def ch53():
     rm(ax, E_pt, A, D); rm(ax, F_pt, B, C_)
     vl(ax, A, 'A', [B,D]); vl(ax, B, 'B', [A,C_])
     vl(ax, C_, 'C', [B,D]); vl(ax, D, 'D', [A,C_])
+    vl(ax, E_pt, 'E', [A,D]); vl(ax, F_pt, 'F', [B,C_])
     aoa(ax, C_, B, D, r=0.4, col='crimson', lbl='53°')
     ml(ax, A, B, 'AB=17'); ml(ax, A, D, 'AD=13'); ml(ax, B, C_, 'BC=15', s=-1)
     ml(ax, A, E_pt, 'h=?', c='red')
     al(ax, [A,B,C_,D,E_pt,F_pt]); sv(fig, pr+"18.png")
 
-    # 19: Isosceles trap, AB=10, DC=34, angle BCD=35°
+    # 19: Isosceles trap AB∥DC, AB=10 (top), DC=34 (bottom), ∠BCD=35°
     fig, ax = nax()
-    ex = 12; h = ex*np.tan(np.radians(35))
-    draw_iso_trap(ax, 34, 10, h, lbl_long='DC=34', lbl_short='AB=10',
-                  lbl_leg='?', lbl_h='h=?', lbl_ang='35°')
-    sv(fig, pr+"19.png")
+    ex = 12; h = ex * np.tan(np.radians(35)); short_b = 10; long_b = 34
+    sc = s4(long_b, h)
+    D = np.array([0.0, 0.0]); C_ = np.array([long_b * sc, 0.0])
+    A = np.array([ex * sc, h * sc]); B = np.array([(ex + short_b) * sc, h * sc])
+    E = np.array([ex * sc, 0.0]); F = np.array([(ex + short_b) * sc, 0.0])
+    pg(ax, [A, B, C_, D])
+    ln(ax, A, E, lw=1.5, c='royalblue', ls='--')
+    ln(ax, B, F, lw=1.5, c='royalblue', ls='--')
+    rm(ax, E, A, D); rm(ax, F, B, C_)
+    vl(ax, A, 'A', [B, D]); vl(ax, B, 'B', [A, C_])
+    vl(ax, C_, 'C', [B, D]); vl(ax, D, 'D', [A, C_])
+    aoa(ax, C_, B, D, r=0.4, col='crimson', lbl='35°')
+    ml(ax, A, B, 'AB=10'); ml(ax, D, C_, 'DC=34', s=-1)
+    ml(ax, A, E, 'h=?', s=-1, c='royalblue', k=0.21)
+    ml(ax, B, C_, 'leg=?', k=0.25)
+    al(ax, [A, B, C_, D, E, F]); sv(fig, pr+"19.png")
 
-    # 20: Isosceles trap, AD=8, BC=24, leg AB=10
+    # 20: Isosceles trap, AD=8, BC=24, leg AB=10 — midpoints M,N for part ד
     fig, ax = nax()
     h = np.sqrt(10**2 - 8**2)  # = 6
-    draw_iso_trap(ax, 24, 8, h, lbl_long='BC=24', lbl_short='AD=8',
+    A, B, C_, D, E, F = draw_iso_trap(ax, 24, 8, h, lbl_long='BC=24', lbl_short='AD=8',
                   lbl_leg='AB=10', lbl_h='h=?', lbl_ang='?°')
+    M = (A + B) / 2; N = (D + C_) / 2
+    ln(ax, M, N, lw=1.5, c='darkgreen', ls='--')
+    vl(ax, M, 'M', [A, B]); vl(ax, N, 'N', [D, C_])
     sv(fig, pr+"20.png")
 
     print("  \u2713\u2713 5.3 complete (20 images)")
@@ -1365,7 +1497,8 @@ def ch53():
 def ch61():
     pr = "10_6.1_ex"
 
-    def ladder_scene(ax, ladder_len, ground_dist, height, angle_label=None, q='h'):
+    def ladder_scene(ax, ladder_len, ground_dist, height, angle_label=None, q='h',
+                     show_ground=False):
         """Wall on left, ground at bottom, ladder leaning against wall."""
         O = np.array([0,0]); wall_top = np.array([0, height])
         gnd = np.array([ground_dist, 0])
@@ -1380,7 +1513,10 @@ def ch61():
         elif q == 'ang': pass
         elif q == 'dist': ml(ax, O, gnd, 'd=?', s=-1, c=q_color)
         ml(ax, gnd, wall_top, f'{ladder_len}m', k=0.3, c='royalblue')
-        if ground_dist and q != 'dist': ml(ax, O, gnd, f'{ground_dist}m', s=-1)
+        # Do not label a computed ground distance — that spoils unknowns (ex01/ex09).
+        if show_ground and q != 'dist':
+            gtxt = f'{ground_dist:.2f}'.rstrip('0').rstrip('.') + 'm'
+            ml(ax, O, gnd, gtxt, s=-1)
         al(ax, [O, wall_top, gnd, np.array([-0.3,0])])
 
     def pole_shadow(ax, height, shadow_len, sun_angle=None, q='h'):
@@ -1511,7 +1647,11 @@ def ch61():
     ln(ax, O, top, lw=1.5, c='dimgray', ls='--')
     rm(ax, O, top, end)
     aoa(ax, end, O, top, r=0.5, col='crimson', lbl='5°')
-    ml(ax, O, top, '0.75m'); ml(ax, end, top, 'ramp=?', k=0.28, c='red')
+    ml(ax, O, top, '0.75m')
+    # Place ramp label near hypotenuse midpoint, clearly above the base
+    mid = (end + top) / 2
+    ax.text(mid[0] + 0.15, mid[1] + 0.25, 'ramp=?', fontsize=11,
+            ha='center', va='center', color='red')
     al(ax, [O, top, end]); sv(fig, pr+"11.png")
 
     # 12: TV 16:9, diagonal=55" → width and height
@@ -1553,7 +1693,7 @@ def ch61():
     ax.text(2.2*sc, 1.5*sc, '17cm per step', fontsize=9, ha='center', color='darkgreen')
     al(ax, [O, top, base]); sv(fig, pr+"14.png")
 
-    # 15: Cliff 80m, depression angle=12° → horizontal distance
+    # 15: Cliff 80m, depression angle=12° from horizontal → horizontal distance
     fig, ax = nax()
     horiz = 80/np.tan(np.radians(12))
     sc = s4(horiz, 80)
@@ -1561,28 +1701,37 @@ def ch61():
     ln(ax, O, cliff, lw=3, c='gray')
     ln(ax, O, ship, lw=2, c='dimgray')
     ln(ax, cliff, ship, lw=2, c='royalblue', ls='--')
+    # Horizontal reference at eye level — depression is measured from this, not from vertical
+    horiz_ref = cliff + np.array([1.8, 0])
+    ln(ax, cliff, horiz_ref, lw=1.2, c='gray', ls=':')
     rm(ax, O, cliff, ship)
-    aoa(ax, cliff, O, ship, r=0.4, col='crimson', lbl='12°')
+    aoa(ax, cliff, horiz_ref, ship, r=0.55, col='crimson', lbl='12°')
     ml(ax, O, cliff, '80m'); ml(ax, O, ship, 'd=?', s=-1, c='red')
-    ax.text(horiz*sc+0.3, 0, '\u26f5', fontsize=14)
-    al(ax, [O, cliff, ship]); sv(fig, pr+"15.png")
+    hx = horiz*sc
+    hull = np.array([[hx-0.22,0],[hx+0.22,0],[hx+0.12,-0.14],[hx-0.12,-0.14]])
+    ax.fill(hull[:,0], hull[:,1], color='saddlebrown')
+    ln(ax, np.array([hx,0]), np.array([hx,0.35]), lw=1.5, c='dimgray')
+    al(ax, [O, cliff, ship, horiz_ref]); sv(fig, pr+"15.png")
 
-    # 16: Two buildings, tall=48m, elevation angle=20°, horiz dist=60m
+    # 16: Two buildings, tall=48m, elevation angle=20° from horizontal, horiz dist=60m
     fig, ax = nax()
     diff_h = 60*np.tan(np.radians(20))
     short_h = 48 - diff_h
     sc = s4(60, 48)
     B1_top = np.array([0,48*sc]); B1_bot = np.array([0,0])
     B2_bot = np.array([60*sc,0]); B2_top = np.array([60*sc,short_h*sc])
+    # Point on tall building at the height of the short building (horizontal sight line)
+    meet = np.array([0.0, short_h*sc])
     ln(ax, B1_bot, B1_top, lw=3, c='steelblue')
     ln(ax, B2_bot, B2_top, lw=3, c='saddlebrown')
     ln(ax, B1_bot, B2_bot, lw=2, c='dimgray')
+    ln(ax, B2_top, meet, lw=1.2, c='gray', ls=':')  # horizontal from short roof
     ln(ax, B2_top, B1_top, lw=1.5, c='crimson', ls='--')
     rm(ax, B1_bot, B1_top, B2_bot)
-    aoa(ax, B2_top, B1_top, B2_bot, r=0.4, col='crimson', lbl='20°')
+    aoa(ax, B2_top, meet, B1_top, r=0.5, col='crimson', lbl='20°')
     ml(ax, B1_bot, B1_top, '48m'); ml(ax, B1_bot, B2_bot, '60m', s=-1)
     ml(ax, B2_bot, B2_top, 'h=?', c='red')
-    al(ax, [B1_bot,B1_top,B2_bot,B2_top]); sv(fig, pr+"16.png")
+    al(ax, [B1_bot,B1_top,B2_bot,B2_top,meet]); sv(fig, pr+"16.png")
 
     # 17: Slide, bottom angle=28°, height=2.4m
     fig, ax = nax()
@@ -1647,10 +1796,12 @@ def ch62():
     pr = "10_6.2_ex"
 
     # 01: Right triangle ABC, C=90°, AB=20, angle A=32°
+    # Adjacent to A is AC=20*cos32°, opposite is BC=20*sin32°
     fig, ax = nax()
-    sc = s4(20*np.cos(np.radians(32)), 20*np.sin(np.radians(32)))
-    C = np.array([0,0]); B = np.array([20*np.cos(np.radians(32))*sc,0])
-    A = np.array([0, 20*np.sin(np.radians(32))*sc])
+    sc = s4(20*np.sin(np.radians(32)), 20*np.cos(np.radians(32)))
+    C = np.array([0.0, 0.0])
+    B = np.array([20*np.sin(np.radians(32))*sc, 0.0])
+    A = np.array([0.0, 20*np.cos(np.radians(32))*sc])
     pg(ax, [A,B,C]); rm(ax, C, A, B)
     vl(ax, A, 'A', [B,C]); vl(ax, B, 'B', [A,C]); vl(ax, C, 'C', [A,B])
     aoa(ax, A, B, C, r=0.35, col='royalblue', lbl='32°')
@@ -1660,13 +1811,13 @@ def ch62():
 
     # 02: Rectangle ABCD, AB=9, BC=12 → diagonal, angle, perimeter
     fig, ax = nax()
-    sc = s4(12, 9)
-    A,B,C,D_ = (np.array([0,0]), np.array([12*sc,0]),
-                 np.array([12*sc,9*sc]), np.array([0,9*sc]))
+    sc = s4(9, 12)
+    A,B,C,D_ = (np.array([0.0, 0.0]), np.array([9*sc, 0.0]),
+                 np.array([9*sc, 12*sc]), np.array([0.0, 12*sc]))
     pg(ax, [A,B,C,D_]); ln(ax, A, C, lw=2, c='royalblue', ls='--')
     rm(ax, A, B, D_)
     vl(ax, A,'A',[B,D_]); vl(ax,B,'B',[A,C]); vl(ax,C,'C',[B,D_]); vl(ax,D_,'D',[A,C])
-    ml(ax, A, B, '12', s=-1); ml(ax, A, D_, '9')
+    ml(ax, A, B, 'AB=9', s=-1); ml(ax, B, C, 'BC=12')
     ml(ax, A, C, 'AC=?', k=0.28, c='red')
     aoa(ax, A, B, C, r=0.4, col='crimson', lbl='?°')
     al(ax, [A,B,C,D_]); sv(fig, pr+"02.png")
@@ -1759,20 +1910,20 @@ def ch62():
     ax.text(13*sc,5.5*sc,'Area=220',fontsize=10,ha='center',color='royalblue')
     al(ax,[A,B,C_,D,E,F]); sv(fig,pr+"08.png")
 
-    # 09: Right triangle ABC, C=90°, AB=17, BC=8 → find AC, angles, then altitude BD
+    # 09: Right triangle ABC, C=90°, AB=17, BC=8; D on AB with CD⊥AB
     fig, ax = nax()
-    sc = s4(15, 8)
-    C=np.array([0,0]); B=np.array([15*sc,0]); A=np.array([0,8*sc])
-    pg(ax,[A,B,C]); rm(ax,C,A,B)
-    vl(ax,A,'A',[B,C]); vl(ax,B,'B',[A,C]); vl(ax,C,'C',[A,B])
-    # D: foot of altitude from B to AC
-    AC=A-C; ac_n=np.linalg.norm(AC)
-    D=C+np.dot(B-C,AC/ac_n)*(AC/ac_n)
-    ln(ax,B,D,lw=1.5,c='royalblue',ls='--'); rm(ax,D,B,A)
-    vl(ax,D,'D',[B,C])
-    ml(ax,A,B,'AB=17'); ml(ax,C,B,'BC=15',s=-1); ml(ax,A,C,'AC=8',c='steelblue')
-    ml(ax,B,D,'BD=?',k=0.3,c='red')
-    al(ax,[A,B,C,D]); sv(fig,pr+"09.png")
+    sc = s4(8, 15)
+    C = np.array([0.0, 0.0]); B = np.array([8*sc, 0.0]); A = np.array([0.0, 15*sc])
+    AB = B - A
+    t = np.dot(C - A, AB) / np.dot(AB, AB)
+    D = A + t * AB
+    pg(ax, [A, B, C]); rm(ax, C, A, B)
+    ln(ax, C, D, lw=1.5, c='royalblue', ls='--'); rm(ax, D, C, A)
+    vl(ax, A, 'A', [B, C]); vl(ax, B, 'B', [A, C]); vl(ax, C, 'C', [A, B])
+    vl(ax, D, 'D', [A, B, C])
+    ml(ax, A, B, 'AB=17'); ml(ax, C, B, 'BC=8', s=-1); ml(ax, A, C, 'AC=?', c='red')
+    ml(ax, C, D, 'CD=?', k=0.28, c='red')
+    al(ax, [A, B, C, D]); sv(fig, pr+"09.png")
 
     # 10: Rectangle ABCD, angle ABD=55°, BD=18
     fig, ax = nax()
@@ -1841,32 +1992,37 @@ def ch62():
 
     # 14: Isosceles ABC, AB=AC=25, apex angle=50°
     fig, ax = nax()
-    base_a=(180-50)/2
-    hb=25*np.sin(np.radians(base_a)); h=25*np.cos(np.radians(base_a))
-    sc=s4(hb,h)
-    A=np.array([0,h*sc]); B=np.array([-hb*sc,0]); C=np.array([hb*sc,0])
-    D=np.array([0,0])
-    pg(ax,[A,B,C]); ln(ax,A,D,lw=1.5,c='royalblue',ls='--'); rm(ax,D,A,B)
-    vl(ax,A,'A',[B,C]); vl(ax,B,'B',[A,C]); vl(ax,C,'C',[A,B]); vl(ax,D,'D',[A,B])
-    aoa(ax,A,B,C,r=0.35,col='royalblue',lbl='50°')
-    ml(ax,A,B,'25'); ml(ax,B,C,'BC=?',s=-1,c='red'); ml(ax,A,D,'h=?',c='red')
-    al(ax,[A,B,C,D]); sv(fig,pr+"14.png")
+    hb = 25*np.sin(np.radians(25)); h = 25*np.cos(np.radians(25))
+    sc = s4(hb, h)
+    A = np.array([0.0, h*sc]); B = np.array([-hb*sc, 0.0]); C = np.array([hb*sc, 0.0])
+    D = np.array([0.0, 0.0])
+    # E on AB such that DE⊥AB
+    AB = B - A
+    t = np.dot(D - A, AB) / np.dot(AB, AB)
+    E = A + t * AB
+    pg(ax, [A, B, C]); ln(ax, A, D, lw=1.5, c='royalblue', ls='--'); rm(ax, D, A, B)
+    ln(ax, D, E, lw=1.5, c='crimson', ls='--'); rm(ax, E, D, A)
+    vl(ax, A, 'A', [B, C]); vl(ax, B, 'B', [A, C]); vl(ax, C, 'C', [A, B])
+    vl(ax, D, 'D', [A, B]); vl(ax, E, 'E', [A, B, D])
+    aoa(ax, A, B, C, r=0.35, col='royalblue', lbl='50°')
+    ml(ax, A, B, '25'); ml(ax, B, C, 'BC=?', s=-1, c='red'); ml(ax, A, D, 'h=?', c='red')
+    ml(ax, D, E, 'DE=?', k=0.25, c='crimson')
+    al(ax, [A, B, C, D, E], pad=0.7); sv(fig, pr+"14.png")
 
-    # 15: Rectangle ABCD, diagonal AC=20, angle BAC=36°, point P on CD
+    # 15: Rectangle ABCD, diagonal AC=20, angle BAC=36°; distance A→CD
     fig, ax = nax()
-    w=20*np.cos(np.radians(36)); h=20*np.sin(np.radians(36))
-    sc=s4(w,h)
-    A,B,C,D_=(np.array([0,0]),np.array([w*sc,0]),
-               np.array([w*sc,h*sc]),np.array([0,h*sc]))
-    P=np.array([0,h*sc])  # P on CD, AP⊥CD means P is same x as A → P=D actually
-    # Actually P on CD such that AP⊥CD means P is at same x as A, so P=D_
-    pg(ax,[A,B,C,D_])
-    ln(ax,A,C,lw=2,c='royalblue',ls='--')
-    vl(ax,A,'A',[B,D_]); vl(ax,B,'B',[A,C]); vl(ax,C,'C',[B,D_]); vl(ax,D_,'D',[A,C])
-    aoa(ax,A,B,C,r=0.4,col='crimson',lbl='36°')
-    ml(ax,A,C,'AC=20',k=0.28,c='royalblue')
-    ml(ax,A,B,'AB=?',s=-1,c='red'); ml(ax,A,D_,'AD=?',c='red')
-    al(ax,[A,B,C,D_]); sv(fig,pr+"15.png")
+    w = 20*np.cos(np.radians(36)); h = 20*np.sin(np.radians(36))
+    sc = s4(w, h)
+    A,B,C,D_ = (np.array([0.0, 0.0]), np.array([w*sc, 0.0]),
+                 np.array([w*sc, h*sc]), np.array([0.0, h*sc]))
+    pg(ax, [A, B, C, D_])
+    ln(ax, A, C, lw=2, c='royalblue', ls='--')
+    ln(ax, A, D_, lw=2, c='crimson', ls='--')  # distance A to CD equals AD
+    vl(ax, A, 'A', [B, D_]); vl(ax, B, 'B', [A, C]); vl(ax, C, 'C', [B, D_]); vl(ax, D_, 'D', [A, C])
+    aoa(ax, A, B, C, r=0.4, col='crimson', lbl='36°')
+    ml(ax, A, C, 'AC=20', k=0.28, c='royalblue')
+    ml(ax, A, B, 'AB=?', s=-1, c='red'); ml(ax, A, D_, 'AD=?', c='red')
+    al(ax, [A, B, C, D_]); sv(fig, pr+"15.png")
 
     # 16: General trapezoid ABCD, AB=20, AD=15, BC=25, angle ADC=60°
     fig, ax = nax()
@@ -1881,7 +2037,9 @@ def ch62():
     ln(ax,A,E,lw=1.5,c='royalblue',ls='--'); ln(ax,B,F,lw=1.5,c='crimson',ls='--')
     rm(ax,E,A,D); rm(ax,F,B,C_)
     vl(ax,A,'A',[B,D]); vl(ax,B,'B',[A,C_]); vl(ax,C_,'C',[B,D]); vl(ax,D,'D',[A,C_])
-    aoa(ax,D,A,C_,r=0.4,col='royalblue',lbl='60°')
+    aoa(ax,D,A,C_,r=0.45,col='royalblue',lbl=None)
+    ax.text(D[0]+0.55, D[1]+0.35, '60°', fontsize=13, ha='center', va='center',
+            color='royalblue', fontweight='bold')
     ml(ax,A,B,'AB=20'); ml(ax,A,D,'AD=15'); ml(ax,B,C_,'BC=25',s=-1)
     ml(ax,A,E,'h=?',c='red')
     al(ax,[A,B,C_,D,E,F]); sv(fig,pr+"16.png")
@@ -1932,21 +2090,40 @@ def ch62():
     ml(ax,D,C_,'CD=4.7',s=-1); ml(ax,A,D,'AD=?',c='red')
     al(ax,[A,B,C_,D]); sv(fig,pr+"19.png")
 
-    # 20: Rhombus ABCD, AB=10.3, angle ABC=128°
+    # 20: Rhombus ABCD, AB=10.3, angle ABC=128°; rectangle CEDF via heights to line AB
     fig, ax = nax()
-    ang=128
-    d1=2*10.3*abs(np.cos(np.radians(ang/2))); d2=2*10.3*abs(np.sin(np.radians(ang/2)))
-    sc=s4(d1/2,d2/2)
-    A=np.array([0,d2/2*sc]); B=np.array([d1/2*sc,0])
-    C=np.array([0,-d2/2*sc]); D_=np.array([-d1/2*sc,0])
-    O=np.array([0,0])
-    pg(ax,[A,B,C,D_])
-    ln(ax,A,C,lw=1.5,c='royalblue',ls='--'); ln(ax,B,D_,lw=1.5,c='crimson',ls='--')
-    rm(ax,O,A,B)
-    vl(ax,A,'A',[B,D_]); vl(ax,B,'B',[A,C]); vl(ax,C,'C',[B,D_]); vl(ax,D_,'D',[A,C])
-    aoa(ax,B,A,C,r=0.35,col='royalblue',lbl='128°')
-    ml(ax,A,B,'10.3'); ml(ax,A,C,'AC=?',c='red'); ml(ax,B,D_,'BD=?',c='red',s=-1)
-    al(ax,[A,B,C,D_]); sv(fig,pr+"20.png")
+    a = 10.3
+    ang = 52  # direction of sides AD, BC from AB
+    sc = s4(a * (1 + np.cos(np.radians(ang))), a * np.sin(np.radians(ang)))
+    A = np.array([0.0, 0.0])
+    B = np.array([a*sc, 0.0])
+    D_ = np.array([a*np.cos(np.radians(ang))*sc, a*np.sin(np.radians(ang))*sc])
+    C = B + (D_ - A)
+    F = np.array([D_[0], 0.0])
+    E = np.array([C[0], 0.0])
+    # line AB extended
+    ln(ax, np.array([A[0]-0.4, 0.0]), np.array([E[0]+0.4, 0.0]), lw=1.2, c='dimgray', ls=':')
+    pg(ax, [A, B, C, D_])
+    # rectangle CEDF
+    pg(ax, [C, E, F, D_], lw=1.8, c='seagreen', ls='-')
+    ln(ax, D_, F, lw=1.5, c='seagreen', ls='--')
+    ln(ax, C, E, lw=1.5, c='seagreen', ls='--')
+    rm(ax, F, D_, E); rm(ax, E, C, F)
+    ln(ax, A, C, lw=1.5, c='royalblue', ls='--')
+    ln(ax, B, D_, lw=1.5, c='crimson', ls='--')
+    aoa(ax, B, A, C, r=0.40, col='royalblue', lbl=None)
+    # label near B (not along bisector — that lands on diagonal intersection)
+    ax.text(B[0] - 0.15, B[1] + 0.55, '128°', fontsize=12,
+            ha='center', va='center', color='royalblue', fontweight='bold')
+    vl(ax, A, 'A', [B, D_]); vl(ax, B, 'B', [A, C])
+    vl(ax, C, 'C', [B, D_, E]); vl(ax, D_, 'D', [A, C, F])
+    vl(ax, E, 'E', [C, B]); vl(ax, F, 'F', [D_, A])
+    ml(ax, A, B, 'AB=10.3', s=-1)
+    ml(ax, A, C, 'AC=?', c='royalblue', k=0.3)
+    ml(ax, B, D_, 'BD=?', c='crimson', k=0.28)
+    ax.text((F[0]+E[0])/2, (D_[1])/2, 'מלבן CEDF', fontsize=9, ha='center',
+            va='center', color='seagreen')
+    al(ax, [A, B, C, D_, E, F], pad=0.85); sv(fig, pr+"20.png")
 
     print("  \u2713\u2713 6.2 complete (20 images)")
 
