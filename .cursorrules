@@ -48,3 +48,10 @@ At the very bottom of each Markdown file, provide the final answers for all 20 e
 - **RTL & Language:** The output must be entirely in Hebrew. Ensure the Markdown is structured well for Right-To-Left reading. Keep Hebrew text strictly outside of the LaTeX blocks to avoid rendering and syntax issues on the web.
 - **Numbering Spacing:** Ensure there is always a clear space after the question or answer number before the content begins (e.g., write `1. [Content]` and NOT `1.[Content]`).
 - **IRONCLAD RULE - LINE BREAKS BETWEEN TEXT AND MATH:** You must NEVER mix mathematical expressions (LaTeX) and Hebrew words on the same line. Whenever there is a clash or both are needed, you must use a line break to separate the Hebrew text from the math. Every Hebrew instruction or word must sit on its own line, and the math equation on the line below it.
+# Exam PDF Generation (מבחן מה״ט)
+When the user asks to create a מבחן / exam PDF / solutions for specific chapter folders (a short message with chapters/folders + optional exclusions is enough):
+1. Follow `מבחנים/mahat-exam-skill/SKILL.md` and `מבחנים/PROMPT_יצירת_מבחן.md` completely.
+2. Run all commands yourself via `מבחנים/generate_exam.py` (brief → scaffold/update spec → fill full MAHAT content → build PDFs). Never ask the user to run scripts.
+3. Defaults: 4 questions, 100 points, 2 hours, max MAHAT difficulty, formula box only from relevant official sheet formulas, full solutions + QC (math, scoring, RTL).
+4. Gold reference: `מבחנים/generate_exam_ch1_ch2.py`.
+5. This workflow is separate from the Markdown exercise "התחל" workflow above.
