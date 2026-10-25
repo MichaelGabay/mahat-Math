@@ -1,0 +1,15 @@
+@font-face{font-family:Heb;src:url("file:///System/Library/Fonts/Supplemental/Arial.ttf")}
+@font-face{font-family:Heb;src:url("file:///System/Library/Fonts/Supplemental/Arial%20Bold.ttf");font-weight:700}
+@page{size:A4;margin:30mm 17mm 17mm}
+*{box-sizing:border-box}body{font-family:Heb,Arial,sans-serif;font-size:11pt;line-height:1.43;color:#172e3b;direction:rtl;margin:0}
+h1{font-size:20pt;line-height:1.3;margin:3mm 0 5mm;color:#113654}h2{font-size:13pt;color:#327974;border-bottom:.65pt solid #bdd1cf;padding:2mm 0;margin:5mm 0 3mm;break-after:avoid}
+h3{font-size:10pt;color:#327974;margin:0 0 1.5mm;break-after:avoid}p{margin:1mm 0 2mm} .chapter-name{font-size:9pt;color:#536e76;border-bottom:.7pt solid #c8a15c;padding-bottom:2mm}
+.exercise,.answer{break-inside:avoid;padding:2.5mm 0;border-bottom:.35pt solid #d8e1e4} .exercise img{display:block;max-width:90mm;max-height:63mm;object-fit:contain;margin:2mm auto;direction:ltr} .exercise>p:has(img){margin:0}
+.chapter-3 .exercise img,.chapter-7 .exercise img,.chapter-8 .exercise img{max-width:137mm;max-height:87mm}
+.exercise.long,.answer.long{break-inside:auto}.exercise.long p,.answer.long p{orphans:3;widows:3}.exercise.long img{break-inside:avoid}
+figure{margin:0}figcaption{display:none}
+.math{direction:ltr;unicode-bidi:isolate;display:inline-block}.math.display{display:block;margin:2mm 0;text-align:center}.katex{font-size:1.08em}.katex-display{margin:0!important}.katex-display>.katex{white-space:nowrap}.katex .mord.text{font-family:KaTeX_Main,Heb,Arial,sans-serif}
+span[dir="ltr"]{direction:ltr;unicode-bidi:isolate;display:inline-block}.katex [dir="rtl"]{direction:rtl;unicode-bidi:isolate}
+table{border-collapse:collapse;margin:2mm auto;width:100%;font-size:9.5pt;break-inside:avoid}th,td{padding:1.5mm 2mm;border:.5pt solid #b5c6cc;text-align:center!important}th{background:#edf3f4}thead{display:table-header-group}
+.answer-start{break-before:page}.answer h3{display:inline;margin-left:2mm}.answer p:first-of-type{display:inline}.answer .math.display{display:block}hr{border:0;border-top:.4pt solid #d8e1e4;margin:3mm 0}
+ol,ul{padding-right:6mm;padding-left:0}li{margin:1mm 0}a{color:inherit;text-decoration:none}
