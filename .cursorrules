@@ -55,3 +55,5 @@ When the user asks to create a מבחן / exam PDF / solutions for specific chap
 3. Defaults: 4 questions, 100 points, 2 hours, max MAHAT difficulty, formula box only from relevant official sheet formulas, full solutions + QC (math, scoring, RTL).
 4. Gold reference: `מבחנים/generate_exam_ch1_ch2.py`.
 5. This workflow is separate from the Markdown exercise "התחל" workflow above.
+6. Persistent exam preferences are in `AGENTS.md`: no special product identities or trinomial factorization (including questions, solutions, and formula boxes); no significant-figures topic or mentions; decimal answers to two places rounded by the third digit, without intermediate rounding.
+7. These preferences apply to all future exams, including when the prompt says `החרגות: אין` (no additional exclusions). Change them only on an explicit user request, not based on older examples or topic trees.

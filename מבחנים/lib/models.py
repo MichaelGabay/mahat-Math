@@ -32,6 +32,7 @@ class Section:
     draw_solution: Optional[Callable] = None
     lines: int = 1
     line_gap: float = 0.45
+    solution_height_cm: float | None = None
 
 
 @dataclass
@@ -41,6 +42,7 @@ class Question:
     subtitle_he: str
     intro_he: str = ""
     sections: list[Section] = field(default_factory=list)
+    new_page: bool = False
 
     def validate_points(self) -> None:
         s = sum(sec.points for sec in self.sections)
@@ -74,6 +76,7 @@ class ExamSpec:
     formula_box: Optional[FormulaBox] = None
     questions: list[Question] = field(default_factory=list)
     summary_rows: list[AnswerRow] = field(default_factory=list)
+    summary_new_page: bool = False
 
     # מקטעי כותרת ראשית: [('he','...'), ('ltr',' 99913')]
     main_title_segments: list = field(
@@ -86,13 +89,9 @@ class ExamSpec:
     # כותרת עמודי פתרונות עם מספרים
     def solutions_header_segments(self) -> list:
         nums = self.chapter_nums
-        segs = [("he", "פתרונות מלאים — מבחן פרקים")]
-        if len(nums) == 1:
-            segs.append(("ltr", f" {nums[0]}"))
-        elif len(nums) >= 2:
-            segs.append(("ltr", f" {nums[0]}"))
-            segs.append(("ltr", "–"))
-            segs.append(("ltr", str(nums[1])))
+        segs = [("he", "פתרונות מלאים - מבחן פרקים")]
+        if nums:
+            segs.append(("ltr", " " + "-".join(map(str, nums)) + " "))
         return segs
 
     def exam_header_segments(self) -> list:

@@ -10,13 +10,14 @@ from reportlab.lib.colors import black
 from reportlab.lib.units import cm
 
 from .models import ExamSpec
-from .pdf_engine import ExamPDF, LIGHT, LINE, NAVY, PAGE_W, he
+from .pdf_engine import ExamPDF, LIGHT, LINE, NAVY, PAGE_W, he, he_text_segments
 
 
 def build_exam_pdf(spec: ExamSpec, out_dir: Path) -> Path:
     spec.validate()
     path = out_dir / spec.exam_filename
     pdf = ExamPDF(path, doc_hint="מבחן")
+    pdf.c.setTitle(spec.page_title_he)
 
     y = pdf.draw_cover(
         main_title_segments=spec.main_title_segments,
@@ -37,6 +38,8 @@ def build_exam_pdf(spec: ExamSpec, out_dir: Path) -> Path:
 
     header_segs = spec.exam_header_segments()
     for q in spec.questions:
+        if q.new_page:
+            y = pdf.ensure_space(0, 1, title_segments=header_segs, hint="מבחן")
         y = pdf.ensure_space(y, 10 * cm, title_segments=header_segs, hint="מבחן")
         y = pdf.draw_q_heading(y, q.number, q.points, q.subtitle_he)
         pdf.c.setFillColor(black)
@@ -63,6 +66,7 @@ def build_solutions_pdf(spec: ExamSpec, out_dir: Path) -> Path:
     spec.validate()
     path = out_dir / spec.solutions_filename
     pdf = ExamPDF(path, doc_hint="פתרונות")
+    pdf.c.setTitle("פתרונות - " + spec.page_title_he)
     c = pdf.c
 
     # כותרת
@@ -91,13 +95,16 @@ def build_solutions_pdf(spec: ExamSpec, out_dir: Path) -> Path:
     header_segs = spec.solutions_header_segments()
 
     for q in spec.questions:
+        if q.new_page and q.number != spec.questions[0].number:
+            y = pdf.ensure_space(0, 1, title_segments=header_segs, hint="פתרונות")
         y = pdf.ensure_space(y, 8 * cm, title_segments=header_segs, hint="פתרונות")
         pdf.draw_sol_heading(y, q.number, q.points)
         y -= 0.5 * cm
         c.setFillColor(black)
 
         for sec in q.sections:
-            y = pdf.ensure_space(y, 4.5 * cm, title_segments=header_segs, hint="פתרונות")
+            needed = (sec.solution_height_cm + 2) * cm if sec.solution_height_cm else 4.5 * cm
+            y = pdf.ensure_space(y, needed, title_segments=header_segs, hint="פתרונות")
             title = sec.solution_title_he or sec.prompt_he
             pdf.draw_section_head(sec.letter, str(sec.points), title, y)
             y -= 0.2 * cm
@@ -118,8 +125,15 @@ def build_solutions_pdf(spec: ExamSpec, out_dir: Path) -> Path:
                 summary.append(AnswerRow(f"שאלה {q.number}:", joined))
         spec.summary_rows = summary
 
-    y = pdf.ensure_space(y, 7 * cm, title_segments=header_segs, hint="פתרונות")
-    box_h = max(4.5 * cm, 0.7 * cm * (len(spec.summary_rows) + 2))
+    rendered_rows = []
+    for row in spec.summary_rows:
+        img = pdf.formula_image(row.latex, fontsize=11)
+        w, h = pdf.formula_size(img, 11 * cm)
+        rendered_rows.append((row, img, w, h, max(0.9 * cm, h + 0.25 * cm)))
+    box_h = max(4.5 * cm, 1.8 * cm + sum(row[4] for row in rendered_rows))
+    if spec.summary_new_page:
+        y = 0
+    y = pdf.ensure_space(y, max(7 * cm, box_h + 2 * cm), title_segments=header_segs, hint="פתרונות")
     c.setFillColor(LIGHT)
     c.setStrokeColor(LINE)
     c.roundRect(pdf.left, y - box_h, PAGE_W - 3.6 * cm, box_h + 0.2 * cm, 6, fill=1, stroke=1)
@@ -128,12 +142,14 @@ def build_solutions_pdf(spec: ExamSpec, out_dir: Path) -> Path:
     c.drawRightString(pdf.right - 0.3 * cm, y - 0.4 * cm, he("סיכום תשובות סופיות"))
     c.setFillColor(black)
 
-    yy = y - 1.0 * cm
-    for row in spec.summary_rows:
-        pdf.draw_he(row.label_he, pdf.right - 0.3 * cm, yy, size=9)
-        lw = c.stringWidth(he(row.label_he), pdf.FONT_REG, 9)
-        pdf.draw_formula_right(row.latex, pdf.right - 0.3 * cm - lw - 8, yy, fontsize=9.5, max_width=11 * cm)
-        yy -= 0.58 * cm
+    yy = y - 0.8 * cm
+    for row, img, w, h, row_h in rendered_rows:
+        center_y = yy - row_h / 2
+        lw = pdf.draw_rtl_flow(pdf.right - 0.3 * cm, center_y - 3,
+                               he_text_segments(row.label_he), size=9)
+        c.drawImage(img, pdf.right - 0.3 * cm - lw - 12 - w,
+                    center_y - h / 2, width=w, height=h, mask="auto")
+        yy -= row_h
 
     pdf.draw_centered_rtl_flow(
         y - box_h + 0.35 * cm,
