@@ -1,16 +1,10 @@
 ---
-description: Persistent content exclusions and rounding defaults for MAHAT exams
+description: Exam work belongs in the separate private mahat-exams repository
 alwaysApply: true
 ---
 
-# MAHAT exam defaults
+# Exam project location
 
-For every exam creation or revision in this project, follow `AGENTS.md` and
-`מבחנים/mahat-exam-skill/SKILL.md`.
-
-- Exclude special product identities and trinomial factorization from questions, solutions, and formula boxes.
-- Do not mention significant figures anywhere in student exams or solutions.
-- Require decimal answers to two places, rounding by the third digit, without intermediate rounding.
-- These saved defaults still apply when the standard prompt says `החרגות: אין`; that means no additional exclusions.
-- Override only on an explicit user request to change a saved preference.
-- These rules concern exams, not the existing chapter exercise bank.
+This repository holds teaching materials. Exams, solutions and their persistent preferences have moved to the sibling `../mahat-exams` project.
+For exam tasks, use that project and follow its `AGENTS.md`, `PROJECT_CONTEXT.md` and `מבחנים/mahat-exam-skill/SKILL.md`.
+Do not generate or commit private exams in this repository. See `EXAMS_MOVED.md`.

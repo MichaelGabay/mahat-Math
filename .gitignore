@@ -1,2 +1,6 @@
 # Local PDF tools, build cache, review images and distributable archives.
 /output/pdf/
+
+# Exams belong only in the separate private repository.
+/מבחנים/
+/.venv_exam/

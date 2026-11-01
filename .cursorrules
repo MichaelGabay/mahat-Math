@@ -48,12 +48,7 @@ At the very bottom of each Markdown file, provide the final answers for all 20 e
 - **RTL & Language:** The output must be entirely in Hebrew. Ensure the Markdown is structured well for Right-To-Left reading. Keep Hebrew text strictly outside of the LaTeX blocks to avoid rendering and syntax issues on the web.
 - **Numbering Spacing:** Ensure there is always a clear space after the question or answer number before the content begins (e.g., write `1. [Content]` and NOT `1.[Content]`).
 - **IRONCLAD RULE - LINE BREAKS BETWEEN TEXT AND MATH:** You must NEVER mix mathematical expressions (LaTeX) and Hebrew words on the same line. Whenever there is a clash or both are needed, you must use a line break to separate the Hebrew text from the math. Every Hebrew instruction or word must sit on its own line, and the math equation on the line below it.
-# Exam PDF Generation (מבחן מה״ט)
-When the user asks to create a מבחן / exam PDF / solutions for specific chapter folders (a short message with chapters/folders + optional exclusions is enough):
-1. Follow `מבחנים/mahat-exam-skill/SKILL.md` and `מבחנים/PROMPT_יצירת_מבחן.md` completely.
-2. Run all commands yourself via `מבחנים/generate_exam.py` (brief → scaffold/update spec → fill full MAHAT content → build PDFs). Never ask the user to run scripts.
-3. Defaults: 4 questions, 100 points, 2 hours, max MAHAT difficulty, formula box only from relevant official sheet formulas, full solutions + QC (math, scoring, RTL).
-4. Gold reference: `מבחנים/generate_exam_ch1_ch2.py`.
-5. This workflow is separate from the Markdown exercise "התחל" workflow above.
-6. Persistent exam preferences are in `AGENTS.md`: no special product identities or trinomial factorization (including questions, solutions, and formula boxes); no significant-figures topic or mentions; decimal answers to two places rounded by the third digit, without intermediate rounding.
-7. These preferences apply to all future exams, including when the prompt says `החרגות: אין` (no additional exclusions). Change them only on an explicit user request, not based on older examples or topic trees.
+# Exam generation moved to a private repository
+Exams, solutions, the generator, exam preferences and exam skills now live in the separate sibling project `../mahat-exams`.
+For any exam task, work in that project and read its `AGENTS.md`, `PROJECT_CONTEXT.md` and `מבחנים/mahat-exam-skill/SKILL.md`.
+Do not recreate or commit private exam content in this teaching-materials repository. If the private project is unavailable, ask the user to open it.
